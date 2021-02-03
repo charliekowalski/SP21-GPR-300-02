@@ -63,13 +63,13 @@ void a3demo_unloadGeometry(a3_DemoState* demoState)
 // utility to unload shaders
 void a3demo_unloadShaders(a3_DemoState* demoState)
 {
-	// ****TO-DO: 
+	// ****DONE: 
 	//	-> uncomment shader program unloading algorithm
-/*	a3_DemoStateShaderProgram* currentProg = demoState->shaderProgram,
+	a3_DemoStateShaderProgram* currentProg = demoState->shaderProgram,
 		* const endProg = currentProg + demoStateMaxCount_shaderProgram;
 
 	while (currentProg < endProg)
-		a3shaderProgramRelease((currentProg++)->program);*/
+		a3shaderProgramRelease((currentProg++)->program);
 }
 
 
