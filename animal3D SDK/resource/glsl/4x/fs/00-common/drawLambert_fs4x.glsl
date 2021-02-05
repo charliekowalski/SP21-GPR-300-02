@@ -37,8 +37,23 @@
 
 layout (location = 0) out vec4 rtFragColor;
 
+//Varyings
+in vec4 vPosition;
+in vec4 vSurfaceNormal;
+
+//Uniforms
+uniform vec4 uLightPosition;	//Camera-space	//TO-DO:: Add lighting Uniforms in a3_DemoStateLoad (I believe)
+
 void main()
 {
 	// DUMMY OUTPUT: all fragments are OPAQUE LIME
-	rtFragColor = vec4(0.5, 1.0, 0.0, 1.0);
+	//rtFragColor = vec4(0.5, 1.0, 0.0, 1.0);
+	
+	//Diffuse coefficient = dot product (unitSurfaceNormal, unitLightVector);
+	vec4 unitSurfaceNormal = normalize(vSurfaceNormal);	//Normalise it because it gets interpolated
+	vec4 unitLightingVector = normalize(uLightPosition - vPosition);	//Normalise it because it gets interpolated
+	float kd = dot(unitSurfaceNormal, unitLightingVector);
+
+	//DEBUGGING
+	rtFragColor = vec4(kd, kd, kd, 1.0);
 }
