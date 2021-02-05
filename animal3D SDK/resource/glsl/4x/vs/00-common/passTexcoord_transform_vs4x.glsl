@@ -24,7 +24,7 @@
 
 #version 450
 
-// ****TO-DO: 
+// ****DONE: 
 //	-> start with same items as "../passthru_transform_vs4x"
 //	-> declare texture coordinate attribute
 //		(hint: location is 8, use most appropriate type)
