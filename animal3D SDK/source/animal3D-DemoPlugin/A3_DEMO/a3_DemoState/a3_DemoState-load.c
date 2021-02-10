@@ -597,7 +597,7 @@ void a3demo_loadShaders(a3_DemoState *demoState)
 
 	// ****TO-DO: 
 	//	-> uncomment uniform setup and default value assignment
-/*	// prepare uniforms algorithmically instead of manually for all programs
+	// prepare uniforms algorithmically instead of manually for all programs
 	// get uniform and uniform block locations and set default values for all 
 	//	programs that have a uniform that will either never change or is
 	//	consistent for all programs
@@ -651,10 +651,22 @@ void a3demo_loadShaders(a3_DemoState *demoState)
 		a3demo_setUniformDefaultBlock(currentDemoProg, ubTransformMVP, 0);
 		a3demo_setUniformDefaultBlock(currentDemoProg, ubTransformMVPB, 1);
 
-		// ****TO-DO: 
+		// ****DONE????????????: 
 		//	-> set lighting uniform and block handles and defaults
-
-	}*/
+		a3demo_setUniformDefaultVec4(currentDemoProg, uLightPosition00, a3vec4_one.v);
+		a3demo_setUniformDefaultVec4(currentDemoProg, uLightColor00, a3vec4_one.v);
+		a3demo_setUniformDefaultVec4(currentDemoProg, uLightRadius00, a3vec4_one.v);
+		a3demo_setUniformDefaultVec4(currentDemoProg, uLightPosition01, a3vec4_one.v);
+		a3demo_setUniformDefaultVec4(currentDemoProg, uLightColor01, a3vec4_one.v);
+		a3demo_setUniformDefaultVec4(currentDemoProg, uLightRadius01, a3vec4_one.v);
+		a3demo_setUniformDefaultVec4(currentDemoProg, uLightPosition02, a3vec4_one.v);
+		a3demo_setUniformDefaultVec4(currentDemoProg, uLightColor02, a3vec4_one.v);
+		a3demo_setUniformDefaultVec4(currentDemoProg, uLightRadius02, a3vec4_one.v);
+		a3demo_setUniformDefaultVec4(currentDemoProg, uLightPosition03, a3vec4_one.v);
+		a3demo_setUniformDefaultVec4(currentDemoProg, uLightColor03, a3vec4_one.v);
+		a3demo_setUniformDefaultVec4(currentDemoProg, uLightRadius03, a3vec4_one.v);
+		a3demo_setUniformDefaultBlock(currentDemoProg, ubLightingBlend, 0);
+	}
 
 
 	// ****LATER

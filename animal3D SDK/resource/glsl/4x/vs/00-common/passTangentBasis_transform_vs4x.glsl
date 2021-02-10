@@ -43,6 +43,11 @@ layout (location = 8) in vec2 aTexcoord;//uv
 
 uniform mat4 uMV, uP, uMV_nrm;	//object -> view, view -> clip, object -> view
 
+//Uniforms for light data
+uniform vec4 uLightPosition00;
+uniform vec4 uLightColor00;
+uniform vec4 uLightRadius00;
+
 flat out int vVertexID;
 flat out int vInstanceID;
 

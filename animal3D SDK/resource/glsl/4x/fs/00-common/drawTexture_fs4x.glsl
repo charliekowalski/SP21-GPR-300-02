@@ -34,6 +34,7 @@
 in vec2 vTexcoord;
 
 layout (location = 0) out vec4 rtFragColor;
+out vec4 colour;
 
 uniform usampler3D uSampler;
 
@@ -41,4 +42,6 @@ void main()
 {
 	// DUMMY OUTPUT: all fragments are OPAQUE YELLOW
 	
+//	rtFragColor = texelFetch(uSampler, vTexcoord, 0);
+	rtFragColor = uSampler * vTexcoord;
 }
