@@ -35,7 +35,7 @@ layout (location = 0) in vec4 aPosition;
 layout (location = 8) in vec2 aTexcoord;//uv
 
 out vec2 vTexcoord;
-//uniform mat4 uMVP; //model-view-projection 
+uniform mat4 uMVP; //model-view-projection 
 
 flat out int vVertexID;
 flat out int vInstanceID;
@@ -43,7 +43,7 @@ flat out int vInstanceID;
 void main()
 {
 	// DUMMY OUTPUT: directly assign input position to output position
-	gl_Position = aPosition;
+	gl_Position = uMVP * aPosition;
 
 	vTexcoord = aTexcoord;
 
