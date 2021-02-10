@@ -30,7 +30,7 @@
 //		(hint: in the render routine, consolidate lighting data 
 //		into arrays; read them here as arrays)
 //	-> calculate Lambertian coefficient
-//	-> implement Lambertian shading model and assign to output
+//	-> implement Lambertian shading model and assign to output -here
 //		(hint: coefficient * attenuation * light color * surface color)
 //	-> implement for multiple lights
 //		(hint: there is another uniform for light count)
@@ -40,6 +40,7 @@ layout (location = 0) out vec4 rtFragColor;
 //Varyings
 in vec4 vPosition;
 in vec4 vSurfaceNormal;
+in vec2 vTexcoord;
 
 //Uniforms
 uniform vec4 uLightPosition;	//Camera-space	//TO-DO:: Add lighting Uniforms in a3_DemoStateLoad (I believe)

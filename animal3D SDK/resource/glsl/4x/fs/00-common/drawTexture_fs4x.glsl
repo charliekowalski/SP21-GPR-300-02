@@ -25,8 +25,8 @@
 #version 450
 
 // ****TO-DO: 
-//	-> declare texture coordinate varying
-//	-> declare sampler uniform
+//	-> declare texture coordinate varying/done
+//	-> declare sampler uniform/done
 //		(hint: correct name is used in codebase)
 //	-> get color from sampler at texture coordinate
 //	-> assign color to output
@@ -35,8 +35,10 @@ in vec2 vTexcoord;
 
 layout (location = 0) out vec4 rtFragColor;
 
+uniform sampler uSampler;
+
 void main()
 {
 	// DUMMY OUTPUT: all fragments are OPAQUE YELLOW
-	rtFragColor = vec4(1.0, 1.0, 0.0, 1.0);
+	
 }

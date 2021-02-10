@@ -266,19 +266,18 @@ void a3intro_render(a3_DemoState const* demoState, a3_DemoMode0_Intro const* dem
 
 		case intro_renderModeTexture:
 			// activate diffuse map, fall through to solid color
-			// ****TO-DO: 
+			// ****DONE?: 
 			//	-> activate diffuse texture on texture unit 0
-			//a3textureActivate(texture_dm[i],a3tex_unit01);
+			a3textureActivate(texture_dm[i],a3tex_unit00);
 			
 
 		case intro_renderModeSolid:
 			// send general matrix and color, end
-			// ****TO-DO: 
+			// ****DONE?: 
 			//	-> send model-view-projection matrix
 			//	-> send solid color (not a matrix)
 			modelViewMat = currentSceneObject->modelMatrixStackPtr->modelViewProjectionMat;
-			a3shaderUniformSendFloatMat(a3unif_mat4, 0, currentDemoProgram->uMV, 1, modelViewMat.mm);
-			//renderProgram
+			a3shaderUniformSendFloatMat(a3unif_mat4, 0, currentDemoProgram->uMVP, 1, modelViewMat.mm);
 			break;
 		}
 		// ****TO-DO: 
