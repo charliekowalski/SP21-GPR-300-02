@@ -25,17 +25,17 @@
 #version 450
 
 // ****TO-DO: 
-//	-> declare texture coordinate varying/done
-//	-> declare sampler uniform/done
+//	-> declare texture coordinate varying
+//	-> declare sampler uniform					//Done???
 //		(hint: correct name is used in codebase)
-//	-> get color from sampler at texture coordinate
+//	-> get color from sampler at texture coordinate		//Here
 //	-> assign color to output
 
 in vec2 vTexcoord;
 
 layout (location = 0) out vec4 rtFragColor;
 
-uniform sampler uSampler;
+uniform usampler3D uSampler;
 
 void main()
 {

@@ -30,7 +30,7 @@
 //		(hint: in the render routine, consolidate lighting data 
 //		into arrays; read them here as arrays)
 //	-> calculate Lambertian coefficient
-//	-> implement Lambertian shading model and assign to output -here
+//	-> implement Lambertian shading model and assign to output					//Here
 //		(hint: coefficient * attenuation * light color * surface color)
 //	-> implement for multiple lights
 //		(hint: there is another uniform for light count)
