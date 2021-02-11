@@ -24,24 +24,25 @@
 
 #version 450
 
-// ****TO-DO: 
+// ****DONE: 
 //	-> declare texture coordinate varying
-//	-> declare sampler uniform					//Done???
+//	-> declare sampler uniform
 //		(hint: correct name is used in codebase)
-//	-> get color from sampler at texture coordinate		//Here
+//	-> get color from sampler at texture coordinate
 //	-> assign color to output
 
 in vec2 vTexcoord;
 
 layout (location = 0) out vec4 rtFragColor;
-out vec4 colour;
 
-uniform usampler3D uSampler;
+uniform usampler2D uAtlas;
 
 void main()
 {
 	// DUMMY OUTPUT: all fragments are OPAQUE YELLOW
 	
 //	rtFragColor = texelFetch(uSampler, vTexcoord, 0);
-	rtFragColor = uSampler * vTexcoord;
+	rtFragColor = texture2D(uAtlas, vTexcoord);
+
+	gl_FragColor = rtFragColor;
 }

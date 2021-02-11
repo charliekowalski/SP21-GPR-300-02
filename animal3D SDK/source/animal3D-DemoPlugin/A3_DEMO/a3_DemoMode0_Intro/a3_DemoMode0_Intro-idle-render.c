@@ -238,7 +238,7 @@ void a3intro_render(a3_DemoState const* demoState, a3_DemoMode0_Intro const* dem
 	a3shaderUniformSendFloatMat(a3unif_vec4, 0, currentDemoProgram->uLightPosition00, 1, projectionMatInv.mm);
 	a3shaderUniformSendFloatMat(a3unif_vec4, 0, currentDemoProgram->uLightColor00, 1, projectionMatInv.mm);
 	a3shaderUniformSendFloatMat(a3unif_vec4, 0, currentDemoProgram->uLightRadius00, 1, projectionMatInv.mm);
-	a3shaderUniformBlockBind(currentDemoProgram, currentDemoProgram->ubLightingBlend, 0);
+	//a3shaderUniformBlockBind(currentDemoProgram, currentDemoProgram->ubLightingBlend, 0);
 
 	// select pipeline algorithm
 	glDisable(GL_BLEND);
@@ -272,7 +272,7 @@ void a3intro_render(a3_DemoState const* demoState, a3_DemoMode0_Intro const* dem
 			// activate diffuse map, fall through to solid color
 			// ****DONE?: 
 			//	-> activate diffuse texture on texture unit 0
-			a3textureActivate(texture_dm[i], a3tex_unit00);
+			a3textureActivate(texture_dm[j], a3tex_unit00);
 			
 
 		case intro_renderModeSolid:
