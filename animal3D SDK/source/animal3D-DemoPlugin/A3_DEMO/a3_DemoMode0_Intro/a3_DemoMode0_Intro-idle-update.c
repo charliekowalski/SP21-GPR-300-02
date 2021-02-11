@@ -73,7 +73,7 @@ void a3intro_update_scene(a3_DemoState* demoState, a3_DemoMode0_Intro* demoMode,
 	a3demo_updateSceneObject(demoMode->obj_sphere, 0);
 	a3demo_updateSceneObjectStack(demoMode->obj_sphere, projector);
 
-	// ****TO-DO: 
+	// ****DONE: 
 	//	-> update the remaining scene objects and their matrix stacks
 
 	//Cylinder
@@ -111,8 +111,12 @@ void a3intro_update_scene(a3_DemoState* demoState, a3_DemoMode0_Intro* demoMode,
 	a3demo_updateSceneObject(demoMode->obj_teapot, 0);
 	a3demo_updateSceneObjectStack(demoMode->obj_teapot, projector);
 
-	//Ground??????????????????
+	//Ground
+	a3demo_update_defaultAnimation((dt * 15.0), demoMode->obj_ground,
+		(a3ui32)(demoMode->obj_ground - demoMode->obj_ground), 2, demoState->updateAnimation);
 
+	a3demo_updateSceneObject(demoMode->obj_ground, 0);
+	a3demo_updateSceneObjectStack(demoMode->obj_ground, projector);
 }
 
 void a3intro_update(a3_DemoState* demoState, a3_DemoMode0_Intro* demoMode, a3f64 const dt)

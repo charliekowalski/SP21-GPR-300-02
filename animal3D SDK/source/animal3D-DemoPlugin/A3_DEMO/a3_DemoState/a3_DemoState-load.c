@@ -350,7 +350,6 @@ void a3demo_loadGeometry(a3_DemoState *demoState)
 	sharedVertexStorage += a3geometryGenerateDrawable(currentDrawable, proceduralShapesData + 5, vao, vbo_ibo, sceneCommonIndexFormat, 0, 0);
 	currentDrawable = demoState->draw_unit_cone;
 	sharedVertexStorage += a3geometryGenerateDrawable(currentDrawable, proceduralShapesData + 6, vao, vbo_ibo, sceneCommonIndexFormat, 0, 0);
-	//...
 
 	// ****DONE: 
 	//	-> implement the remaining vertex array format from scratch
@@ -561,13 +560,11 @@ void a3demo_loadShaders(a3_DemoState *demoState)
 	currentDemoProg = demoState->prog_drawLambert;
 	a3shaderProgramCreate(currentDemoProg->program, "prog:draw-lambert");
 	a3shaderProgramAttachShader(currentDemoProg->program, shaderList.passTangentBasis_transform_vs->shader);
-	//a3shaderProgramAttachShader(currentDemoProg->program, shaderList.drawTangentBasis_gs->shader);
 	a3shaderProgramAttachShader(currentDemoProg->program, shaderList.drawLambert_fs->shader);
 	// Phong
 	currentDemoProg = demoState->prog_drawPhong;
 	a3shaderProgramCreate(currentDemoProg->program, "prog:draw-phong");
 	a3shaderProgramAttachShader(currentDemoProg->program, shaderList.passTangentBasis_transform_vs->shader);
-	//a3shaderProgramAttachShader(currentDemoProg->program, shaderList.drawTangentBasis_gs->shader);
 	a3shaderProgramAttachShader(currentDemoProg->program, shaderList.drawPhong_fs->shader);
 
 
@@ -658,18 +655,18 @@ void a3demo_loadShaders(a3_DemoState *demoState)
 
 		// ****DONE????????????: 
 		//	-> set lighting uniform and block handles and defaults
-		a3demo_setUniformDefaultVec4(currentDemoProg, uLightPosition00, a3vec4_one.v);
-		a3demo_setUniformDefaultVec4(currentDemoProg, uLightColor00, a3vec4_one.v);
-		a3demo_setUniformDefaultVec4(currentDemoProg, uLightRadius00, a3vec4_one.v);
-		a3demo_setUniformDefaultVec4(currentDemoProg, uLightPosition01, a3vec4_one.v);
-		a3demo_setUniformDefaultVec4(currentDemoProg, uLightColor01, a3vec4_one.v);
-		a3demo_setUniformDefaultVec4(currentDemoProg, uLightRadius01, a3vec4_one.v);
-		a3demo_setUniformDefaultVec4(currentDemoProg, uLightPosition02, a3vec4_one.v);
-		a3demo_setUniformDefaultVec4(currentDemoProg, uLightColor02, a3vec4_one.v);
-		a3demo_setUniformDefaultVec4(currentDemoProg, uLightRadius02, a3vec4_one.v);
-		a3demo_setUniformDefaultVec4(currentDemoProg, uLightPosition03, a3vec4_one.v);
-		a3demo_setUniformDefaultVec4(currentDemoProg, uLightColor03, a3vec4_one.v);
-		a3demo_setUniformDefaultVec4(currentDemoProg, uLightRadius03, a3vec4_one.v);
+		//a3demo_setUniformDefaultVec4(currentDemoProg, uLightPosition00, a3vec4_one.v);
+		//a3demo_setUniformDefaultVec4(currentDemoProg, uLightColor00, a3vec4_one.v);
+		//a3demo_setUniformDefaultVec4(currentDemoProg, uLightRadius00, a3vec4_one.v);
+		//a3demo_setUniformDefaultVec4(currentDemoProg, uLightPosition01, a3vec4_one.v);
+		//a3demo_setUniformDefaultVec4(currentDemoProg, uLightColor01, a3vec4_one.v);
+		//a3demo_setUniformDefaultVec4(currentDemoProg, uLightRadius01, a3vec4_one.v);
+		//a3demo_setUniformDefaultVec4(currentDemoProg, uLightPosition02, a3vec4_one.v);
+		//a3demo_setUniformDefaultVec4(currentDemoProg, uLightColor02, a3vec4_one.v);
+		//a3demo_setUniformDefaultVec4(currentDemoProg, uLightRadius02, a3vec4_one.v);
+		//a3demo_setUniformDefaultVec4(currentDemoProg, uLightPosition03, a3vec4_one.v);
+		//a3demo_setUniformDefaultVec4(currentDemoProg, uLightColor03, a3vec4_one.v);
+		//a3demo_setUniformDefaultVec4(currentDemoProg, uLightRadius03, a3vec4_one.v);
 		//a3demo_setUniformDefaultBlock(currentDemoProg, ubLightingBlend, 0);
 	}
 

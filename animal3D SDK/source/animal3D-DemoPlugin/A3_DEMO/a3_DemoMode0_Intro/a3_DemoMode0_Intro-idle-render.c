@@ -235,9 +235,9 @@ void a3intro_render(a3_DemoState const* demoState, a3_DemoMode0_Intro const* dem
 
 	// ****DONE???????????????: 
 	//	-> send lighting uniforms and bind blocks where appropriate
-	a3shaderUniformSendFloatMat(a3unif_vec4, 0, currentDemoProgram->uLightPosition00, 1, projectionMatInv.mm);
-	a3shaderUniformSendFloatMat(a3unif_vec4, 0, currentDemoProgram->uLightColor00, 1, projectionMatInv.mm);
-	a3shaderUniformSendFloatMat(a3unif_vec4, 0, currentDemoProgram->uLightRadius00, 1, projectionMatInv.mm);
+	//a3shaderUniformSendFloatMat(a3unif_vec4, 0, currentDemoProgram->uLightPosition00, 1, projectionMatInv.mm);
+	//a3shaderUniformSendFloatMat(a3unif_vec4, 0, currentDemoProgram->uLightColor00, 1, projectionMatInv.mm);
+	//a3shaderUniformSendFloatMat(a3unif_vec4, 0, currentDemoProgram->uLightRadius00, 1, projectionMatInv.mm);
 	//a3shaderUniformBlockBind(currentDemoProgram, currentDemoProgram->ubLightingBlend, 0);
 
 	// select pipeline algorithm
@@ -270,7 +270,7 @@ void a3intro_render(a3_DemoState const* demoState, a3_DemoMode0_Intro const* dem
 			
 		case intro_renderModeTexture:
 			// activate diffuse map, fall through to solid color
-			// ****DONE?: 
+			// ****DONE: 
 			//	-> activate diffuse texture on texture unit 0
 			a3textureActivate(texture_dm[j], a3tex_unit00);
 			
@@ -282,6 +282,7 @@ void a3intro_render(a3_DemoState const* demoState, a3_DemoMode0_Intro const* dem
 			//	-> send solid color (not a matrix)
 			modelViewMat = currentSceneObject->modelMatrixStackPtr->modelViewProjectionMat;
 			a3shaderUniformSendFloatMat(a3unif_mat4, 0, currentDemoProgram->uMVP, 1, modelViewMat.mm);
+			a3shaderUniformSendFloat(a3unif_vec4, currentDemoProgram->uMVP, 1, modelViewMat.mm);
 			break;
 		}
 		// ****DONE: 
