@@ -277,12 +277,13 @@ void a3intro_render(a3_DemoState const* demoState, a3_DemoMode0_Intro const* dem
 
 		case intro_renderModeSolid:
 			// send general matrix and color, end
-			// ****DONE?: 
+			// ****TO-DO: 
 			//	-> send model-view-projection matrix
 			//	-> send solid color (not a matrix)
 			modelViewMat = currentSceneObject->modelMatrixStackPtr->modelViewProjectionMat;
 			a3shaderUniformSendFloatMat(a3unif_mat4, 0, currentDemoProgram->uMVP, 1, modelViewMat.mm);
-			a3shaderUniformSendFloat(a3unif_vec4, currentDemoProgram->uMVP, 1, modelViewMat.mm);
+			a3shaderUniformSendFloat(a3unif_vec4, currentDemoProgram->uColor, 1, modelViewMat.mm);
+			//a3shaderUniformSendFloat(a3unif_vec4, currentDemoProgram->uMVP, 1, modelViewMat.mm);
 			break;
 		}
 		// ****DONE: 
