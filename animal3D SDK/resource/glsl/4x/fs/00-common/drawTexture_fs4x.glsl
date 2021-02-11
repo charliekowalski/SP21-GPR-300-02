@@ -44,5 +44,5 @@ void main()
 //	rtFragColor = texelFetch(uSampler, vTexcoord, 0);
 	rtFragColor = texture2D(uAtlas, vTexcoord);
 
-	gl_FragColor = rtFragColor;
+//	gl_FragColor = rtFragColor;
 }
