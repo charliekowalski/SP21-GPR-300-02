@@ -266,6 +266,7 @@ void a3intro_render(a3_DemoState const* demoState, a3_DemoMode0_Intro const* dem
 			// ****DONE:
 			//	-> send "normal matrix": the inverse-transpose of the model-view matrix
 			//		(hint: the correct uniform location is in the shader header)
+			modelViewMat = currentSceneObject->modelMatrixStackPtr->modelMatInverseTranspose;
 			a3shaderUniformSendFloatMat(a3unif_mat4, 0, currentDemoProgram->uMV_nrm, 1, modelViewMat.mm);
 			
 		case intro_renderModeTexture:
@@ -277,7 +278,7 @@ void a3intro_render(a3_DemoState const* demoState, a3_DemoMode0_Intro const* dem
 
 		case intro_renderModeSolid:
 			// send general matrix and color, end
-			// ****TO-DO: 
+			// ****DONE: 
 			//	-> send model-view-projection matrix
 			//	-> send solid color (not a matrix)
 			modelViewMat = currentSceneObject->modelMatrixStackPtr->modelViewProjectionMat;
