@@ -216,7 +216,8 @@ void a3demo_renderTest(a3_DemoState const* demoState, a3f64 const dt)
 	};
 
 	glClearBufferfv(GL_COLOR, 0, colour);
-	//glUseProgram(renderingProgram);				//Does not like renderingProgram
+	glUseProgram(demoState->renderingProgram);	//Use the correct rendering program
+	glDrawArrays(GL_POINTS, 0, 1);		//Draws a point on the screen
 }
 
 void a3demo_render(a3_DemoState const* demoState, a3f64 const dt)

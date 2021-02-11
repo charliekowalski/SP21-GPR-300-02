@@ -62,7 +62,9 @@ void a3demo_unloadShaders(a3_DemoState* demoState)
 {
 	// ****TO-DO: 
 	//	-> implement "shutdown" from tutorial
-	glDeleteVertexArrays(1, );
+	glDeleteVertexArrays(1, &demoState->vertexArrayObject);
+	glDeleteProgram(demoState->renderingProgram);
+	glDeleteVertexArrays(1, &demoState->vertexArrayObject);
 }
 
 // utility to unload textures

@@ -349,8 +349,6 @@ void a3demo_loadShaders(a3_DemoState *demoState)
 
 	// ****DONE: 
 	//	-> implement "startup" from tutorial
-	GLuint renderingProgram;
-	GLuint vertexArrayObject;
 
 	//----compile_shaders()----
 	GLuint vertex_shader;
@@ -404,11 +402,9 @@ void a3demo_loadShaders(a3_DemoState *demoState)
 	//----compile_shaders()----END
 
 	//Compile shaders in the object, create array of vertices, and bind the objects in the array
-	renderingProgram = program;
-	glCreateVertexArrays(1, &vertexArrayObject);
-	glBindVertexArray(vertexArrayObject);
-	glUseProgram(renderingProgram);							//COULD BE IN THE WRONG PLACE, tutorial puts it in idle-renderer
-	glDrawArrays(GL_POINTS, 0, 1);
+	demoState->renderingProgram = program;
+	glCreateVertexArrays(1, &demoState->vertexArrayObject);
+	glBindVertexArray(demoState->vertexArrayObject);
 }
 
 
