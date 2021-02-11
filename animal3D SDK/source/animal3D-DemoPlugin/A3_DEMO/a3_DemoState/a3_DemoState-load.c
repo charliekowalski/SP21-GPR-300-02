@@ -670,7 +670,7 @@ void a3demo_loadShaders(a3_DemoState *demoState)
 		a3demo_setUniformDefaultVec4(currentDemoProg, uLightPosition03, a3vec4_one.v);
 		a3demo_setUniformDefaultVec4(currentDemoProg, uLightColor03, a3vec4_one.v);
 		a3demo_setUniformDefaultVec4(currentDemoProg, uLightRadius03, a3vec4_one.v);
-		a3demo_setUniformDefaultBlock(currentDemoProg, ubLightingBlend, 0);
+		//a3demo_setUniformDefaultBlock(currentDemoProg, ubLightingBlend, 0);
 	}
 
 

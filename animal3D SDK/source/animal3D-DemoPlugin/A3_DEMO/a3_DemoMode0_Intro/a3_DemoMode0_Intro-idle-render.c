@@ -284,10 +284,10 @@ void a3intro_render(a3_DemoState const* demoState, a3_DemoMode0_Intro const* dem
 			a3shaderUniformSendFloatMat(a3unif_mat4, 0, currentDemoProgram->uMVP, 1, modelViewMat.mm);
 			break;
 		}
-		// ****TO-DO: 
+		// ****DONE: 
 		//	-> uncomment render call
-	/*	a3shaderUniformSendInt(a3unif_single, currentDemoProgram->uIndex, 1, &j);
-		a3vertexDrawableActivateAndRender(drawable[j]);*/
+		a3shaderUniformSendInt(a3unif_single, currentDemoProgram->uIndex, 1, &j);
+		a3vertexDrawableActivateAndRender(drawable[j]);
 	}
 
 	// stop using stencil
@@ -303,9 +303,9 @@ void a3intro_render(a3_DemoState const* demoState, a3_DemoMode0_Intro const* dem
 	// enable alpha
 	a3demo_enableCompositeBlending();
 
-	// ****TO-DO: 
+	// ****DONE: 
 	//	-> uncomment overlay rendering
-/*	// scene overlays
+	// scene overlays
 	if (demoState->displayGrid || demoState->displayTangentBases || demoState->displayWireframe)
 	{
 		// draw grid aligned to world
@@ -348,7 +348,7 @@ void a3intro_render(a3_DemoState const* demoState, a3_DemoMode0_Intro const* dem
 				a3vertexDrawableActivateAndRender(drawable[j]);
 			}
 		}
-	}*/
+	}
 
 	// overlays with no depth
 	glDisable(GL_DEPTH_TEST);
@@ -359,9 +359,9 @@ void a3intro_render(a3_DemoState const* demoState, a3_DemoMode0_Intro const* dem
 
 	}
 
-	// ****TO-DO: 
+	// ****DONE: 
 	//	-> uncomment axis rendering
-/*	// superimpose axes
+	// superimpose axes
 	// draw coordinate axes in front of everything
 	currentDemoProgram = demoState->prog_drawColorAttrib;
 	a3shaderProgramActivate(currentDemoProgram->program);
@@ -385,7 +385,7 @@ void a3intro_render(a3_DemoState const* demoState, a3_DemoMode0_Intro const* dem
 			modelMat = currentSceneObject->modelMatrixStackPtr->modelMat;
 			a3demo_drawModelSimple(modelViewProjectionMat.m, viewProjectionMat.m, modelMat.m, currentDemoProgram);
 		}
-	}*/
+	}
 }
 
 
