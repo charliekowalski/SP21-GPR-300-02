@@ -45,6 +45,7 @@ void main()
 	// DUMMY OUTPUT: directly assign input position to output position
 	gl_Position = uMVP * aPosition;
 
+	//Assigning the texture attribute to the varying
 	vTexcoord = aTexcoord;
 
 	vVertexID = gl_VertexID;

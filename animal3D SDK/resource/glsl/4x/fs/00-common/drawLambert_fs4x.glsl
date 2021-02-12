@@ -42,8 +42,12 @@ in vec4 vPosition;
 in vec4 vSurfaceNormal;
 in vec2 vTexcoord;
 
+//uniform usampler2D uAtlas;
+
 //Uniforms
-uniform vec4 uLightPosition;	//Camera-space	//TO-DO:: Add lighting Uniforms in a3_DemoStateLoad (I believe)
+uniform vec4 uLightPosition00;	//Camera-space
+uniform vec4 uLightColor00;
+uniform vec4 uLightRadius00;
 
 void main()
 {
@@ -52,9 +56,16 @@ void main()
 	
 	//Diffuse coefficient = dot product (unitSurfaceNormal, unitLightVector);
 	vec4 unitSurfaceNormal = normalize(vSurfaceNormal);	//Normalise it because it gets interpolated
-	vec4 unitLightingVector = normalize(uLightPosition - vPosition);	//Normalise it because it gets interpolated
-	float kd = dot(unitSurfaceNormal, unitLightingVector);
+	vec4 unitLightingVector = normalize(uLightPosition00 - vPosition);	//Normalise it because it gets interpolated
+	float lambertianCoefficient = dot(unitSurfaceNormal, unitLightingVector);
 
-	//DEBUGGING
-	rtFragColor = vec4(kd, kd, kd, 1.0);
+	//Surface colour
+//	vec4 surfaceColour = texture2D(uAtlas, vTexcoord);	//Not working at all
+
+	float attenuationMultiplier = 0.9;
+
+	vec4 lambertianShading = lambertianCoefficient * attenuationMultiplier * uLightColor00/* * surfaceColour*/;
+
+	//Output Lambertian shading
+	rtFragColor = lambertianShading;
 }

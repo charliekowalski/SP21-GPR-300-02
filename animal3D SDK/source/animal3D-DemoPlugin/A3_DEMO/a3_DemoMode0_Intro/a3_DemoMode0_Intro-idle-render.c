@@ -233,11 +233,11 @@ void a3intro_render(a3_DemoState const* demoState, a3_DemoMode0_Intro const* dem
 	if (demoState->updateAnimation)
 		a3shaderUniformSendDouble(a3unif_single, currentDemoProgram->uTime, 1, &demoState->timer_display->totalTime);
 
-	// ****DONE???????????????: 
+	// ****DONE: 
 	//	-> send lighting uniforms and bind blocks where appropriate
-	//a3shaderUniformSendFloatMat(a3unif_vec4, 0, currentDemoProgram->uLightPosition00, 1, projectionMatInv.mm);
-	//a3shaderUniformSendFloatMat(a3unif_vec4, 0, currentDemoProgram->uLightColor00, 1, projectionMatInv.mm);
-	//a3shaderUniformSendFloatMat(a3unif_vec4, 0, currentDemoProgram->uLightRadius00, 1, projectionMatInv.mm);
+	a3shaderUniformSendFloatMat(a3unif_mat4, 0, currentDemoProgram->uLightPosition00, 1, demoMode->pointLightData->position.v);
+	a3shaderUniformSendFloatMat(a3unif_mat4, 0, currentDemoProgram->uLightColor00, 1, demoMode->pointLightData->color.v);
+	a3shaderUniformSendFloat(a3unif_single, currentDemoProgram->uLightRadius00, 1, &demoMode->pointLightData->radius);
 	//a3shaderUniformBlockBind(currentDemoProgram, currentDemoProgram->ubLightingBlend, 0);
 
 	// select pipeline algorithm
@@ -274,6 +274,7 @@ void a3intro_render(a3_DemoState const* demoState, a3_DemoMode0_Intro const* dem
 			// ****DONE: 
 			//	-> activate diffuse texture on texture unit 0
 			a3textureActivate(texture_dm[j], a3tex_unit00);
+			
 			
 
 		case intro_renderModeSolid:

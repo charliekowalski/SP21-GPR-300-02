@@ -36,13 +36,16 @@ in vec2 vTexcoord;
 layout (location = 0) out vec4 rtFragColor;
 
 uniform usampler2D uAtlas;
+//uniform vec4 uColour;
 
 void main()
 {
 	// DUMMY OUTPUT: all fragments are OPAQUE YELLOW
 	
-//	rtFragColor = texelFetch(uSampler, vTexcoord, 0);
+//	rtFragColor = texelFetch(uAtlas, vTexcoord, 0);
 	rtFragColor = texture2D(uAtlas, vTexcoord);
 
-//	gl_FragColor = rtFragColor;
+	//vec4 pixelColour = texture2D(uAtlas, vTexcoord);
+	//vec4 pixelColour = vec4(1.0f, 0.0f, 0.0f, 1.0f);
+	//rtFragColor = pixelColour /** uColour*/;
 }

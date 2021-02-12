@@ -98,9 +98,9 @@ extern "C"
 		struct {
 			a3i32
 				//Lighting uniforms
-				uLightPosition00, uLightPosition01, uLightPosition02, uLightPosition03,		//Position of the light in view space
-				uLightColor00, uLightColor01, uLightColor02, uLightColor03,		//The colours of the lights
-				uLightRadius00, uLightRadius01, uLightRadius02, uLightRadius03;		//The radii of the lights
+				uLightPosition00,// , uLightPosition01, uLightPosition02, uLightPosition03,		//Position of the light in view space
+				uLightColor00,// , uLightColor01, uLightColor02, uLightColor03,		//The colours of the lights
+				uLightRadius00;// , uLightRadius01, uLightRadius02, uLightRadius03;		//The radii of the lights
 
 			a3i32
 				//Block handles

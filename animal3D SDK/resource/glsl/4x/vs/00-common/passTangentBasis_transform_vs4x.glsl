@@ -24,7 +24,7 @@
 
 #version 450
 
-// ****DONE?: 
+// ****DONE: 
 //	-> declare matrices
 //		(hint: not MVP this time, made up of multiple; see render code)
 //	-> transform input position correctly, assign to output
@@ -32,7 +32,7 @@
 //	-> declare attributes for lighting and shading
 //		(hint: normal and texture coordinate locations are 2 and 8)
 //	-> declare additional matrix for transforming normal
-//	-> declare varyings for lighting and shading		
+//	-> declare varyings for lighting and shading	
 //	-> calculate final normal and assign to varying
 //	-> assign texture coordinate to varying
 
