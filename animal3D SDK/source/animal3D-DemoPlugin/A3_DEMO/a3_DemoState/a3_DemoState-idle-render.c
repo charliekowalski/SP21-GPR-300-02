@@ -216,19 +216,21 @@ void a3demo_renderTest(a3_DemoState const* demoState, a3f64 const dt)
 	};
 
 	//Drawing a trianlge
-	const a3vec4 vertices[3] = ((0.25, -0.25, 0.5, 1.0),
-		(-0.25, -0.25, 0.5, 1.0),
-		(0.25, 0.25, 0.5, 1.0));
+	//const a3vec4 vertices[3] = ((0.25, -0.25, 0.5, 1.0),
+	//	(-0.25, -0.25, 0.5, 1.0),
+	//	(0.25, 0.25, 0.5, 1.0));
 
-	gl_Position = vertices[gl_VertexID];
+	//For the triangle
+	//gl_Position = vertices[gl_VertexID];
 
 	glClearBufferfv(GL_COLOR, 0, colour);
 	glUseProgram(demoState->renderingProgram);	//Use the correct rendering program
 
 	//Make the shape(s) bigger
-	//glPointSize(40.0f);
+	glPointSize(40.0f);
 
-	glDrawArrays(GL_TRIANGLES, 0, 3);		//Draws a point on the screen
+	//glDrawArrays(GL_TRIANGLES, 0, 3);		//For drawing a triangle
+	glDrawArrays(GL_POINTS, 0, 1);			//For drawing a square
 }
 
 void a3demo_render(a3_DemoState const* demoState, a3f64 const dt)
