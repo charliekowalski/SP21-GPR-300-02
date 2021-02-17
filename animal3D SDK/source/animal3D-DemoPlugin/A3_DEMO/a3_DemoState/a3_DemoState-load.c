@@ -855,7 +855,7 @@ void a3demo_loadFramebuffers(a3_DemoState* demoState)
 	const a3ui32 targets_composite = 1;
 
 
-	// ****TO-DO:
+	// ****DONE?:
 	//	-> uncomment framebuffer initialization
 	//	-> initialize all framebuffers
 	//		(hint: their names describe their features)
@@ -865,15 +865,41 @@ void a3demo_loadFramebuffers(a3_DemoState* demoState)
 	//		-> set of full-size MRT-color only
 	//		-> set of half/quarter/eighth-size color only
 	// initialize framebuffers: MRT, color and depth formats, size
+
 	fbo = demoState->fbo_c16x4_d24s8;		//Scene
 	a3framebufferCreate(fbo, "fbo:c16x4;d24s8",
 		4, a3fbo_colorRGBA16, a3fbo_depth24_stencil8,
 		frameWidth1, frameHeight1);
+
+	fbo = demoState->fbo_c32f;		//Float color only			// we like 50% percent sure
+	a3framebufferCreate(fbo, "fbo:c32f",
+		0, a3fbo_colorRGBA16, a3fbo_colorRGBA16,
+		frameWidth1, frameHeight1);
+
 	fbo = demoState->fbo_d32;				//Depth
 	a3framebufferCreate(fbo, "fbo:d32",
 		0, a3fbo_colorDisable, a3fbo_depth32,
 		shadowMapSize, shadowMapSize);	//Does not care about viewport, make it a square (power of 2, much more optimal for gpu)
-	//...
+
+	fbo = demoState->fbo_c16x4;		//full-size MRT-color only			// we like 50% percent sure
+	a3framebufferCreate(fbo, "fbo:c16x4",
+		4, a3fbo_colorRGBA16, a3fbo_colorRGBA16,
+		frameWidth1, frameHeight1);
+
+	fbo = demoState->fbo_c32f;		//half color only			// we like 50% percent sure
+	a3framebufferCreate(fbo, "fbo:c32f",
+		0, a3fbo_colorRGBA16, a3fbo_colorRGBA16,
+		frameWidth2, frameHeight2);
+
+	fbo = demoState->fbo_c32f;		//quarter color only			// we like 50% percent sure
+	a3framebufferCreate(fbo, "fbo:c32f",
+		0, a3fbo_colorRGBA16, a3fbo_colorRGBA16,
+		frameWidth4, frameHeight4);
+
+	fbo = demoState->fbo_c32f;		//eighth color only			// we like 50% percent sure
+	a3framebufferCreate(fbo, "fbo:c32f",
+		0, a3fbo_colorRGBA16, a3fbo_colorRGBA16,
+		frameWidth8, frameHeight8);
 
 
 	// ****DONE:
@@ -933,10 +959,10 @@ void a3demo_loadValidate(a3_DemoState* demoState)
 		* const endUBO = currentUBO + demoStateMaxCount_uniformBuffer;
 	a3_Texture* currentTex = demoState->texture,
 		* const endTex = currentTex + demoStateMaxCount_texture;
-	// ****TO-DO:
+	// ****DONE:
 	//	-> uncomment framebuffer pointers
-/*	a3_Framebuffer* currentFBO = demoState->framebuffer,
-		* const endFBO = currentFBO + demoStateMaxCount_framebuffer;*/
+	a3_Framebuffer* currentFBO = demoState->framebuffer,
+		* const endFBO = currentFBO + demoStateMaxCount_framebuffer;
 
 	// set pointers to appropriate release callback for different asset types
 	while (currentBuff < endBuff)
@@ -949,10 +975,10 @@ void a3demo_loadValidate(a3_DemoState* demoState)
 		a3bufferHandleUpdateReleaseCallback(currentUBO++);
 	while (currentTex < endTex)
 		a3textureHandleUpdateReleaseCallback(currentTex++);
-	// ****TO-DO:
+	// ****DONE:
 	//	-> uncomment framebuffer update
-/*	while (currentFBO < endFBO)
-		a3framebufferHandleUpdateReleaseCallback(currentFBO++);*/
+	while (currentFBO < endFBO)
+		a3framebufferHandleUpdateReleaseCallback(currentFBO++);
 
 	// re-link specific object pointers for different asset types
 	currentBuff = demoState->vbo_staticSceneObjectDrawBuffer;
