@@ -230,20 +230,24 @@ void a3postproc_render(a3_DemoState const* demoState, a3_DemoMode1_PostProc cons
 		1,
 	};
 
-	// ****DONE???:
+	// ****DONE?:
 	//	-> uncomment FBO target array
 	//	-> add pointer to target FBO for each pass
 	//		(hint: choose the most relevant one for each; all are unique)
 	// framebuffer target for each pass
 	const a3_Framebuffer* writeFBO[postproc_renderPass_max] = {
-		demoState->fbo_d32,
-		demoState->fbo_c16x4_d24s8,
-		demoState->fbo_c16x4,			
-		demoState->fbo_c16_szHalf,		
-		demoState->fbo_c16_szEighth,	
-		demoState->fbo_c16_szQuarter,	
-		demoState->fbo_c32f,			
-		//...
+		demoState->fbo_d32,							//Shadow
+		demoState->fbo_c16x4_d24s8,					//Scene
+		demoState->fbo_c16_szHalf,					//Bright pass (half)
+		demoState->fbo_c16_szHalf,					//Blur 1st axis (half)
+		demoState->fbo_c16_szHalf,					//Blur 2nd axis (half)
+		demoState->fbo_c16_szQuarter,				//Bright pass (quarter)
+		demoState->fbo_c16_szQuarter,				//Blur 1st axis (quarter)
+		demoState->fbo_c16_szQuarter,				//Blur 2nd axis (quarter)
+		demoState->fbo_c16_szEighth,				//Bright pass (eighth)
+		demoState->fbo_c16_szEighth,				//Blur 1st axis (eighth)
+		demoState->fbo_c16_szEighth,				//Blur 2nd axis (eighth)
+		demoState->fbo_c16x4,						//Bloom
 	};
 
 	// target info
@@ -419,13 +423,13 @@ void a3postproc_render(a3_DemoState const* demoState, a3_DemoMode1_PostProc cons
 	//	-> uncomment first post-processing pass
 	//	-> implement bloom pipeline following the above algorithm
 	//		(hint: this is the entirety of the first bright pass)
-/*	currentDemoProgram = demoState->prog_postBright;
+	currentDemoProgram = demoState->prog_postBright;
 	a3shaderProgramActivate(currentDemoProgram->program);
 	a3framebufferBindColorTexture(currentWriteFBO, a3tex_unit00, 0);
 	currentWriteFBO = writeFBO[postproc_renderPassBright2];
 	a3framebufferActivate(currentWriteFBO);
 	a3vertexDrawableRenderActive();
-	//...*/
+	//...
 
 
 	//-------------------------------------------------------------------------
