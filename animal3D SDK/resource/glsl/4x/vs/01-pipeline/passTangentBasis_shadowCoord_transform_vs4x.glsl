@@ -101,15 +101,15 @@ out vec4 vShadowCoord;
 
 void main()
 {
-	// DUMMY OUTPUT: directly assign input position to output position
-	gl_Position = uCamera.projectionMat * uModel[uIndex].modelViewMat * aPosition;
+//	// DUMMY OUTPUT: directly assign input position to output position
+//	gl_Position = uCamera.projectionMat * uModel[uIndex].modelViewMat * aPosition;
 
 	//Calculate vectors (normal, to light, and to camera)
 	vec4 p = uModel[uIndex].modelViewMat * aPosition;
 	vSurfaceNormal = mat3(uModel[uIndex].modelViewMat) * aSurfaceNormal;
 	vVecToLight = vec3(aLightWorldPosition) - p.xyz;
 	vVecToCamera = -p.xyz;
-//	gl_Position = uCamera.projectionMat * p;									//CAN WE HAVE 2 OF THESE????????????
+	gl_Position = uCamera.projectionMat * p;
 
 	//Apply transformations to the varyings
 	vLightPosition = uLight.viewProjectionMat * aLightWorldPosition;	//View-projection matrix (world -> clip)
