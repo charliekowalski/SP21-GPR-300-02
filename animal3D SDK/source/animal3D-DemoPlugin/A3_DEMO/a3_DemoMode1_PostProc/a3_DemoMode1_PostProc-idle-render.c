@@ -429,6 +429,71 @@ void a3postproc_render(a3_DemoState const* demoState, a3_DemoMode1_PostProc cons
 	currentWriteFBO = writeFBO[postproc_renderPassBright2];
 	a3framebufferActivate(currentWriteFBO);
 	a3vertexDrawableRenderActive();
+
+	//Blur half axis 1 (horizontal)
+	currentDemoProgram = demoState->prog_postBlur;
+	a3shaderProgramActivate(currentDemoProgram->program);
+	a3framebufferBindColorTexture(currentWriteFBO, a3tex_unit00, 0);
+	currentWriteFBO = writeFBO[postproc_renderPassBlurH2];
+	a3framebufferActivate(currentWriteFBO);
+	a3vertexDrawableRenderActive();
+
+	//Blur half axis  (vertical)
+	currentDemoProgram = demoState->prog_postBlur;
+	a3shaderProgramActivate(currentDemoProgram->program);
+	a3framebufferBindColorTexture(currentWriteFBO, a3tex_unit00, 0);
+	currentWriteFBO = writeFBO[postproc_renderPassBlurV2];
+	a3framebufferActivate(currentWriteFBO);
+	a3vertexDrawableRenderActive();
+
+	//Bright pass quarter
+	currentDemoProgram = demoState->prog_postBright;
+	a3shaderProgramActivate(currentDemoProgram->program);
+	a3framebufferBindColorTexture(currentWriteFBO, a3tex_unit00, 0);
+	currentWriteFBO = writeFBO[postproc_renderPassBright4];
+	a3framebufferActivate(currentWriteFBO);
+	a3vertexDrawableRenderActive();
+
+	//Blur quarter axis 1 (horizontal)
+	currentDemoProgram = demoState->prog_postBlur;
+	a3shaderProgramActivate(currentDemoProgram->program);
+	a3framebufferBindColorTexture(currentWriteFBO, a3tex_unit00, 0);
+	currentWriteFBO = writeFBO[postproc_renderPassBlurH4];
+	a3framebufferActivate(currentWriteFBO);
+	a3vertexDrawableRenderActive();
+
+	//Blur quarter axis  (vertical)
+	currentDemoProgram = demoState->prog_postBlur;
+	a3shaderProgramActivate(currentDemoProgram->program);
+	a3framebufferBindColorTexture(currentWriteFBO, a3tex_unit00, 0);
+	currentWriteFBO = writeFBO[postproc_renderPassBlurV4];
+	a3framebufferActivate(currentWriteFBO);
+	a3vertexDrawableRenderActive();
+
+	//Bright pass eighth
+	currentDemoProgram = demoState->prog_postBright;
+	a3shaderProgramActivate(currentDemoProgram->program);
+	a3framebufferBindColorTexture(currentWriteFBO, a3tex_unit00, 0);
+	currentWriteFBO = writeFBO[postproc_renderPassBright8];
+	a3framebufferActivate(currentWriteFBO);
+	a3vertexDrawableRenderActive();
+
+	//Blur eighth axis 1 (horizontal)
+	currentDemoProgram = demoState->prog_postBlur;
+	a3shaderProgramActivate(currentDemoProgram->program);
+	a3framebufferBindColorTexture(currentWriteFBO, a3tex_unit00, 0);
+	currentWriteFBO = writeFBO[postproc_renderPassBlurH8];
+	a3framebufferActivate(currentWriteFBO);
+	a3vertexDrawableRenderActive();
+
+	//Blur eighth axis  (vertical)
+	currentDemoProgram = demoState->prog_postBlur;
+	a3shaderProgramActivate(currentDemoProgram->program);
+	a3framebufferBindColorTexture(currentWriteFBO, a3tex_unit00, 0);
+	currentWriteFBO = writeFBO[postproc_renderPassBlurV8];
+	a3framebufferActivate(currentWriteFBO);
+	a3vertexDrawableRenderActive();
+
 	//...
 
 

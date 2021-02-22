@@ -878,7 +878,7 @@ void a3demo_loadFramebuffers(a3_DemoState* demoState)
 
 	fbo = demoState->fbo_d32;									//Depth
 	a3framebufferCreate(fbo, "fbo:d32",
-		1, a3fbo_colorDisable, a3fbo_depth32,
+		0, a3fbo_colorDisable, a3fbo_depth32,
 		shadowMapSize, shadowMapSize);	//Does not care about viewport, make it a square (power of 2, much more optimal for gpu)
 
 	fbo = demoState->fbo_c16x4;									//full-size MRT-color only
@@ -886,7 +886,7 @@ void a3demo_loadFramebuffers(a3_DemoState* demoState)
 		4, a3fbo_colorRGBA16, a3fbo_depthDisable,
 		frameWidth1, frameHeight1);
 
-	fbo = demoState->fbo_c16_szHalf;		//half color only			// we like 50% percent sure
+	fbo = demoState->fbo_c16_szHalf;		//half color only			// we like 75% percent sure
 	a3framebufferCreate(fbo, "fbo:c16;szHalf",
 	1, a3fbo_colorRGBA16, a3fbo_depthDisable,
 		frameWidth2, frameHeight2);
