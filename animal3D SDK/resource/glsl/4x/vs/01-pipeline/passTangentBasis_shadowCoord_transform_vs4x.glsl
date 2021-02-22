@@ -24,7 +24,7 @@
 
 #version 450
 
-// ****TO-DO:
+// ****DONE????:
 // 1) core transformation and lighting setup:
 //	-> declare data structures for projector and model matrix stacks
 //		(hint: copy and slightly modify demo object descriptors)
@@ -32,10 +32,10 @@
 //		(hint: must match how it is uploaded in update function)
 //	-> use matrix data for current object to perform relevant transformations
 //		(hint: model-view-projection sequence may be split up like last time, 
-//		but per usual the final clip-space result is assigned to gl_Position)
-//	-> declare relevant attributes for lighting
-//	-> perform any additional transformations and write varyings for lighting
-// 2) shadow mapping
+//		but per usual the final clip-space result is assigned to gl_Position)		-- this point and before was done in class
+//	-> declare relevant attributes for lighting										// After class		Not sure
+//	-> perform any additional transformations and write varyings for lighting		//Not sure
+// 2) shadow mapping																//We think we nailed this
 //	-> using the above setup, perform additional transformation to generate a 
 //		"shadow coordinate", which is a "biased clip-space" coordinate from 
 //		the light's point of view
@@ -79,14 +79,31 @@ struct sModelMatrixStack
 uniform ubTransformStack	//Uniform block
 {
 	sProjectorMatrixStack uCamera, uLight;
-//	sProjectorMatrixStack uProjector[2];	//2 projectors (c code, a3_DemoMode1_PostProc.h)
 	sModelMatrixStack uModel[16];			// 16 models (c code, a3_DemoMode1_PostProc.h)
 };
+
+//Lighting attributes
+attribute vec4 aLightWorldPosition;
+attribute vec4 aLightColour;
+
+//Varyings for lighitng data
+out vec4 vLightPosition;
+out vec4 vLightColour;
+
+//Varying for shadow coordinate
+out vec4 vShadowCoord;
 
 void main()
 {
 	// DUMMY OUTPUT: directly assign input position to output position
 	gl_Position = uCamera.projectionMat * uModel[uIndex].modelViewMat * aPosition;
+
+	//Apply transformations to the varyings
+	vLightPosition = uLight.viewProjectionMat * aLightWorldPosition;	//View-projection matrix (world -> clip)
+	vLightColour = aLightColour;
+
+	//Shadow coordinates
+	vShadowCoord = (uLight.viewProjectionBiasMat * uModel[uIndex].modelMat) * aPosition;	//Shadow matrix * position
 
 	vVertexID = gl_VertexID;
 	vInstanceID = gl_InstanceID;
