@@ -26,19 +26,48 @@
 
 // ****TO-DO:
 // 1) Phong shading
-//	-> identical to outcome of last project
+//	-> identical to outcome of last project										//COPIED FREOM BLUE BOOK, DONE????
 // 2) shadow mapping
 //	-> declare shadow map texture
 //	-> declare shadow coordinate varying
-//	-> perform manual "perspective divide" on shadow coordinate
+//	-> perform manual "perspective divide" on shadow coordinate					//COPIED FREOM BLUE BOOK, DONE????
 //	-> perform "shadow test" (explained in class)
 
 layout (location = 0) out vec4 rtFragColor;
+layout (binding = 0) uniform sampler2DShadow shadow_tex;	//Declare shadow map texture FROM BLUE BOOK
+
+//Declare shadow coordinate varying
+in vec4 vShadowCoord;
 
 uniform int uCount;
 
+//Varyings for normal vector, vector from object surface to light, and vector vector from object surface to camera
+in vec3 vSurfaceNormal;
+in vec3 vVecToLight;
+in vec3 vVecToCamera;
+
+// Material properties
+uniform vec3 diffuse_albedo = vec3(0.5, 0.2, 0.7);
+uniform vec3 specular_albedo = vec3(0.7);
+uniform float specular_power = 128.0;
+
 void main()
 {
+	//Normalise varyings
+	vec3 n = normalize(vSurfaceNormal);
+	vec3 l = normalize(vVecToLight);
+	vec3 v = normalize(vVecToCamera);
+
+	//Reflect
+	vec3 r = reflect(-l, n);
+
+	//Compute diffuse and specular
+	vec3 diffuse = max(dot(n, l), 0.0) * diffuse_albedo;
+	vec3 specular = pow(max(dot(r, v), 0.0), specular_power) * specular_albedo;
+
+	//Assign to output
+	rtFragColor = textureProj(shadow_tex, vShadowCoord) * vec4(diffuse + specular, 1.0);
+
 	// DUMMY OUTPUT: all fragments are OPAQUE MAGENTA
-	rtFragColor = vec4(1.0, 0.0, 1.0, 1.0);
+	//rtFragColor = vec4(1.0, 0.0, 1.0, 1.0);
 }

@@ -43,6 +43,12 @@
 //	-> declare and write varying for shadow coordinate
 
 layout (location = 0) in vec4 aPosition;
+layout (location = 1) in vec3 aSurfaceNormal;												//LOC MIGHT BE 2
+
+//Varyings for normal vector, vector from object surface to light, and vector vector from object surface to camera
+out vec3 vSurfaceNormal;
+out vec3 vVecToLight;
+out vec3 vVecToCamera;
 
 flat out int vVertexID;
 flat out int vInstanceID;
@@ -97,6 +103,13 @@ void main()
 {
 	// DUMMY OUTPUT: directly assign input position to output position
 	gl_Position = uCamera.projectionMat * uModel[uIndex].modelViewMat * aPosition;
+
+	//Calculate vectors (normal, to light, and to camera)
+	vec4 p = uModel[uIndex].modelViewMat * aPosition;
+	vSurfaceNormal = mat3(uModel[uIndex].modelViewMat) * aSurfaceNormal;
+	vVecToLight = vec3(aLightWorldPosition) - p.xyz;
+	vVecToCamera = -p.xyz;
+//	gl_Position = uCamera.projectionMat * p;									//CAN WE HAVE 2 OF THESE????????????
 
 	//Apply transformations to the varyings
 	vLightPosition = uLight.viewProjectionMat * aLightWorldPosition;	//View-projection matrix (world -> clip)
