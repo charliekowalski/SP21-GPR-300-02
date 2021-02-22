@@ -419,7 +419,7 @@ void a3postproc_render(a3_DemoState const* demoState, a3_DemoMode1_PostProc cons
 	//		-> blur in other direction (e.g. vertical)
 	//	-> composite original scene result with final blur iteration results
 
-	// ****TO-DO:
+	// ****TO-DO:															--------------------------- WE ARE HERE
 	//	-> uncomment first post-processing pass
 	//	-> implement bloom pipeline following the above algorithm
 	//		(hint: this is the entirety of the first bright pass)
@@ -438,7 +438,7 @@ void a3postproc_render(a3_DemoState const* demoState, a3_DemoMode1_PostProc cons
 	a3framebufferActivate(currentWriteFBO);
 	a3vertexDrawableRenderActive();
 
-	//Blur half axis  (vertical)
+	//Blur half axis 2 (vertical)
 	currentDemoProgram = demoState->prog_postBlur;
 	a3shaderProgramActivate(currentDemoProgram->program);
 	a3framebufferBindColorTexture(currentWriteFBO, a3tex_unit00, 0);
@@ -462,7 +462,7 @@ void a3postproc_render(a3_DemoState const* demoState, a3_DemoMode1_PostProc cons
 	a3framebufferActivate(currentWriteFBO);
 	a3vertexDrawableRenderActive();
 
-	//Blur quarter axis  (vertical)
+	//Blur quarter axis 2 (vertical)
 	currentDemoProgram = demoState->prog_postBlur;
 	a3shaderProgramActivate(currentDemoProgram->program);
 	a3framebufferBindColorTexture(currentWriteFBO, a3tex_unit00, 0);
@@ -486,7 +486,7 @@ void a3postproc_render(a3_DemoState const* demoState, a3_DemoMode1_PostProc cons
 	a3framebufferActivate(currentWriteFBO);
 	a3vertexDrawableRenderActive();
 
-	//Blur eighth axis  (vertical)
+	//Blur eighth axis 2 (vertical)
 	currentDemoProgram = demoState->prog_postBlur;
 	a3shaderProgramActivate(currentDemoProgram->program);
 	a3framebufferBindColorTexture(currentWriteFBO, a3tex_unit00, 0);
@@ -494,6 +494,13 @@ void a3postproc_render(a3_DemoState const* demoState, a3_DemoMode1_PostProc cons
 	a3framebufferActivate(currentWriteFBO);
 	a3vertexDrawableRenderActive();
 
+	//Bloom																						BROKEN
+	//currentDemoProgram = demoState->prog_postBlend;
+	//a3shaderProgramActivate(currentDemoProgram->program);
+	//a3framebufferBindColorTexture(currentWriteFBO, a3tex_unit00, 0);
+	//currentWriteFBO = writeFBO[postproc_renderPassDisplay];
+	//a3framebufferActivate(currentWriteFBO);
+	//a3vertexDrawableRenderActive();
 	//...
 
 

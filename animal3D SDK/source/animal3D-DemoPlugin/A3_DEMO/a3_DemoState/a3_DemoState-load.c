@@ -886,17 +886,17 @@ void a3demo_loadFramebuffers(a3_DemoState* demoState)
 		4, a3fbo_colorRGBA16, a3fbo_depthDisable,
 		frameWidth1, frameHeight1);
 
-	fbo = demoState->fbo_c16_szHalf;		//half color only			// we like 75% percent sure
+	fbo = demoState->fbo_c16_szHalf;		//half color only
 	a3framebufferCreate(fbo, "fbo:c16;szHalf",
 	1, a3fbo_colorRGBA16, a3fbo_depthDisable,
 		frameWidth2, frameHeight2);
 
-	fbo = demoState->fbo_c16_szQuarter;		//quarter color only			// we like 50% percent sure
+	fbo = demoState->fbo_c16_szQuarter;		//quarter color only
 	a3framebufferCreate(fbo, "fbo:c16;szQuarter",
 		1, a3fbo_colorRGBA16, a3fbo_depthDisable,
 		frameWidth4, frameHeight4);
 
-	fbo = demoState->fbo_c16_szEighth;		//eighth color only			// we like 50% percent sure
+	fbo = demoState->fbo_c16_szEighth;		//eighth color only
 	a3framebufferCreate(fbo, "fbo:c16;szEighth",
 		1, a3fbo_colorRGBA16, a3fbo_depthDisable,
 		frameWidth8, frameHeight8);
