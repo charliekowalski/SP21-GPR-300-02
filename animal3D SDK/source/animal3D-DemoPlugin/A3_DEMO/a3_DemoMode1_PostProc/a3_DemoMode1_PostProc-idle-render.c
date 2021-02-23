@@ -230,7 +230,7 @@ void a3postproc_render(a3_DemoState const* demoState, a3_DemoMode1_PostProc cons
 		1,
 	};
 
-	// ****DONE?:
+	// ****DONE: In-class fix
 	//	-> uncomment FBO target array
 	//	-> add pointer to target FBO for each pass
 	//		(hint: choose the most relevant one for each; all are unique)
@@ -239,15 +239,15 @@ void a3postproc_render(a3_DemoState const* demoState, a3_DemoMode1_PostProc cons
 		demoState->fbo_d32,							//Shadow
 		demoState->fbo_c16x4_d24s8,					//Scene
 		demoState->fbo_c16_szHalf,					//Bright pass (half)
-		demoState->fbo_c16_szHalf,					//Blur 1st axis (half)
-		demoState->fbo_c16_szHalf,					//Blur 2nd axis (half)
+		demoState->fbo_c16_szHalf + 1,				//Blur 1st axis (half)
+		demoState->fbo_c16_szHalf + 2,				//Blur 2nd axis (half)
 		demoState->fbo_c16_szQuarter,				//Bright pass (quarter)
-		demoState->fbo_c16_szQuarter,				//Blur 1st axis (quarter)
-		demoState->fbo_c16_szQuarter,				//Blur 2nd axis (quarter)
+		demoState->fbo_c16_szQuarter + 1,			//Blur 1st axis (quarter)
+		demoState->fbo_c16_szQuarter + 2,			//Blur 2nd axis (quarter)
 		demoState->fbo_c16_szEighth,				//Bright pass (eighth)
-		demoState->fbo_c16_szEighth,				//Blur 1st axis (eighth)
-		demoState->fbo_c16_szEighth,				//Blur 2nd axis (eighth)
-		demoState->fbo_c16x4,						//Bloom
+		demoState->fbo_c16_szEighth + 1,			//Blur 1st axis (eighth)
+		demoState->fbo_c16_szEighth + 2,			//Blur 2nd axis (eighth)
+		demoState->fbo_c16x4,						//Composite
 	};
 
 	// target info
@@ -271,7 +271,7 @@ void a3postproc_render(a3_DemoState const* demoState, a3_DemoMode1_PostProc cons
 	};
 
 	// pixel size and effect axis
-	//a3vec2 pixelSize = a3vec2_one;
+	a3vec2 pixelSize = a3vec2_one;
 
 
 	//-------------------------------------------------------------------------
@@ -423,24 +423,30 @@ void a3postproc_render(a3_DemoState const* demoState, a3_DemoMode1_PostProc cons
 	//	-> uncomment first post-processing pass
 	//	-> implement bloom pipeline following the above algorithm
 	//		(hint: this is the entirety of the first bright pass)
-	currentDemoProgram = demoState->prog_postBright;
-	a3shaderProgramActivate(currentDemoProgram->program);
-	a3framebufferBindColorTexture(currentWriteFBO, a3tex_unit00, 0);
-	currentWriteFBO = writeFBO[postproc_renderPassBright2];
-	a3framebufferActivate(currentWriteFBO);
-	a3vertexDrawableRenderActive();
+	currentDemoProgram = demoState->prog_postBright;						//Select program
+	a3shaderProgramActivate(currentDemoProgram->program);					//Activate program
+	a3framebufferBindColorTexture(currentWriteFBO, a3tex_unit00, 0);		//Select texture to draw to
+	currentWriteFBO = writeFBO[postproc_renderPassBright2];					//Select which FBO to write to
+	a3framebufferActivate(currentWriteFBO);									//Draw to off-screen framebuffer
+	a3vertexDrawableRenderActive();											//Draw to 
 
 	//Blur half axis 1 (horizontal)
 	currentDemoProgram = demoState->prog_postBlur;
 	a3shaderProgramActivate(currentDemoProgram->program);
+	pixelSize.x = 1.0f / (float)currentWriteFBO->frameWidth;
+	pixelSize.y = 0.0f;
+	a3shaderUniformSendFloat(a3unif_vec2, currentDemoProgram->uAxis, 1, pixelSize.v);	//Send the right axis to blur along
 	a3framebufferBindColorTexture(currentWriteFBO, a3tex_unit00, 0);
 	currentWriteFBO = writeFBO[postproc_renderPassBlurH2];
 	a3framebufferActivate(currentWriteFBO);
 	a3vertexDrawableRenderActive();
 
 	//Blur half axis 2 (vertical)
-	currentDemoProgram = demoState->prog_postBlur;
-	a3shaderProgramActivate(currentDemoProgram->program);
+	//currentDemoProgram = demoState->prog_postBlur;
+	//a3shaderProgramActivate(currentDemoProgram->program);
+	pixelSize.x = 0.0f;
+	pixelSize.y = 1.0f / (float)currentWriteFBO->frameHeight;
+	a3shaderUniformSendFloat(a3unif_vec2, currentDemoProgram->uAxis, 1, pixelSize.v);	//Send the right axis to blur along
 	a3framebufferBindColorTexture(currentWriteFBO, a3tex_unit00, 0);
 	currentWriteFBO = writeFBO[postproc_renderPassBlurV2];
 	a3framebufferActivate(currentWriteFBO);
@@ -457,14 +463,20 @@ void a3postproc_render(a3_DemoState const* demoState, a3_DemoMode1_PostProc cons
 	//Blur quarter axis 1 (horizontal)
 	currentDemoProgram = demoState->prog_postBlur;
 	a3shaderProgramActivate(currentDemoProgram->program);
+	pixelSize.x = 1.0f / (float)currentWriteFBO->frameWidth;
+	pixelSize.y = 0.0f;
+	a3shaderUniformSendFloat(a3unif_vec2, currentDemoProgram->uAxis, 1, pixelSize.v);	//Send the right axis to blur along
 	a3framebufferBindColorTexture(currentWriteFBO, a3tex_unit00, 0);
 	currentWriteFBO = writeFBO[postproc_renderPassBlurH4];
 	a3framebufferActivate(currentWriteFBO);
 	a3vertexDrawableRenderActive();
 
 	//Blur quarter axis 2 (vertical)
-	currentDemoProgram = demoState->prog_postBlur;
-	a3shaderProgramActivate(currentDemoProgram->program);
+	//currentDemoProgram = demoState->prog_postBlur;
+	//a3shaderProgramActivate(currentDemoProgram->program);
+	pixelSize.x = 0.0f;
+	pixelSize.y = 1.0f / (float)currentWriteFBO->frameHeight;
+	a3shaderUniformSendFloat(a3unif_vec2, currentDemoProgram->uAxis, 1, pixelSize.v);	//Send the right axis to blur along
 	a3framebufferBindColorTexture(currentWriteFBO, a3tex_unit00, 0);
 	currentWriteFBO = writeFBO[postproc_renderPassBlurV4];
 	a3framebufferActivate(currentWriteFBO);
@@ -481,26 +493,35 @@ void a3postproc_render(a3_DemoState const* demoState, a3_DemoMode1_PostProc cons
 	//Blur eighth axis 1 (horizontal)
 	currentDemoProgram = demoState->prog_postBlur;
 	a3shaderProgramActivate(currentDemoProgram->program);
+	pixelSize.x = 1.0f / (float)currentWriteFBO->frameWidth;
+	pixelSize.y = 0.0f;
+	a3shaderUniformSendFloat(a3unif_vec2, currentDemoProgram->uAxis, 1, pixelSize.v);	//Send the right axis to blur along
 	a3framebufferBindColorTexture(currentWriteFBO, a3tex_unit00, 0);
 	currentWriteFBO = writeFBO[postproc_renderPassBlurH8];
 	a3framebufferActivate(currentWriteFBO);
 	a3vertexDrawableRenderActive();
 
 	//Blur eighth axis 2 (vertical)
-	currentDemoProgram = demoState->prog_postBlur;
-	a3shaderProgramActivate(currentDemoProgram->program);
+	//currentDemoProgram = demoState->prog_postBlur;
+	//a3shaderProgramActivate(currentDemoProgram->program);
+	pixelSize.x = 0.0f;
+	pixelSize.y = 1.0f / (float)currentWriteFBO->frameHeight;
+	a3shaderUniformSendFloat(a3unif_vec2, currentDemoProgram->uAxis, 1, pixelSize.v);	//Send the right axis to blur along
 	a3framebufferBindColorTexture(currentWriteFBO, a3tex_unit00, 0);
 	currentWriteFBO = writeFBO[postproc_renderPassBlurV8];
 	a3framebufferActivate(currentWriteFBO);
 	a3vertexDrawableRenderActive();
 
-	//Bloom																						BROKEN
-	//currentDemoProgram = demoState->prog_postBlend;
-	//a3shaderProgramActivate(currentDemoProgram->program);
-	//a3framebufferBindColorTexture(currentWriteFBO, a3tex_unit00, 0);
-	//currentWriteFBO = writeFBO[postproc_renderPassDisplay];
-	//a3framebufferActivate(currentWriteFBO);
-	//a3vertexDrawableRenderActive();
+	//Blend						---------- HERE, CHOOSE 4 FBO's to bind textures to
+	currentDemoProgram = demoState->prog_postBlend;
+	a3shaderProgramActivate(currentDemoProgram->program);
+	a3framebufferBindColorTexture(writeFBO[postproc_renderPassScene], a3tex_unit00, 0);
+	a3framebufferBindColorTexture(writeFBO[postproc_renderPassBlurV2], a3tex_unit01, 0);
+	a3framebufferBindColorTexture(writeFBO[postproc_renderPassBlurV4], a3tex_unit02, 0);
+	a3framebufferBindColorTexture(writeFBO[postproc_renderPassBlurV8], a3tex_unit03, 0);
+	currentWriteFBO = writeFBO[postproc_renderPassDisplay];
+	a3framebufferActivate(currentWriteFBO);
+	a3vertexDrawableRenderActive();
 	//...
 
 

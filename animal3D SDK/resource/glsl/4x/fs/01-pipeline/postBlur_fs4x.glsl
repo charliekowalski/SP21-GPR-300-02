@@ -30,10 +30,23 @@
 //	-> declare Gaussian blur function that samples along one axis
 //		(hint: the efficiency of this is described in class)
 
+in vec2 vTexcoord;
+
+uniform vec2 uAxis;
+
 layout (location = 0) out vec4 rtFragColor;
 
 void main()
 {
 	// DUMMY OUTPUT: all fragments are OPAQUE AQUA
 	rtFragColor = vec4(0.0, 1.0, 0.5, 1.0);
+
+	//Blurring along an axis
+	//	-> sample neighbouring pixels, output weighted average
+	//		-> coordinate offest by some amount (+- displacement vector)
+	//			-> ex: horizontal, dv = vec2(1 / resolution (width), 0)
+	//			-> ex: vertical, dv = vec2(0, 1 / resolution (height))
+	//		same program for horizontal and vertical blurs,
+	//		how do we tell it which axis?
+	//			-> uniform
 }

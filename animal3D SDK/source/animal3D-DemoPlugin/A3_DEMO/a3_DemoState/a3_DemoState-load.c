@@ -461,7 +461,7 @@ void a3demo_loadShaders(a3_DemoState *demoState)
 			{ { { 0 },	"shdr-vs:pass-tex-trans-inst",		a3shader_vertex  ,	1,{ A3_DEMO_VS"00-common/e/passTexcoord_transform_instanced_vs4x.glsl" } } },
 			{ { { 0 },	"shdr-vs:pass-tb-trans-inst",		a3shader_vertex  ,	1,{ A3_DEMO_VS"00-common/e/passTangentBasis_transform_instanced_vs4x.glsl" } } },
 			// 01-pipeline
-			{ { { 0 },	"shdr-vs:pass-tb-sc-trans",			a3shader_vertex  ,	1,{ A3_DEMO_VS"01-pipeline/passTangentBasis_shadowCoord_transform_vs4x.glsl" } } }, // ****DECODE
+			{ { { 0 },	"shdr-vs:pass-tb-sc-trans",			a3shader_vertex  ,	1,{ A3_DEMO_VS"01-pipeline/e/passTangentBasis_shadowCoord_transform_vs4x.glsl" } } }, // ****DECODE
 			{ { { 0 },	"shdr-vs:pass-tb-sc-trans-inst",	a3shader_vertex  ,	1,{ A3_DEMO_VS"01-pipeline/e/passTangentBasis_shadowCoord_transform_instanced_vs4x.glsl" } } },
 
 			// gs
@@ -483,8 +483,8 @@ void a3demo_loadShaders(a3_DemoState *demoState)
 			{ { { 0 },	"shdr-fs:post-bright",				a3shader_fragment,	1,{ A3_DEMO_FS"01-pipeline/e/postBright_fs4x.glsl" } } }, // ****DECODE
 			{ { { 0 },	"shdr-fs:post-blur",				a3shader_fragment,	1,{ A3_DEMO_FS"01-pipeline/e/postBlur_fs4x.glsl" } } }, // ****DECODE
 			{ { { 0 },	"shdr-fs:post-blend",				a3shader_fragment,	1,{ A3_DEMO_FS"01-pipeline/e/postBlend_fs4x.glsl" } } }, // ****DECODE
-			{ { { 0 },	"shdr-fs:draw-Phong-shadow",		a3shader_fragment,	2,{ A3_DEMO_FS"01-pipeline/drawPhong_shadow_fs4x.glsl", // ****DECODE
-																					A3_DEMO_FS"00-common/utilCommon_fs4x.glsl",} } }, // ****DECODE
+			{ { { 0 },	"shdr-fs:draw-Phong-shadow",		a3shader_fragment,	2,{ A3_DEMO_FS"01-pipeline/e/drawPhong_shadow_fs4x.glsl", // ****DECODE
+																					A3_DEMO_FS"00-common/e/utilCommon_fs4x.glsl",} } }, // ****DECODE
 		}
 	};
 	a3_DemoStateShader *const shaderListPtr = (a3_DemoStateShader *)(&shaderList), *shaderPtr;
@@ -886,20 +886,38 @@ void a3demo_loadFramebuffers(a3_DemoState* demoState)
 		4, a3fbo_colorRGBA16, a3fbo_depthDisable,
 		frameWidth1, frameHeight1);
 
-	fbo = demoState->fbo_c16_szHalf;		//half color only
-	a3framebufferCreate(fbo, "fbo:c16;szHalf",
-	1, a3fbo_colorRGBA16, a3fbo_depthDisable,
-		frameWidth2, frameHeight2);
+	//3 half color only
+	for (int i = 0; i < 3; i++)
+	{
+		fbo = demoState->fbo_c16_szHalf + i;		//half color only
+		a3framebufferCreate(fbo, "fbo:c16;szHalf;" + i,
+			1, a3fbo_colorRGBA16, a3fbo_depthDisable,
+			frameWidth2, frameHeight2);
+	}
 
-	fbo = demoState->fbo_c16_szQuarter;		//quarter color only
-	a3framebufferCreate(fbo, "fbo:c16;szQuarter",
-		1, a3fbo_colorRGBA16, a3fbo_depthDisable,
-		frameWidth4, frameHeight4);
+	//3 quarter color only
+	for (int i = 0; i < 3; i++)
+	{
+		fbo = demoState->fbo_c16_szQuarter + i;		//quarter color only
+		a3framebufferCreate(fbo, "fbo:c16;szQuarter;" + i,
+			1, a3fbo_colorRGBA16, a3fbo_depthDisable,
+			frameWidth4, frameHeight4);
+	}
 
-	fbo = demoState->fbo_c16_szEighth;		//eighth color only
-	a3framebufferCreate(fbo, "fbo:c16;szEighth",
+	//3 eighth color only
+	for (int i = 0; i < 3; i++)
+	{
+		fbo = demoState->fbo_c16_szEighth + i;		//eighth color only
+		a3framebufferCreate(fbo, "fbo:c16;szEighth;" + i,
+			1, a3fbo_colorRGBA16, a3fbo_depthDisable,
+			frameWidth8, frameHeight8);
+	}
+
+	//Blend
+	fbo = demoState->fbo_c16x4;
+	a3framebufferCreate(fbo, "fbo:c16x4",
 		1, a3fbo_colorRGBA16, a3fbo_depthDisable,
-		frameWidth8, frameHeight8);
+		frameWidth1, frameHeight1);
 
 
 	// ****DONE:
