@@ -419,7 +419,7 @@ void a3postproc_render(a3_DemoState const* demoState, a3_DemoMode1_PostProc cons
 	//		-> blur in other direction (e.g. vertical)
 	//	-> composite original scene result with final blur iteration results
 
-	// ****TO-DO:															--------------------------- WE ARE HERE
+	// ****DONE:
 	//	-> uncomment first post-processing pass
 	//	-> implement bloom pipeline following the above algorithm
 	//		(hint: this is the entirety of the first bright pass)
@@ -442,8 +442,6 @@ void a3postproc_render(a3_DemoState const* demoState, a3_DemoMode1_PostProc cons
 	a3vertexDrawableRenderActive();
 
 	//Blur half axis 2 (vertical)
-	//currentDemoProgram = demoState->prog_postBlur;
-	//a3shaderProgramActivate(currentDemoProgram->program);
 	pixelSize.x = 0.0f;
 	pixelSize.y = 1.0f / (float)currentWriteFBO->frameHeight;
 	a3shaderUniformSendFloat(a3unif_vec2, currentDemoProgram->uAxis, 1, pixelSize.v);	//Send the right axis to blur along
@@ -472,8 +470,6 @@ void a3postproc_render(a3_DemoState const* demoState, a3_DemoMode1_PostProc cons
 	a3vertexDrawableRenderActive();
 
 	//Blur quarter axis 2 (vertical)
-	//currentDemoProgram = demoState->prog_postBlur;
-	//a3shaderProgramActivate(currentDemoProgram->program);
 	pixelSize.x = 0.0f;
 	pixelSize.y = 1.0f / (float)currentWriteFBO->frameHeight;
 	a3shaderUniformSendFloat(a3unif_vec2, currentDemoProgram->uAxis, 1, pixelSize.v);	//Send the right axis to blur along
@@ -502,8 +498,6 @@ void a3postproc_render(a3_DemoState const* demoState, a3_DemoMode1_PostProc cons
 	a3vertexDrawableRenderActive();
 
 	//Blur eighth axis 2 (vertical)
-	//currentDemoProgram = demoState->prog_postBlur;
-	//a3shaderProgramActivate(currentDemoProgram->program);
 	pixelSize.x = 0.0f;
 	pixelSize.y = 1.0f / (float)currentWriteFBO->frameHeight;
 	a3shaderUniformSendFloat(a3unif_vec2, currentDemoProgram->uAxis, 1, pixelSize.v);	//Send the right axis to blur along
@@ -512,7 +506,7 @@ void a3postproc_render(a3_DemoState const* demoState, a3_DemoMode1_PostProc cons
 	a3framebufferActivate(currentWriteFBO);
 	a3vertexDrawableRenderActive();
 
-	//Blend						---------- HERE, CHOOSE 4 FBO's to bind textures to
+	//Blend
 	currentDemoProgram = demoState->prog_postBlend;
 	a3shaderProgramActivate(currentDemoProgram->program);
 	a3framebufferBindColorTexture(writeFBO[postproc_renderPassScene], a3tex_unit00, 0);
@@ -522,8 +516,6 @@ void a3postproc_render(a3_DemoState const* demoState, a3_DemoMode1_PostProc cons
 	currentWriteFBO = writeFBO[postproc_renderPassDisplay];
 	a3framebufferActivate(currentWriteFBO);
 	a3vertexDrawableRenderActive();
-	//...
-
 
 	//-------------------------------------------------------------------------
 	// DISPLAY: final pass, perform and present final composite
