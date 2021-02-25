@@ -30,7 +30,16 @@
 //	-> declare Gaussian blur function that samples along one axis
 //		(hint: the efficiency of this is described in class)
 
-//in vec2 vTexcoord;
+
+//Blurring along an axis
+//	-> sample neighbouring pixels, output weighted average
+//		-> coordinate offest by some amount (+- displacement vector)
+//			-> ex: horizontal, dv = vec2(1 / resolution (width), 0)
+//			-> ex: vertical, dv = vec2(0, 1 / resolution (height))
+//		same program for horizontal and vertical blurs,
+//		how do we tell it which axis?
+//			-> uniform
+
 in vec4 vTexcoord_atlas;
 
 uniform vec2 uAxis;
@@ -66,57 +75,68 @@ const float weights[] = float[](0.0024499299678342,
 
 void main()
 {
+	//Check which axis we are blurring along
+//	if (uAxis.x == 0.0)		//Blur along y-axis
+//	{
+//		vec4 c = vec4(0.0);
+//		ivec2 P = ivec2(0.0, vTexcoord_atlas.y) - ivec2(0, weights.length() >> 1);
+//		int i;
+//		for (i = 0; i < weights.length(); i++)
+//		{
+//			c += texelFetch(hdr_image, P + ivec2(0, i), 0) * weights[i];
+//		}
+//		rtFragColor = c;
+//		
+//		//Sample texel at coordinate
+//
+//
+//		//Sample neighbouring pixels
+//
+//
+//		//Weighted average
+//
+//	}
+//	else if (uAxis.y == 0.0)	//Blur along x-axis
+//	{
+//		vec4 c = vec4(0.0);
+//
+//		//Sample texel at coordinate
+//		ivec2 P = ivec2(vTexcoord_atlas.x, 0.0) - ivec2(weights.length() >> 1, 0);
+//		int i;
+//		for (i = 0; i < weights.length(); i++)
+//		{
+//			c += texelFetch(hdr_image, P + ivec2(i, 0), 0) * weights[i];
+//		}
+//		rtFragColor = c;
+//
+//
+//		//Sample neighbouring pixels
+//
+//
+//		//Weighted average
+//	}
+	vec2 textelSize = 1.0 / textureSize(hdr_image, 0);
+	vec3 result = texture(hdr_image, vTexcoord_atlas.xy).rgb * weights[0];
+
+	if (uAxis.x == 0.0)		//Blur along y-axis
+	{
+		for(int i = 1; i < weights.length(); ++i)
+        {
+            result += texture(hdr_image, vTexcoord_atlas.xy + vec2(0.0, textelSize.y * i)).rgb * weights[i];
+            result += texture(hdr_image, vTexcoord_atlas.xy - vec2(0.0, textelSize.y * i)).rgb * weights[i];
+        }
+	}
+	else if (uAxis.y == 0.0)	//Blur along x-axis
+	{
+		for(int i = 1; i < weights.length(); ++i)
+        {
+            result += texture(hdr_image, vTexcoord_atlas.xy + vec2(textelSize.x * i, 0.0)).rgb * weights[i];
+            result += texture(hdr_image, vTexcoord_atlas.xy - vec2(textelSize.x * i, 0.0)).rgb * weights[i];
+        }
+	}
+
+	rtFragColor = vec4(result, 1.0);
+
 	// DUMMY OUTPUT: all fragments are OPAQUE AQUA
 //	rtFragColor = vec4(0.0, 1.0, 0.5, 1.0);
-
-	//Blurring along an axis
-	//	-> sample neighbouring pixels, output weighted average
-	//		-> coordinate offest by some amount (+- displacement vector)
-	//			-> ex: horizontal, dv = vec2(1 / resolution (width), 0)
-	//			-> ex: vertical, dv = vec2(0, 1 / resolution (height))
-	//		same program for horizontal and vertical blurs,
-	//		how do we tell it which axis?
-	//			-> uniform
-
-	//Check which axis we are blurring along
-	if (uAxis.x == 0.0)
-	{
-		vec4 c = vec4(0.0);
-		ivec2 P = ivec2(0.0, vTexcoord_atlas.y) - ivec2(0, weights.length() >> 1);
-		int i;
-		for (i = 0; i < weights.length(); i++)
-		{
-			c += texelFetch(hdr_image, P + ivec2(0, i), 0) * weights[i];
-		}
-		rtFragColor = c;
-		//Blur along y-axis
-		//Sample texel at coordinate
-
-
-		//Sample neighbouring pixels
-
-
-		//Weighted average
-
-	}
-	else if (uAxis.y == 0.0)
-	{
-		vec4 c = vec4(0.0);
-		ivec2 P = ivec2(vTexcoord_atlas.x, 0.0) - ivec2(weights.length() >> 1, 0);
-		int i;
-		for (i = 0; i < weights.length(); i++)
-		{
-			c += texelFetch(hdr_image, P + ivec2(i, 0), 0) * weights[i];
-		}
-		rtFragColor = c;
-		//Blur along x-axis
-		//Sample texel at coordinate
-
-
-		//Sample neighbouring pixels
-
-
-		//Weighted average
-
-	}
 }
