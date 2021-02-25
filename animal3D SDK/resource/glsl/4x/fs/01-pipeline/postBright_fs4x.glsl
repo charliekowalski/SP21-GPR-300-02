@@ -48,7 +48,8 @@ void main()
 	{
 		vec2 tc = (2.0 * gl_FragCoord.xy +
 			3.5 * vec2(i % 5 - 2, i / 5 - 2));
-		vec3 col = texture(hdr_image, vTexcoord_atlas.xy * tex_scale).rgb;
+		vec3 col = texture(hdr_image, tc * gl_FragCoord.xy * tex_scale).rgb;		//I can't tell which is better, this...
+//		vec3 col = texture(hdr_image, tc * tex_scale).rgb;							// Or this
 		lum[i] = dot(col, vec3(0.3, 0.59, 0.11));
 	}
 
