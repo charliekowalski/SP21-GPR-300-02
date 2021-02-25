@@ -48,13 +48,13 @@ void main()
 	{
 		vec2 tc = (2.0 * gl_FragCoord.xy +
 			3.5 * vec2(i % 5 - 2, i / 5 - 2));
-		vec3 col = texture(hdr_image, tc * tex_scale).rgb;
+		vec3 col = texture(hdr_image, vTexcoord_atlas.xy * tex_scale).rgb;
 		lum[i] = dot(col, vec3(0.3, 0.59, 0.11));
 	}
 
 	// Calculate weighted color of region
 	vec3 vColor = texelFetch(hdr_image,
-		2 * ivec2(gl_FragCoord.xy), 0).rgb;
+		2 * ivec2(gl_FragCoord.xy), 0).rgb;		//This HAS to be gl_FragCoord and not vTexcoord_atlas, everything is gray if vTexcoord_atlas
 
 	float kernelLuminance = (
 		(1.0 * (lum[0] + lum[4] + lum[20] + lum[24])) +
@@ -67,10 +67,10 @@ void main()
 		) / 273.0;
 
 	// Compute the corresponding exposure
-	float exposure = sqrt(8.0 / (kernelLuminance + 0.25));
+//	float exposure = sqrt(8.0 / (kernelLuminance + 0.25));
 	
 	// Apply the exposure to this texel
-	rtFragColor.rgb = 1.0 - exp2(-vColor * exposure);
+	rtFragColor.rgb = 1.0 - exp2(-vColor * (kernelLuminance + 0.25));
 	rtFragColor.a = 1.0f;
 
 	//----------------------------------------------- DIFFERENT ALGORITHM -----------------------------------------
