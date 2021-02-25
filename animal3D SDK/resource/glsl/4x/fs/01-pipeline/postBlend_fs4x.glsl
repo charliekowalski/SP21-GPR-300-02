@@ -60,16 +60,18 @@ void main()
 	blend += texelFetch(verticalBlur2, ivec2(vTexcoord_atlas.xy), 0);			//Use vTexcoord_atlas for postProcessing passes
 	blend += texelFetch(verticalBlur4, ivec2(vTexcoord_atlas.xy), 0);			//...
 	blend += texelFetch(verticalBlur8, ivec2(vTexcoord_atlas.xy), 0);			//...
+		//Use texture instead of textlFetch
+		//Use vTexcoord_atlas instgead of gl_FragCoord
 
 //	blend += texelFetch(verticalBlur8, ivec2(vTexcoord_atlas.xy), 0);			//Use vTexcoord_atlas for postProcessing passes
 //	blend += texelFetch(verticalBlur4, ivec2(vTexcoord_atlas.xy), 0);			//Use vTexcoord_atlas for postProcessing passes
 //	blend += texelFetch(verticalBlur2, ivec2(vTexcoord_atlas.xy), 0);			//Use vTexcoord_atlas for postProcessing passes
 //	blend += texelFetch(sceneTexture, ivec2(gl_FragCoord.xy), 0);				//Use gl_FragCoord for the scene pass
 
-	vec4 testBlend = vec4(1.0) - (vec4(1.0) - texelFetch(sceneTexture, ivec2(gl_FragCoord.xy), 0))
-		* (vec4(1.0) - texelFetch(verticalBlur2, ivec2(vTexcoord_atlas.xy), 0))
-		* (vec4(1.0) - texelFetch(verticalBlur4, ivec2(vTexcoord_atlas.xy), 0))
-		* (vec4(1.0) - texelFetch(verticalBlur8, ivec2(vTexcoord_atlas.xy), 0));
+	vec4 testBlend = 1.0 - (1.0 - texelFetch(sceneTexture, ivec2(gl_FragCoord.xy), 0))
+		* (1.0 - texelFetch(verticalBlur2, ivec2(vTexcoord_atlas.xy), 0))
+		* (1.0 - texelFetch(verticalBlur4, ivec2(vTexcoord_atlas.xy), 0))
+		* (1.0 - texelFetch(verticalBlur8, ivec2(vTexcoord_atlas.xy), 0));
 
 //	blend.rgb = vec3(1.0) - exp(-blend.rgb * 0.9);
 

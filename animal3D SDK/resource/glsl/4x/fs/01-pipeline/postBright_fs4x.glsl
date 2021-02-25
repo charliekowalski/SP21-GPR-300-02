@@ -69,10 +69,15 @@ void main()
 
 	// Compute the corresponding exposure
 //	float exposure = sqrt(8.0 / (kernelLuminance + 0.25));
+	float exposure = sin(1.57 * (kernelLuminance * kernelLuminance));
 	
 	// Apply the exposure to this texel
-	rtFragColor.rgb = 1.0 - exp2(-vColor * (kernelLuminance + 0.25));
+//	rtFragColor.rgb = 1.0 - exp2(-vColor * (kernelLuminance + 0.25));	//Example of a curve
+	rtFragColor.rgb = 1.0 - exp2(-vColor * exposure);	//Example of a curve
 	rtFragColor.a = 1.0f;
+
+	//Tonemapping function that matches S shape
+	//
 
 	//----------------------------------------------- DIFFERENT ALGORITHM (Reinhard something) -----------------------------------------
 //	vec3 tonemapColour = texture(hdr_image, vTexcoord_atlas.xy).rgb;
