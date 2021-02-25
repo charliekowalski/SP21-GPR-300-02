@@ -44,8 +44,7 @@ layout (binding = 3) uniform sampler2D verticalBlur8;
 //in vec4 a3tex_unit03;
 
 //Texture coordiate varying
-in vec4 vTexcoord_atlas;					//When we try to use this instead of gl_FragCoord below, everything is dark-gray. If we use
-											//gl_FragCoord, there is a pale square in the bottom-left of the screen
+in vec4 vTexcoord_atlas;
 
 void main()
 {
@@ -57,12 +56,12 @@ void main()
 
 //	vec4 blend = (1.0 - a3tex_unit00) * (1.0 - a3tex_unit01) * (1.0 - a3tex_unit02) * (1.0 - a3tex_unit03);
 	vec4 blend = vec4(0.0);
-	blend += texelFetch(sceneTexture, ivec2(gl_FragCoord.xy), 0);
-	blend += texelFetch(verticalBlur2, ivec2(gl_FragCoord.xy), 0);
-	blend += texelFetch(verticalBlur4, ivec2(gl_FragCoord.xy), 0);
-	blend += texelFetch(verticalBlur8, ivec2(gl_FragCoord.xy), 0);
+	blend += texelFetch(sceneTexture, ivec2(gl_FragCoord.xy), 0);				//Use gl_FragCoord for the scene pass
+	blend += texelFetch(verticalBlur2, ivec2(vTexcoord_atlas.xy), 0);			//Use vTexcoord_atlas for postProcessing passes
+	blend += texelFetch(verticalBlur4, ivec2(vTexcoord_atlas.xy), 0);
+	blend += texelFetch(verticalBlur8, ivec2(vTexcoord_atlas.xy), 0);
 
-	blend.rgb = vec3(1.0) - exp(-blend.rgb * 0.9);
+//	blend.rgb = vec3(1.0) - exp(-blend.rgb * 0.9);
 
 //	rtFragColor = 1.0 - blend;
 	rtFragColor = blend;
