@@ -34,11 +34,11 @@ layout (location = 0) out vec4 rtFragColor;
 layout (binding = 0) uniform sampler2D hdr_image;
 
 //Varyings
-//in vec2 vTexcoord;
 in vec4 vTexcoord_atlas;
 
 void main()
 {
+	//----------------------------------------------- FROM BLUE BOOK -----------------------------------------
 	int i;
 	float lum[25];
 	vec2 tex_scale = vec2(1.0) / textureSize(hdr_image, 0);
@@ -72,6 +72,11 @@ void main()
 	// Apply the exposure to this texel
 	rtFragColor.rgb = 1.0 - exp2(-vColor * exposure);
 	rtFragColor.a = 1.0f;
+
+	//----------------------------------------------- DIFFERENT ALGORITHM -----------------------------------------
+//	vec3 tonemapColour = texture(hdr_image, vTexcoord_atlas.xy).rgb;
+//	vec3 tonemap = tonemapColour / (tonemapColour + vec3(10.0));
+//	rtFragColor = vec4(tonemap, 1.0);
 
 	// DUMMY OUTPUT: all fragments are OPAQUE ORANGE
 //	rtFragColor = vec4(1.0, 0.5, 0.0, 1.0);

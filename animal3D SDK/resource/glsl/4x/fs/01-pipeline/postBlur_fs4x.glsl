@@ -79,7 +79,7 @@ void main()
 	//			-> uniform
 
 	//Check which axis we are blurring along
-	if (uAxis.y == 0.0)
+	if (uAxis.x == 0.0)
 	{
 		vec4 c = vec4(0.0);
 		ivec2 P = ivec2(0.0, vTexcoord_atlas.y) - ivec2(0, weights.length() >> 1);
@@ -99,7 +99,7 @@ void main()
 		//Weighted average
 
 	}
-	else if (uAxis.x == 0.0)
+	else if (uAxis.y == 0.0)
 	{
 		vec4 c = vec4(0.0);
 		ivec2 P = ivec2(vTexcoord_atlas.x, 0.0) - ivec2(weights.length() >> 1, 0);
