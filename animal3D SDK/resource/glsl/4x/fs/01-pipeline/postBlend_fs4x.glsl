@@ -24,7 +24,7 @@
 
 #version 450
 
-// ****TO-DO: ------------------------------------------------------------------------------------------------ Blue book p. 489
+// ****TO-DO: --------------------------------------------------------------------------- Blue book p. 489 and Lecture 5: Bloom, slide 32
 //	-> declare texture coordinate varying and set of input textures
 //	-> implement some sort of blending algorithm that highlights bright areas
 //		(hint: research some Photoshop blend modes)

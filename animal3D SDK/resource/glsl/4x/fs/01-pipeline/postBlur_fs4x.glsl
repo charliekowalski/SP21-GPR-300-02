@@ -30,6 +30,7 @@
 //	-> declare Gaussian blur function that samples along one axis
 //		(hint: the efficiency of this is described in class)
 
+//GETTING HELP FROM https://learnopengl.com/Advanced-Lighting/Bloom and the Blue book, p. 487
 
 //Blurring along an axis
 //	-> sample neighbouring pixels, output weighted average

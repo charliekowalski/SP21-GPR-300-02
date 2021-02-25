@@ -38,7 +38,7 @@ in vec4 vTexcoord_atlas;
 
 void main()
 {
-	//----------------------------------------------- FROM BLUE BOOK -----------------------------------------
+	//----------------------------------------------- FROM BLUE BOOK p. 481-482 -----------------------------------------
 	int i;
 	float lum[25];
 	vec2 tex_scale = vec2(1.0) / textureSize(hdr_image, 0);
@@ -74,7 +74,7 @@ void main()
 	rtFragColor.rgb = 1.0 - exp2(-vColor * (kernelLuminance + 0.25));
 	rtFragColor.a = 1.0f;
 
-	//----------------------------------------------- DIFFERENT ALGORITHM -----------------------------------------
+	//----------------------------------------------- DIFFERENT ALGORITHM (Reinhard something) -----------------------------------------
 //	vec3 tonemapColour = texture(hdr_image, vTexcoord_atlas.xy).rgb;
 //	vec3 tonemap = tonemapColour / (tonemapColour + vec3(10.0));
 //	rtFragColor = vec4(tonemap, 1.0);
