@@ -78,10 +78,10 @@ void main()
 	//			-> uniform
 
 	//Check which axis we are blurring along
-	if (uAxis.x == 0.0f)
+	if (uAxis.y == 0.0)
 	{
 		vec4 c = vec4(0.0);
-		ivec2 P = ivec2(0.0f, gl_FragCoord.y) - ivec2(0, weights.length() >> 1);
+		ivec2 P = ivec2(0.0, vTexcoord.y) - ivec2(0, weights.length() >> 1);
 		int i;
 		for (i = 0; i < weights.length(); i++)
 		{
@@ -98,14 +98,14 @@ void main()
 		//Weighted average
 
 	}
-	else if (uAxis.y == 0.0f)
+	else if (uAxis.x == 0.0)
 	{
 		vec4 c = vec4(0.0);
-		ivec2 P = ivec2(gl_FragCoord.x, 0.0f) - ivec2(0, weights.length() >> 1);
+		ivec2 P = ivec2(vTexcoord.x, 0.0) - ivec2(weights.length() >> 1, 0);
 		int i;
 		for (i = 0; i < weights.length(); i++)
 		{
-			c += texelFetch(hdr_image, P + ivec2(0, i), 0) * weights[i];
+			c += texelFetch(hdr_image, P + ivec2(i, 0), 0) * weights[i];
 		}
 		rtFragColor = c;
 		//Blur along x-axis

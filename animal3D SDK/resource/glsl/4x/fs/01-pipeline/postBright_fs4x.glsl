@@ -46,7 +46,7 @@ void main()
 	//Sample 25 texels centered on the current one (the sampler)
 	for (i = 0; i < 25; i++)
 	{
-		vec2 tc = (2.0 * vTexcoord_atlas.xy +
+		vec2 tc = (2.0 * gl_FragCoord.xy +
 			3.5 * vec2(i % 5 - 2, i / 5 - 2));
 		vec3 col = texture(hdr_image, tc * tex_scale).rgb;
 		lum[i] = dot(col, vec3(0.3, 0.59, 0.11));
@@ -54,7 +54,7 @@ void main()
 
 	// Calculate weighted color of region
 	vec3 vColor = texelFetch(hdr_image,
-		2 * ivec2(vTexcoord_atlas.xy), 0).rgb;
+		2 * ivec2(gl_FragCoord.xy), 0).rgb;
 
 	float kernelLuminance = (
 		(1.0 * (lum[0] + lum[4] + lum[20] + lum[24])) +

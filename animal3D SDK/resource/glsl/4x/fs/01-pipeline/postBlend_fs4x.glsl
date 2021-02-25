@@ -31,8 +31,32 @@
 
 layout (location = 0) out vec4 rtFragColor;
 
+//Input textures
+layout (binding = 0) uniform sampler2D sceneTexture;
+
+//Input textures
+in vec4 a3tex_unit00;
+in vec4 a3tex_unit01;
+in vec4 a3tex_unit02;
+in vec4 a3tex_unit03;
+
+//Texture coordiate varying
+in vec4 vTexcoord_atlas;
+
 void main()
 {
+//	vec4 blend = texture2D(a3tex_unit00, vTexcoord_atlas) + texture2D(a3tex_unit01, vTexcoord_atlas);// + a3tex_unit01 + a3tex_unit02 + a3tex_unit03;
+//	vec4 blend = texelFetch(a3tex_unit00, ivec2(vTexcoord_atlas.xy), 0)
+//		+ texelFetch(a3tex_unit01, ivec2(vTexcoord_atlas.xy), 1)
+//		+ texelFetch(a3tex_unit02, ivec2(vTexcoord_atlas.xy), 2)
+//		+ texelFetch(a3tex_unit03, ivec2(vTexcoord_atlas.xy), 3);
+
+//	vec4 blend = (1.0 - a3tex_unit00) * (1.0 - a3tex_unit01) * (1.0 - a3tex_unit02) * (1.0 - a3tex_unit03);
+	vec4 blend = texelFetch(sceneTexture, ivec2(gl_FragCoord.xy), 0);
+
+//	rtFragColor = 1.0 - blend;
+	rtFragColor = blend;
+
 	// DUMMY OUTPUT: all fragments are OPAQUE PURPLE
-	rtFragColor = vec4(0.5, 0.0, 1.0, 1.0);
+//	rtFragColor = vec4(0.5, 0.0, 1.0, 1.0);
 }
