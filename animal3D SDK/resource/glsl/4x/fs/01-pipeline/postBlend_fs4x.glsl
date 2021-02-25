@@ -53,18 +53,29 @@ void main()
 //		+ texelFetch(a3tex_unit01, ivec2(vTexcoord_atlas.xy), 1)
 //		+ texelFetch(a3tex_unit02, ivec2(vTexcoord_atlas.xy), 2)
 //		+ texelFetch(a3tex_unit03, ivec2(vTexcoord_atlas.xy), 3);
-
 //	vec4 blend = (1.0 - a3tex_unit00) * (1.0 - a3tex_unit01) * (1.0 - a3tex_unit02) * (1.0 - a3tex_unit03);
+
 	vec4 blend = vec4(0.0);
 	blend += texelFetch(sceneTexture, ivec2(gl_FragCoord.xy), 0);				//Use gl_FragCoord for the scene pass
 	blend += texelFetch(verticalBlur2, ivec2(vTexcoord_atlas.xy), 0);			//Use vTexcoord_atlas for postProcessing passes
-	blend += texelFetch(verticalBlur4, ivec2(vTexcoord_atlas.xy), 0);
-	blend += texelFetch(verticalBlur8, ivec2(vTexcoord_atlas.xy), 0);
+	blend += texelFetch(verticalBlur4, ivec2(vTexcoord_atlas.xy), 0);			//...
+	blend += texelFetch(verticalBlur8, ivec2(vTexcoord_atlas.xy), 0);			//...
+
+//	blend += texelFetch(verticalBlur8, ivec2(vTexcoord_atlas.xy), 0);			//Use vTexcoord_atlas for postProcessing passes
+//	blend += texelFetch(verticalBlur4, ivec2(vTexcoord_atlas.xy), 0);			//Use vTexcoord_atlas for postProcessing passes
+//	blend += texelFetch(verticalBlur2, ivec2(vTexcoord_atlas.xy), 0);			//Use vTexcoord_atlas for postProcessing passes
+//	blend += texelFetch(sceneTexture, ivec2(gl_FragCoord.xy), 0);				//Use gl_FragCoord for the scene pass
+
+	vec4 testBlend = vec4(1.0) - (vec4(1.0) - texelFetch(sceneTexture, ivec2(gl_FragCoord.xy), 0))
+		* (vec4(1.0) - texelFetch(verticalBlur2, ivec2(vTexcoord_atlas.xy), 0))
+		* (vec4(1.0) - texelFetch(verticalBlur4, ivec2(vTexcoord_atlas.xy), 0))
+		* (vec4(1.0) - texelFetch(verticalBlur8, ivec2(vTexcoord_atlas.xy), 0));
 
 //	blend.rgb = vec3(1.0) - exp(-blend.rgb * 0.9);
 
-//	rtFragColor = 1.0 - blend;
+	//rtFragColor = 1.0 - blend;
 	rtFragColor = blend;
+	//rtFragColor = testBlend;
 
 	// DUMMY OUTPUT: all fragments are OPAQUE PURPLE
 //	rtFragColor = vec4(0.5, 0.0, 1.0, 1.0);

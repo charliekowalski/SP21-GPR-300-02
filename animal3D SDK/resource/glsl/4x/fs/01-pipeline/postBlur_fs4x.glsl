@@ -30,7 +30,8 @@
 //	-> declare Gaussian blur function that samples along one axis
 //		(hint: the efficiency of this is described in class)
 
-in vec2 vTexcoord;
+//in vec2 vTexcoord;
+in vec4 vTexcoord_atlas;
 
 uniform vec2 uAxis;
 
@@ -81,7 +82,7 @@ void main()
 	if (uAxis.y == 0.0)
 	{
 		vec4 c = vec4(0.0);
-		ivec2 P = ivec2(0.0, vTexcoord.y) - ivec2(0, weights.length() >> 1);
+		ivec2 P = ivec2(0.0, vTexcoord_atlas.y) - ivec2(0, weights.length() >> 1);
 		int i;
 		for (i = 0; i < weights.length(); i++)
 		{
@@ -101,7 +102,7 @@ void main()
 	else if (uAxis.x == 0.0)
 	{
 		vec4 c = vec4(0.0);
-		ivec2 P = ivec2(vTexcoord.x, 0.0) - ivec2(weights.length() >> 1, 0);
+		ivec2 P = ivec2(vTexcoord_atlas.x, 0.0) - ivec2(weights.length() >> 1, 0);
 		int i;
 		for (i = 0; i < weights.length(); i++)
 		{
