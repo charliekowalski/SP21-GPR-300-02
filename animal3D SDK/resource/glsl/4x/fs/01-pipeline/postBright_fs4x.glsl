@@ -67,12 +67,16 @@ void main()
 		) / 273.0;
 
 	//Compute the corresponding exposure (Charlie's custom S-shaped tonemapping curve)
-	float insideFunction = (kernelLuminance - 0.5) * 0.25;
-	float denominator = 1 + pow((1 - insideFunction), 48);
-	float exposure = 1 / denominator;
+	float insideFunction = (kernelLuminance - 0.6) * 0.25;
+	float denominator = 1 + pow((1 - insideFunction), 19);
+	float kowalskiTonemapper = 1 / denominator;
+
+	//Help from https://learnopengl.com/Advanced-Lighting/Bloom
+	float simpleExposure = dot(vColor.rgb, vec3(0.2126, 0.7152, 0.0722));
 	
 	//Apply the exposure to this texel
-	rtFragColor.rgb = 1.0 - exp2(-vColor * exposure);
+//	rtFragColor.rgb = 1.0 - exp2(-vColor * kowalskiTonemapper);
+	rtFragColor.rgb = vColor * simpleExposure;
 	rtFragColor.a = 1.0f;
 
 

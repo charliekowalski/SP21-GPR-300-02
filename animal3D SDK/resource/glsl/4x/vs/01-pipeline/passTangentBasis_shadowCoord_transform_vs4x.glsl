@@ -88,9 +88,22 @@ uniform ubTransformStack	//Uniform block
 	sModelMatrixStack uModel[16];			// 16 models (c code, a3_DemoMode1_PostProc.h)
 };
 
+//Lighting data
+struct sPointLightData
+{
+	vec4 position;						// position in rendering target space
+	vec4 worldPos;						// original position in world space
+	vec4 color;							// RGB color with padding
+};
+
+uniform ubLight
+{
+	sPointLightData uLightData[4];
+};
+
 //Lighting attributes
-attribute vec4 aLightWorldPosition;
-attribute vec4 aLightColour;
+//attribute vec4 aLightWorldPosition;
+//attribute vec4 aLightColour;
 
 //Varyings for lighitng data
 out vec4 vLightPosition;
@@ -101,22 +114,22 @@ out vec4 vShadowCoord;
 
 void main()
 {
-//	// DUMMY OUTPUT: directly assign input position to output position
-//	gl_Position = uCamera.projectionMat * uModel[uIndex].modelViewMat * aPosition;
-
 	//Calculate vectors (normal, to light, and to camera)
 	vec4 p = uModel[uIndex].modelViewMat * aPosition;
 	vSurfaceNormal = mat3(uModel[uIndex].modelViewMat) * aSurfaceNormal;
-	vVecToLight = vec3(aLightWorldPosition) - p.xyz;
+	vVecToLight = vec3(lightData.position) - p.xyz;
 	vVecToCamera = -p.xyz;
 	gl_Position = uCamera.projectionMat * p;
 
 	//Apply transformations to the varyings
-	vLightPosition = uLight.viewProjectionMat * aLightWorldPosition;	//View-projection matrix (world -> clip)
-	vLightColour = aLightColour;
+	vLightPosition = uLight.viewProjectionMat * lightData.worldPos;	//View-projection matrix (world -> clip)
+	vLightColour = lightData.color;
 
 	//Shadow coordinates
 	vShadowCoord = (uLight.viewProjectionBiasMat * uModel[uIndex].modelMat) * aPosition;	//Shadow matrix * position
+
+	// DUMMY OUTPUT: directly assign input position to output position
+	//gl_Position = uCamera.projectionMat * uModel[uIndex].modelViewMat * aPosition;
 
 	vVertexID = gl_VertexID;
 	vInstanceID = gl_InstanceID;

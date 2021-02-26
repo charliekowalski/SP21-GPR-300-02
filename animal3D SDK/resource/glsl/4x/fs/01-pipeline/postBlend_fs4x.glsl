@@ -43,13 +43,13 @@ in vec4 vTexcoord_atlas;
 void main()
 {
 	//Blend the textures
-	vec4 testBlend = 1.0 - (1.0 - texture2D(sceneTexture, vTexcoord_atlas.xy))
+	vec4 blend = 1.0 - (1.0 - texture2D(sceneTexture, vTexcoord_atlas.xy))
 		* (1.0 - texture2D(verticalBlur2, vTexcoord_atlas.xy))
 		* (1.0 - texture2D(verticalBlur4, vTexcoord_atlas.xy))
 		* (1.0 - texture2D(verticalBlur8, vTexcoord_atlas.xy));
 
 	//Assign the blended textures to the outp[ut colour
-	rtFragColor = testBlend;
+	rtFragColor = blend;
 
 	// DUMMY OUTPUT: all fragments are OPAQUE PURPLE
 	//rtFragColor = vec4(0.5, 0.0, 1.0, 1.0);

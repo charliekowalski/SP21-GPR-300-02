@@ -48,57 +48,33 @@ uniform vec2 uAxis;
 layout (location = 0) out vec4 rtFragColor;
 layout (binding = 0) uniform sampler2D hdr_image;
 
-const float weights[] = float[](0.0024499299678342,
-	0.0043538453346397,
-	0.0073599963704157,
-	0.0118349786570722,
-	0.0181026699707781,
-	0.0263392293891488,
-	0.0364543006660986,
-	0.0479932050577658,
-	0.0601029809166942,
-	0.0715974486241365,
-	0.0811305381519717,
-	0.0874493212267511,
-	0.0896631113333857,
-	0.0874493212267511,
-	0.0811305381519717,
-	0.0715974486241365,
-	0.0601029809166942,
-	0.0479932050577658,
-	0.0364543006660986,
-	0.0263392293891488,
-	0.0181026699707781,
-	0.0118349786570722,
-	0.0073599963704157,
-	0.0043538453346397,
-	0.0024499299678342);
+uniform float weight[5] = float[] (0.227027, 0.1945946, 0.1216216, 0.054054, 0.016216);
 
-//const float weights[] = float[](0.002,
-//	0.004,
-//	0.007,
-//	0.011,
-//	0.018,
-//	0.026,
-//	0.036,
-//	0.047,
-//	0.060,
-//	0.071,
-//	0.081,
-//	0.087,
-//	0.089,
-//	0.087,
-//	0.081,
-//	0.071,
-//	0.060,
-//	0.047,
-//	0.036,
-//	0.026,
-//	0.018,
-//	0.011,
-//	0.007,
-//	0.004,
-//	0.002);
+//const float weights[] = float[](0.0024499299678342,
+//	0.0043538453346397,
+//	0.0073599963704157,
+//	0.0118349786570722,
+//	0.0181026699707781,
+//	0.0263392293891488,
+//	0.0364543006660986,
+//	0.0479932050577658,
+//	0.0601029809166942,
+//	0.0715974486241365,
+//	0.0811305381519717,
+//	0.0874493212267511,
+//	0.0896631113333857,
+//	0.0874493212267511,
+//	0.0811305381519717,
+//	0.0715974486241365,
+//	0.0601029809166942,
+//	0.0479932050577658,
+//	0.0364543006660986,
+//	0.0263392293891488,
+//	0.0181026699707781,
+//	0.0118349786570722,
+//	0.0073599963704157,
+//	0.0043538453346397,
+//	0.0024499299678342);
 
 void main()
 {
@@ -143,22 +119,22 @@ void main()
 //		//Weighted average
 //	}
 	vec2 textelSize = 1.0 / textureSize(hdr_image, 0);
-	vec3 result = texture(hdr_image, vTexcoord_atlas.xy).rgb * weights[0];
+	vec3 result = texture(hdr_image, vTexcoord_atlas.xy).rgb * weight[0];
 
 	if (uAxis.x == 0.0)		//Blur along y-axis
 	{
-		for(int i = 1; i < weights.length(); i++)
+		for(int i = 1; i < weight.length(); i++)
         {
-            result += texture(hdr_image, vTexcoord_atlas.xy + vec2(0.0, textelSize.y * i)).rgb * weights[i];
-            result += texture(hdr_image, vTexcoord_atlas.xy - vec2(0.0, textelSize.y * i)).rgb * weights[i];
+            result += texture(hdr_image, vTexcoord_atlas.xy + vec2(0.0, textelSize.y * i)).rgb * weight[i];
+            result += texture(hdr_image, vTexcoord_atlas.xy - vec2(0.0, textelSize.y * i)).rgb * weight[i];
         }
 	}
 	else if (uAxis.y == 0.0)	//Blur along x-axis
 	{
-		for(int i = 1; i < weights.length(); i++)
+		for(int i = 1; i < weight.length(); i++)
         {
-            result += texture(hdr_image, vTexcoord_atlas.xy + vec2(textelSize.x * i, 0.0)).rgb * weights[i];
-            result += texture(hdr_image, vTexcoord_atlas.xy - vec2(textelSize.x * i, 0.0)).rgb * weights[i];
+            result += texture(hdr_image, vTexcoord_atlas.xy + vec2(textelSize.x * i, 0.0)).rgb * weight[i];
+            result += texture(hdr_image, vTexcoord_atlas.xy - vec2(textelSize.x * i, 0.0)).rgb * weight[i];
         }
 	}
 
