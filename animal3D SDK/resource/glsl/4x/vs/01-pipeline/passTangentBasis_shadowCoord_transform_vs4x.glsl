@@ -94,12 +94,12 @@ struct sPointLightData
 	vec4 position;						// position in rendering target space
 	vec4 worldPos;						// original position in world space
 	vec4 color;							// RGB color with padding
-};
+} pointLight;
 
-uniform ubLight
-{
-	sPointLightData uLightData[4];
-};
+//uniform ubLight
+//{
+//	sPointLightData uLightData[4];
+//};
 
 //Lighting attributes
 //attribute vec4 aLightWorldPosition;
@@ -117,13 +117,13 @@ void main()
 	//Calculate vectors (normal, to light, and to camera)
 	vec4 p = uModel[uIndex].modelViewMat * aPosition;
 	vSurfaceNormal = mat3(uModel[uIndex].modelViewMat) * aSurfaceNormal;
-	vVecToLight = vec3(lightData.position) - p.xyz;
+	vVecToLight = vec3(pointLight.position) - p.xyz;
 	vVecToCamera = -p.xyz;
 	gl_Position = uCamera.projectionMat * p;
 
 	//Apply transformations to the varyings
-	vLightPosition = uLight.viewProjectionMat * lightData.worldPos;	//View-projection matrix (world -> clip)
-	vLightColour = lightData.color;
+	vLightPosition = uLight.viewProjectionMat * pointLight.position;	//View-projection matrix (world -> clip)
+	vLightColour = pointLight.color;
 
 	//Shadow coordinates
 	vShadowCoord = (uLight.viewProjectionBiasMat * uModel[uIndex].modelMat) * aPosition;	//Shadow matrix * position

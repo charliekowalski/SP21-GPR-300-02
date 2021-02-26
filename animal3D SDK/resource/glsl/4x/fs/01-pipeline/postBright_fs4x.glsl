@@ -48,7 +48,7 @@ void main()
 	{
 		vec2 tc = (2.0 * gl_FragCoord.xy +
 			3.5 * vec2(i % 5 - 2, i / 5 - 2));
-		vec3 col = texture(hdr_image, tc * tex_scale).rgb;							// Or this
+		vec3 col = texture(hdr_image, tc * tex_scale).rgb;
 		lum[i] = dot(col, vec3(0.3, 0.59, 0.11));
 	}
 
@@ -67,9 +67,9 @@ void main()
 		) / 273.0;
 
 	//Compute the corresponding exposure (Charlie's custom S-shaped tonemapping curve)
-	float insideFunction = (kernelLuminance - 0.6) * 0.25;
-	float denominator = 1 + pow((1 - insideFunction), 19);
-	float kowalskiTonemapper = 1 / denominator;
+//	float insideFunction = (kernelLuminance - 0.6) * 0.25;
+//	float denominator = 1 + pow((1 - insideFunction), 19);
+//	float kowalskiTonemapper = 1 / denominator;
 
 	//Help from https://learnopengl.com/Advanced-Lighting/Bloom
 	float simpleExposure = dot(vColor.rgb, vec3(0.2126, 0.7152, 0.0722)) * (kernelLuminance + 0.5);
