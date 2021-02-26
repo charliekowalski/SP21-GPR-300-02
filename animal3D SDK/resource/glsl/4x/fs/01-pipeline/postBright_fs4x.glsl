@@ -72,7 +72,7 @@ void main()
 	float kowalskiTonemapper = 1 / denominator;
 
 	//Help from https://learnopengl.com/Advanced-Lighting/Bloom
-	float simpleExposure = dot(vColor.rgb, vec3(0.2126, 0.7152, 0.0722));
+	float simpleExposure = dot(vColor.rgb, vec3(0.2126, 0.7152, 0.0722)) * (kernelLuminance + 0.5);
 	
 	//Apply the exposure to this texel
 //	rtFragColor.rgb = 1.0 - exp2(-vColor * kowalskiTonemapper);

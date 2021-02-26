@@ -78,51 +78,15 @@ uniform float weight[5] = float[] (0.227027, 0.1945946, 0.1216216, 0.054054, 0.0
 
 void main()
 {
-	//Check which axis we are blurring along
-//	if (uAxis.x == 0.0)		//Blur along y-axis
-//	{
-//		vec4 c = vec4(0.0);
-//		ivec2 P = ivec2(0.0, vTexcoord_atlas.y) - ivec2(0, weights.length() >> 1);
-//		int i;
-//		for (i = 0; i < weights.length(); i++)
-//		{
-//			c += texelFetch(hdr_image, P + ivec2(0, i), 0) * weights[i];
-//		}
-//		rtFragColor = c;
-//		
-//		//Sample texel at coordinate
-//
-//
-//		//Sample neighbouring pixels
-//
-//
-//		//Weighted average
-//
-//	}
-//	else if (uAxis.y == 0.0)	//Blur along x-axis
-//	{
-//		vec4 c = vec4(0.0);
-//
-//		//Sample texel at coordinate
-//		ivec2 P = ivec2(vTexcoord_atlas.x, 0.0) - ivec2(weights.length() >> 1, 0);
-//		int i;
-//		for (i = 0; i < weights.length(); i++)
-//		{
-//			c += texelFetch(hdr_image, P + ivec2(i, 0), 0) * weights[i];
-//		}
-//		rtFragColor = c;
-//
-//
-//		//Sample neighbouring pixels
-//
-//
-//		//Weighted average
-//	}
+	//The size of each textel
 	vec2 textelSize = 1.0 / textureSize(hdr_image, 0);
+
+	//The blur result
 	vec3 result = texture(hdr_image, vTexcoord_atlas.xy).rgb * weight[0];
 
 	if (uAxis.x == 0.0)		//Blur along y-axis
 	{
+		//Sample neighbouring pixels
 		for(int i = 1; i < weight.length(); i++)
         {
             result += texture(hdr_image, vTexcoord_atlas.xy + vec2(0.0, textelSize.y * i)).rgb * weight[i];
@@ -131,6 +95,7 @@ void main()
 	}
 	else if (uAxis.y == 0.0)	//Blur along x-axis
 	{
+		//Sample neighbouring pixels
 		for(int i = 1; i < weight.length(); i++)
         {
             result += texture(hdr_image, vTexcoord_atlas.xy + vec2(textelSize.x * i, 0.0)).rgb * weight[i];
