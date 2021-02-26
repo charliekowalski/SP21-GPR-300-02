@@ -48,7 +48,6 @@ void main()
 	{
 		vec2 tc = (2.0 * gl_FragCoord.xy +
 			3.5 * vec2(i % 5 - 2, i / 5 - 2));
-//		vec3 col = texture(hdr_image, tc * vTexcoord_atlas.xy * tex_scale).rgb;		//I can't tell which is better, this...
 		vec3 col = texture(hdr_image, tc * tex_scale).rgb;							// Or this
 		lum[i] = dot(col, vec3(0.3, 0.59, 0.11));
 	}
@@ -67,24 +66,15 @@ void main()
 		(41.0 * lum[12])
 		) / 273.0;
 
-	// Compute the corresponding exposure
-//	float exposure = sqrt(8.0 / (kernelLuminance + 0.25));
+	//Compute the corresponding exposure (Charlie's custom S-shaped tonemapping curve)
 	float insideFunction = (kernelLuminance - 0.5) * 0.25;
 	float denominator = 1 + pow((1 - insideFunction), 48);
 	float exposure = 1 / denominator;
 	
-	// Apply the exposure to this texel
-//	rtFragColor.rgb = 1.0 - exp2(-vColor * (kernelLuminance + 0.25));	//Example of a curve
-	rtFragColor.rgb = 1.0 - exp2(-vColor * exposure);	//Example of a curve
+	//Apply the exposure to this texel
+	rtFragColor.rgb = 1.0 - exp2(-vColor * exposure);
 	rtFragColor.a = 1.0f;
 
-	//Tonemapping function that matches S shape
-	//
-
-	//----------------------------------------------- DIFFERENT ALGORITHM (Reinhard something) -----------------------------------------
-//	vec3 tonemapColour = texture(hdr_image, vTexcoord_atlas.xy).rgb;
-//	vec3 tonemap = tonemapColour / (tonemapColour + vec3(10.0));
-//	rtFragColor = vec4(tonemap, 1.0);
 
 	// DUMMY OUTPUT: all fragments are OPAQUE ORANGE
 //	rtFragColor = vec4(1.0, 0.5, 0.0, 1.0);
