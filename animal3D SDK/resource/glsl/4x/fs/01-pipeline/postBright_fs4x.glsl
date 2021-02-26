@@ -48,8 +48,8 @@ void main()
 	{
 		vec2 tc = (2.0 * gl_FragCoord.xy +
 			3.5 * vec2(i % 5 - 2, i / 5 - 2));
-		vec3 col = texture(hdr_image, tc * gl_FragCoord.xy * tex_scale).rgb;		//I can't tell which is better, this...
-//		vec3 col = texture(hdr_image, tc * tex_scale).rgb;							// Or this
+//		vec3 col = texture(hdr_image, tc * vTexcoord_atlas.xy * tex_scale).rgb;		//I can't tell which is better, this...
+		vec3 col = texture(hdr_image, tc * tex_scale).rgb;							// Or this
 		lum[i] = dot(col, vec3(0.3, 0.59, 0.11));
 	}
 
@@ -69,7 +69,9 @@ void main()
 
 	// Compute the corresponding exposure
 //	float exposure = sqrt(8.0 / (kernelLuminance + 0.25));
-	float exposure = sin(1.57 * (kernelLuminance * kernelLuminance));
+	float insideFunction = (kernelLuminance - 0.5) * 0.25;
+	float denominator = 1 + pow((1 - insideFunction), 48);
+	float exposure = 1 / denominator;
 	
 	// Apply the exposure to this texel
 //	rtFragColor.rgb = 1.0 - exp2(-vColor * (kernelLuminance + 0.25));	//Example of a curve
