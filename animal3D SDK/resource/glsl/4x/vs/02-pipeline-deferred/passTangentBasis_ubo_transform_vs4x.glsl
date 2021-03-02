@@ -26,7 +26,7 @@
 
 #define MAX_OBJECTS 128
 
-// ****TO-DO:
+// ****TO-DO:	------------------------------------------	Wait crap was this done fully in class or drawGBuffers_fs4x.glsl ?
 //	-> declare attributes related to lighting
 //		(hint: normal [2], texcoord [8], tangent [10], bitangent [11])
 //	-> declare view-space varyings related to lighting
@@ -35,7 +35,10 @@
 //		(hint: complete tangent basis [TBNP] transformed to view-space)
 //		(hint: texcoord transformed to atlas coordinates in a similar fashion)
 
+//Attributes
 layout (location = 0) in vec4 aPosition;
+layout (location = 2) in vec3 aNormal;
+layout (location = 8) in vec4 aTexcoord;
 
 struct sModelMatrixStack
 {
@@ -57,10 +60,27 @@ uniform int uIndex;
 flat out int vVertexID;
 flat out int vInstanceID;
 
+//Varyings
+out vec4 vPosition;
+out vec4 vNormal;		//Converted to vec4
+out vec4 vTexcoord;
+
 void main()
 {
 	// DUMMY OUTPUT: directly assign input position to output position
-	gl_Position = aPosition;
+	//gl_Position = aPosition;
+
+	//Convert to clip space
+	gl_Position = uModelMatrixStack[uIndex].modelViewProjectionMat * aPosition;
+
+	//Transform "things" to common space (relative to the camera) --> because we want lights to be common to all objects (all in the same space)
+	vPosition = uModelMatrixStack[uIndex].modelViewMat * aPosition;
+
+	//Convert texture coordinate to cell space (all textures are in 1)
+	vTexcoord = uModelMatrixStack[uIndex].atlasMat * aTexcoord;
+
+	//Convert nomal to viewer skewed space (keeps normals perpendicular to surface)
+	vNormal = uModelMatrixStack[uIndex].modelViewMatInverseTranspose * vec4(aNormal, 0.0);	//0 for w component, they do NOT rotate, only move
 
 	vVertexID = gl_VertexID;
 	vInstanceID = gl_InstanceID;
