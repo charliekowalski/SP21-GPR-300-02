@@ -39,6 +39,8 @@
 layout (location = 0) in vec4 aPosition;
 layout (location = 2) in vec3 aNormal;
 layout (location = 8) in vec4 aTexcoord;
+layout (location = 10) in vec4 aTangent;
+layout (location = 11) in vec4 aBiTangent;
 
 struct sModelMatrixStack
 {
@@ -64,12 +66,11 @@ flat out int vInstanceID;
 out vec4 vPosition;
 out vec4 vNormal;		//Converted to vec4
 out vec4 vTexcoord;
+out vec4 vTangent;
+out vec4 vBiTangent;
 
 void main()
 {
-	// DUMMY OUTPUT: directly assign input position to output position
-	//gl_Position = aPosition;
-
 	//Convert to clip space
 	gl_Position = uModelMatrixStack[uIndex].modelViewProjectionMat * aPosition;
 

@@ -27,7 +27,7 @@
 #define MAX_LIGHTS 1024
 
 // ****TO-DO:
-//	-> declare view-space varyings from vertex shader
+//	-> declare view-space varyings from vertex shader							//Done?
 //	-> declare point light data structure and uniform block
 //	-> declare uniform samplers (diffuse, specular & normal maps)
 //	-> calculate final normal by transforming normal map sample
@@ -39,6 +39,45 @@
 uniform int uCount;
 
 layout (location = 0) out vec4 rtFragColor;
+
+//Varyings from VS
+in vec4 vPosition;
+in vec4 vNormal;
+
+// simple point light
+struct a3_PointLightData
+{
+	vec4 position;						// position in rendering target space
+	vec4 worldPos;						// original position in world space
+	vec4 color;							// RGB color with padding
+	float radius;						// radius (distance of effect from center)
+	float radiusSq;						// radius squared (if needed)
+	float radiusInv;					// radius inverse (attenuation factor)
+	float radiusInvSq;					// radius inverse squared (attenuation factor)
+} pointLight;
+
+uniform xyz
+{
+	
+};
+
+//Uniform samplers (diffuse, specular & normal maps)
+uniform sampler
+
+
+//Diffuse
+uniform vec3 vDiffuseMaterial;
+uniform vec3 vDiffuseLight;
+float fDotProduct = max(0.0, dot(vNormal, vLightDir));
+vec3 vDiffuseColor = vDiffuseMaterial * vDiffuseLight * fDotProduct;
+
+//Specular
+uniform vec3 vSpecularMaterial;
+uniform vec3 vSpecularLight;float shininess = 128.0;
+vec3 vReflection = reflect(-vLightDir, vEyeNormal);
+float EyeReflectionAngle = max(0.0, dot(vEyeNormal, vReflection);
+fSpec = pow(EyeReflectionAngle, shininess);
+vec3 vSpecularColor = vSpecularLight * vSpecularMaterial * fSpec;
 
 // location of viewer in its own space is the origin
 const vec4 kEyePos_view = vec4(0.0, 0.0, 0.0, 1.0);
@@ -64,4 +103,37 @@ void main()
 {
 	// DUMMY OUTPUT: all fragments are OPAQUE MAGENTA
 	rtFragColor = vec4(1.0, 0.0, 1.0, 1.0);
+}
+
+
+
+
+out VS_OUT
+{
+vec2 texcoord;
+vec3 eyeDir;
+vec3 lightDir;
+} vs_out;
+
+uniform vec3 light_pos = vec3(0.0, 0.0, 100.0);
+void main(void)
+{
+// Calculate vertex position in view space.
+vec4 P = mv_matrix * position;
+// Calculate normal (N) and tangent (T) vectors in view space from
+// incoming object space vectors.
+vec3 N = normalize(mat3(mv_matrix) * normal);
+vec3 T = normalize(mat3(mv_matrix) * tangent);
+// Calculate the bitangent vector (B) from the normal and tangent
+// vectors.
+vec3 B = cross(N, T);
+// The light vector (L) is the vector from the point of interest to
+// the light. Calculate that and multiply it by the TBN matrix.
+vec3 L = light_pos - P.xyz;
+vs_out.lightDir = normalize(vec3(dot(V, T), dot(V, B), dot(V, N)));
+// The view vector is the vector from the point of interest to the
+// viewer, which in view space is simply the negative of the position.
+// Calculate that and multiply it by the TBN matrix.
+vec3 V = -P.xyz;
+vs_out.eyeDir = normalize(vec3(dot(V, T), dot(V, B), dot(V, N)));
 }
