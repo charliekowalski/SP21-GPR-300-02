@@ -37,6 +37,7 @@
 layout (location = 0) out vec4 rtTexcoord;
 layout (location = 1) out vec4 rtNormal;
 layout (location = 3) out vec4 rtPosition;
+//We also have depth, but it is not a target
 
 //Varyings
 in vec4 vPosition;

@@ -41,6 +41,18 @@
 
 in vec4 vTexcoord_atlas;
 
+//Textures
+uniform sampler2D uImage00;		//The diffuse atlas //Found in the shader utility header
+uniform sampler2D uImage01;		//The specular atlas
+
+uniform sampler2D uImage04;		//Texcoord g-buffer
+uniform sampler2D uImage05;		//Normal g-buffer
+//uniform sampler2D uImage06;		//Position g-buffer
+uniform sampler2D uImage07;		//Depth g-buffer
+
+//Testing, NOT NEEDED
+//uniform sampler2D uImage02, uImage03;	//Normal, height map
+
 uniform int uCount;
 
 layout (location = 0) out vec4 rtFragColor;
@@ -48,5 +60,28 @@ layout (location = 0) out vec4 rtFragColor;
 void main()
 {
 	// DUMMY OUTPUT: all fragments are OPAQUE ORANGE
-	rtFragColor = vec4(1.0, 0.5, 0.0, 1.0);
+//	rtFragColor = vec4(1.0, 0.5, 0.0, 1.0);
+
+	vec4 sceneTexcoord = texture(uImage04, vTexcoord_atlas.xy);
+	vec4 diffuseSample = texture(uImage00, sceneTexcoord.xy);
+	vec4 specularSample = texture(uImage01, sceneTexcoord.xy);
+
+	//Phong shading:
+	//	ambient
+	//	+ diffuse colour * diffuse light
+	//	+ specular colour * specular light
+	//We have:
+	//	-> diffse and specular colours
+	//We do not have:
+	//	-> light stuff
+	//		-> light data -> light data struct -> uniform buffer
+	//		-> normals, position, depth -> geometry buffers!!!
+	//	-> texture coordinates -> g-buffer
+	
+	//DEBUGGING
+	rtFragColor = diffuseSample;
+//	rtFragColor = texture(uImage04, vTexcoord_atlas.xy);
+//	rtFragColor = texture(uImage05, vTexcoord_atlas.xy);
+//	rtFragColor = texture(uImage06, vTexcoord_atlas.xy);
+//	rtFragColor = texture(uImage07, vTexcoord_atlas.xy);
 }
