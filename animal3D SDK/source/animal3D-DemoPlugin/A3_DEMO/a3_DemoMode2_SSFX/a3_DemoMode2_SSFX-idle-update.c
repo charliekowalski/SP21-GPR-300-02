@@ -119,18 +119,37 @@ void a3ssfx_update_scene(a3_DemoState* demoState, a3_DemoMode2_SSFX* demoMode, a
 		i < ssfxMaxCount_pointLight;
 		++i, ++pointLightData, ++pointLightMVP)
 	{
-		//This is in camera space (view space) (we have MV)
+		//This is in camera space (view space)
 		a3real4Real4x4Product(pointLightData->position.v,
 			projector->sceneObjectPtr->modelMatrixStackPtr->modelMatInverse.m,
 			pointLightData->worldPos.v);
 
-		// ****TO-DO: SEE SCREENSHOT
+		// ****DONE?: SEE SCREENSHOT
 		//	-> calculate light transformation
 		//		(hint: in the previous line, we calculate the view-space position)
 		//		(hint: determine the scale part, append position and multiply by 
 		//			projection matrix to arrive at a proper MVP for each light)
-	/*	// update and transform light matrix --> bring into projection space (MVP = P * MV)
-		//...*/
+		// update and transform light matrix --> bring into projection space (MVP = P * MV)
+
+		// Make the model view matrix		//Scale is radius of unit sphere, position is already calculated in pointLightData->position.v
+		//Manual way
+		//a3real4x4r lightMV = {
+		//	pointLightData->radius, 0.0, 0.0, pointLightData->position.x,
+		//	0.0, pointLightData->radius, 0.0, pointLightData->position.y,
+		//	0.0, 0.0, pointLightData->radius, pointLightData->position.z,
+		//	0.0, 0.0, 0.0, 1.0
+		//};
+
+		//Automatic way
+		a3real4x4r lightMVMat = a3real4x4SetScale(projector->sceneObjectPtr->modelMatrixStackPtr->modelMatInverse.m, pointLightData->radius);
+
+		//Projection matrix
+		a3real4x4r lightProj = projector->projectorMatrixStackPtr->projectionMat.m;
+
+		//Final MVP matrix
+		//pointLightMVP->m = a3real4x4ConcatL(lightProj, lightMVMat);
+		//a3real4x4Product(pointLightMVP, lightProj, lightMV);
+		a3real4x4Product(pointLightMVP->m, lightProj, lightMVMat);
 	}
 }
 
