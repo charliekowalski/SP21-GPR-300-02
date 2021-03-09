@@ -69,10 +69,22 @@ out vec4 vTexcoord;
 out vec4 vTangent;
 out vec4 vBiTangent;
 
+//Screen-space position (from pyramid space to cube) - perspective divide
+out vec4 vPosition_screen;
+
+//Half scale (diagonal) and half translation (bottom, GLSL is column-major)
+const mat4 bias = mat4(
+	0.5, 0.0, 0.0, 0.0,
+	0.0, 0.5, 0.0, 0.0,
+	0.0, 0.0, 0.5, 0.0,
+	0.5, 0.5, 0.5, 1.0
+);
+
 void main()
 {
 	//Convert to clip space
 	gl_Position = uModelMatrixStack[uIndex].modelViewProjectionMat * aPosition;
+	vPosition_screen = bias * gl_Position;	//Clip to screen (view) space right????????????????????????????????
 
 	//Transform "things" to common space (relative to the camera) --> because we want lights to be common to all objects (all in the same space)
 	vPosition = uModelMatrixStack[uIndex].modelViewMat * aPosition;

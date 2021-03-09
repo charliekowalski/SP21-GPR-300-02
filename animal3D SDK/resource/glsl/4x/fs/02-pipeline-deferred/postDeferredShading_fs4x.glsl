@@ -39,7 +39,7 @@
 //		back to view-space, perspective divide)
 //	-> calculate and accumulate final diffuse and specular shading
 
-in vec4 vTexcoord_atlas;
+in vec4 vTexcoord_atlas;	//Maps directly to screen-space
 
 //Textures
 uniform sampler2D uImage00;		//The diffuse atlas //Found in the shader utility header
@@ -54,6 +54,7 @@ uniform sampler2D uImage07;		//Depth g-buffer
 //uniform sampler2D uImage02, uImage03;	//Normal, height map
 
 uniform int uCount;
+uniform mat4 uPB_inv;
 
 layout (location = 0) out vec4 rtFragColor;
 
@@ -65,6 +66,18 @@ void main()
 	vec4 sceneTexcoord = texture(uImage04, vTexcoord_atlas.xy);
 	vec4 diffuseSample = texture(uImage00, sceneTexcoord.xy);
 	vec4 specularSample = texture(uImage01, sceneTexcoord.xy);
+
+	//Screen-space position
+	vec4 position_screen = vTexcoord_atlas;
+	position_screen.z = texture(uImage07, vTexcoord_atlas.xy).r;
+
+	//View-space pos
+	vec4 position_view = uPB_inv * position_screen;
+	position_view /= position_view.w;	//Reverse pers[ectove-divide
+
+	//Normal
+	vec4 normal = texture(uImage05, vTexcoord_atlas.xy);
+	normal = (normal - 0.5) * 2.0;	//Undo bias done in drawGBuffers
 
 	//Phong shading:
 	//	ambient
@@ -80,8 +93,13 @@ void main()
 	
 	//DEBUGGING
 	rtFragColor = diffuseSample;
+//	rtFragColor = position_screen;
+	rtFragColor = position_view;
 //	rtFragColor = texture(uImage04, vTexcoord_atlas.xy);
 //	rtFragColor = texture(uImage05, vTexcoord_atlas.xy);
 //	rtFragColor = texture(uImage06, vTexcoord_atlas.xy);
 //	rtFragColor = texture(uImage07, vTexcoord_atlas.xy);
+
+	//Final transparency
+	rtFragColor.a = diffuseSample.a;
 }

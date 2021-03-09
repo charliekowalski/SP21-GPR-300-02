@@ -44,11 +44,14 @@ in vec4 vPosition;
 in vec4 vNormal;
 in vec4 vTexcoord;
 
+in vec4 vPosition_screen;
+
 void main()
 {
 	// DUMMY OUTPUT: all fragments are OPAQUE MAGENTA
 //	rtFragColor = vec4(1.0, 0.0, 1.0, 1.0);
 	rtTexcoord = vTexcoord;
 	rtNormal = vec4(normalize(vNormal.xyz) * 0.5 + 0.5, 1.0); 	//Pack normal from -1 -> 1 space to 0 -> 1, normalize it
-	rtPosition = vPosition;
+	//rtPosition = vPosition;
+	rtPosition = vPosition_screen / vPosition_screen.w;	//Perspective-divide (convert from pyramid-shaped clip space to box-shaped screen space)
 }
