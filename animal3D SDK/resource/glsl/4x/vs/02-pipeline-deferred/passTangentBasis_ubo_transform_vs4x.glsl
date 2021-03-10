@@ -28,9 +28,9 @@
 
 // ****TO-DO:
 //	-> declare attributes related to lighting
-//		(hint: normal [2], texcoord [8], tangent [10], bitangent [11])
+//		(hint: normal [2], texcoord [8], tangent [10], bitangent [11])				done
 //	-> declare view-space varyings related to lighting
-//		(hint: one per attribute)
+//		(hint: one per attribute)													done
 //	-> calculate final clip-space position and view-space varyings
 //		(hint: complete tangent basis [TBNP] transformed to view-space)
 //		(hint: texcoord transformed to atlas coordinates in a similar fashion)

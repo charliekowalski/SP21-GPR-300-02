@@ -41,13 +41,14 @@
 
 void a3ssfx_update_graphics(a3_DemoState* demoState, a3_DemoMode2_SSFX* demoMode)
 {
-	// ****TO-DO:
+	// ****NOT DONE NOT DONE:
 	//	-> uncomment transformation and light data uploads
 	//	-> add line to upload light transformations
 	//		(hint: just individual matrices, see scene update)
 	// upload
 	a3bufferRefillOffset(demoState->ubo_transform, 0, 0, sizeof(demoMode->modelMatrixStack), demoMode->modelMatrixStack);
 	a3bufferRefillOffset(demoState->ubo_light, 0, 0, sizeof(demoMode->pointLightData), demoMode->pointLightData);
+	//a3bufferRefillOffset(demoState->ubo_light, 0, sizeof(demoMode->pointLightData), sizeof(demoMode->pointLightMVP), demoMode->pointLightMVP);
 	//...
 }
 
@@ -131,24 +132,13 @@ void a3ssfx_update_scene(a3_DemoState* demoState, a3_DemoMode2_SSFX* demoMode, a
 		//			projection matrix to arrive at a proper MVP for each light)
 		// update and transform light matrix --> bring into projection space (MVP = P * MV)
 
-		// Make the model view matrix		//Scale is radius of unit sphere, position is already calculated in pointLightData->position.v
-		//Manual way
-		//a3real4x4r lightMV = {
-		//	pointLightData->radius, 0.0, 0.0, pointLightData->position.x,
-		//	0.0, pointLightData->radius, 0.0, pointLightData->position.y,
-		//	0.0, 0.0, pointLightData->radius, pointLightData->position.z,
-		//	0.0, 0.0, 0.0, 1.0
-		//};
-
-		//Automatic way
+		//Scale is radius of unit sphere, position is already calculated in pointLightData->position.v
 		a3real4x4r lightMVMat = a3real4x4SetScale(projector->sceneObjectPtr->modelMatrixStackPtr->modelMatInverse.m, pointLightData->radius);
 
 		//Projection matrix
 		a3real4x4r lightProj = projector->projectorMatrixStackPtr->projectionMat.m;
 
 		//Final MVP matrix
-		//pointLightMVP->m = a3real4x4ConcatL(lightProj, lightMVMat);
-		//a3real4x4Product(pointLightMVP, lightProj, lightMV);
 		a3real4x4Product(pointLightMVP->m, lightProj, lightMVMat);
 	}
 }

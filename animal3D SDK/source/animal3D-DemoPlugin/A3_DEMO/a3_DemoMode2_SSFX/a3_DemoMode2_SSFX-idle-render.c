@@ -329,7 +329,26 @@ void a3ssfx_render(a3_DemoState const* demoState, a3_DemoMode2_SSFX const* demoM
 		// draw light volumes
 	/*	currentDemoProgram = demoState->prog_drawPhongPointLight_instanced;
 		a3shaderProgramActivate(currentDemoProgram->program);
-		//...*/
+
+		//Activate pertinent textures (outputs from previous passes)
+		a3textureActivate(demoState->tex_atlas_dm, a3tex_unit00);
+		//a3textureActivate(demoState->tex_atlas_sm, a3tex_unit01);
+		a3textureActivate(demoState->tex_atlas_nm, a3tex_unit01);	//Used to be 02
+		//a3textureActivate(demoState->tex_atlas_hm, a3tex_unit03);
+		
+		//for (currentSceneObject = demoMode->obj_sphere, endSceneObject = demoMode->obj_ground;
+		//currentSceneObject <= endSceneObject; ++currentSceneObject)
+		//{
+		//	// send index as uniform and draw; all other model data is shared
+		//	j = ;
+		//	a3shaderUniformSendInt(a3unif_single, currentDemoProgram->uIndex, 1, &j);
+		//	a3vertexDrawableActivateAndRender(drawable[j]);
+		//}
+		 
+		//Activate and send pertinent uniform blocks and values
+		//a3shaderUniformBufferActivate(demoState->ubo_light, )
+		//...
+		*/
 
 		currentWriteFBO = writeFBO[ssfx_renderPassLights];
 		a3framebufferActivate(currentWriteFBO);
