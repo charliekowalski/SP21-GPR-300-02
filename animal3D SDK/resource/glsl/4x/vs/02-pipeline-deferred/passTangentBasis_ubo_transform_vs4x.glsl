@@ -26,13 +26,13 @@
 
 #define MAX_OBJECTS 128
 
-// ****TO-DO:
+// ****DONE?:
 //	-> declare attributes related to lighting
-//		(hint: normal [2], texcoord [8], tangent [10], bitangent [11])				done
+//		(hint: normal [2], texcoord [8], tangent [10], bitangent [11])
 //	-> declare view-space varyings related to lighting
-//		(hint: one per attribute)													done
+//		(hint: one per attribute)
 //	-> calculate final clip-space position and view-space varyings
-//		(hint: complete tangent basis [TBNP] transformed to view-space)				what is this?
+//		(hint: complete tangent basis [TBNP] transformed to view-space)
 //		(hint: texcoord transformed to atlas coordinates in a similar fashion)
 
 //Attributes
@@ -41,8 +41,8 @@ layout (location = 2) in vec3 aNormal;
 layout (location = 8) in vec4 aTexcoord;
 
 //Whatever we do to normal, do to tan and bitan (not really required, screen-space stuff is more important)
-layout (location = 10) in vec4 aTangent;		//Related to normal (part of tangent basis)
-layout (location = 11) in vec4 aBiTangent;		//Related to normal (part of tangent basis)
+layout (location = 10) in vec3 aTangent;		//
+layout (location = 11) in vec3 aBiTangent;		//biTangent = Cross(Normal, Tangent) (blue book p. 630)
 
 struct sModelMatrixStack
 {
@@ -68,8 +68,8 @@ flat out int vInstanceID;
 out vec4 vPosition;
 out vec4 vNormal;		//Converted to vec4
 out vec4 vTexcoord;
-out vec4 vTangent;
-out vec4 vBiTangent;
+out vec4 vTangent;		//Converted to vec4
+out vec4 vBiTangent;	//Converted to vec4
 
 //Screen-space position (from pyramid space to cube) - perspective divide
 out vec4 vPosition_screen;
@@ -96,6 +96,8 @@ void main()
 
 	//Convert nomal to viewer skewed space (keeps normals perpendicular to surface)
 	vNormal = uModelMatrixStack[uIndex].modelViewMatInverseTranspose * vec4(aNormal, 0.0);	//0 for w component, they do NOT rotate, only move
+	vTangent = uModelMatrixStack[uIndex].modelViewMatInverseTranspose * vec4(aTangent, 0.0);	//0 for w component, they do NOT rotate, only move
+	vBiTangent = uModelMatrixStack[uIndex].modelViewMatInverseTranspose * vec4(cross(aNormal, aTangent), 0.0);	//0 for w component, they do NOT rotate, only move
 
 	vVertexID = gl_VertexID;
 	vInstanceID = gl_InstanceID;

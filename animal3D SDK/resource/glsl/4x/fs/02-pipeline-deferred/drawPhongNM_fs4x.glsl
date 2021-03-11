@@ -26,11 +26,11 @@
 // ****TO-DO:
 //	-> declare view-space varyings from vertex shader
 //	-> declare point light data structure and uniform block
-//	-> declare uniform samplers (diffuse, specular & normal maps)
-//	-> calculate final normal by transforming normal map sample
+//	-> declare uniform samplers (diffuse, specular & normal maps)				//COME BACK
+//	-> calculate final normal by transforming normal map sample					//Deserialize it somehow (like presentation)
 //	-> calculate common view vector
 //	-> declare lighting sums (diffuse, specular), initialized to zero
-//	-> implement loop in main to calculate and accumulate light
+//	-> implement loop in main to calculate and accumulate light					//Here
 //	-> calculate and output final Phong sum
 
 uniform int uCount;
@@ -39,6 +39,30 @@ layout (location = 0) out vec4 rtFragColor;
 
 // location of viewer in its own space is the origin
 const vec4 kEyePos_view = vec4(0.0, 0.0, 0.0, 1.0);
+
+//Varying from VS
+in vec4 vPosition;
+in vec4 vNormal;		//Converted to vec4
+in vec4 vTexcoord;
+in vec4 vTangent;		//Converted to vec4
+in vec4 vBiTangent;	//Converted to vec4
+
+//Simple point light uniform block
+struct a3_PointLightData
+{
+	vec4 position;						// position in rendering target space
+	vec4 worldPos;						// original position in world space
+	vec4 color;							// RGB color with padding
+	float radius;						// radius (distance of effect from center)
+	float radiusSq;						// radius squared (if needed)
+	float radiusInv;					// radius inverse (attenuation factor)
+	float radiusInvSq;					// radius inverse squared (attenuation factor)
+} pointLight;
+
+//Samplers																								//FIND THE NUMBERS, MASON
+layout (binding = 0) uniform sampler2D tex_diffuse;
+layout (binding = 1) uniform sampler2D tex_Specular;
+layout (binding = 2) uniform sampler2D tex_NM;
 
 // declaration of Phong shading model
 //	(implementation in "utilCommon_fs4x.glsl")
@@ -60,5 +84,16 @@ void calcPhongPoint(
 void main()
 {
 	// DUMMY OUTPUT: all fragments are OPAQUE MAGENTA
-	rtFragColor = vec4(1.0, 0.0, 1.0, 1.0);
+//	rtFragColor = vec4(1.0, 0.0, 1.0, 1.0);
+
+	//Calculate final normal
+//	vec3 N = normalize(texture(tex_NM, vTexcoord.xy).rgb * 2.0 - vec3(1.0));	//Blue book page 632
+	vec3 N = (texture2D(tex_NM, vTexcoord.xy).rgb);	//Presentation - Lecture 10 nm pom - page 10
+
+	//Calculate common view vector
+	vec4 vecFragToEyeNormalized = normalize(kEyePos_view - vPosition);
+
+	//Lighting sums (fidduse and specular)
+	vec4 diffuseLighting = vec4(0.0, 0.0, 0.0, 0.0);
+	vec4 specularLighting = vec4(0.0, 0.0, 0.0, 0.0);
 }
