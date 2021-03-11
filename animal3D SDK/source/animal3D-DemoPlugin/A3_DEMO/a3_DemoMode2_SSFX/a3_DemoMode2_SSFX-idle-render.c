@@ -321,34 +321,24 @@ void a3ssfx_render(a3_DemoState const* demoState, a3_DemoMode2_SSFX const* demoM
 	{
 		// ****TO-DO:
 		//	-> uncomment deferred shading program and diffuse texture activations
-		//	-> activate pertinent textures for deferred lighting composition
+		//	-> activate pertinent textures for deferred lighting composition					normals and depth from the scene... like in deferred shading	no atlases, already written out normals to gbuffer
 		//		(hint: all outputs from previous passes)
-		//	-> activate and send pertinent uniform blocks and values
+		//	-> activate and send pertinent uniform blocks and values							final pass is compositing and implementing phong sum		this part gives is the light part, colour is in the altases, not relevant here
 		//		(hint: light buffer, light transforms, inverse bias-projection)
-		//		(hint: inverse bias-projection variable is commented out above)
-		// draw light volumes
-	/*	currentDemoProgram = demoState->prog_drawPhongPointLight_instanced;
+		//		(hint: inverse bias-projection variable is commented out above)			look a lot like ds, save stuff for third pass, not rendering rectangle, but a set of spheres
+		// draw light volumes															this is the additional step on a per-sphere basis, third pass puts it all together later
+		currentDemoProgram = demoState->prog_drawPhongPointLight_instanced;									//HERE PLS
 		a3shaderProgramActivate(currentDemoProgram->program);
 
+		//Drawing is writing to a frame buffer, activating is not that, we want to pull stuff stuff out of the texture (we did this before)
 		//Activate pertinent textures (outputs from previous passes)
-		a3textureActivate(demoState->tex_atlas_dm, a3tex_unit00);
-		//a3textureActivate(demoState->tex_atlas_sm, a3tex_unit01);
-		a3textureActivate(demoState->tex_atlas_nm, a3tex_unit01);	//Used to be 02
-		//a3textureActivate(demoState->tex_atlas_hm, a3tex_unit03);
-		
-		//for (currentSceneObject = demoMode->obj_sphere, endSceneObject = demoMode->obj_ground;
-		//currentSceneObject <= endSceneObject; ++currentSceneObject)
-		//{
-		//	// send index as uniform and draw; all other model data is shared
-		//	j = ;
-		//	a3shaderUniformSendInt(a3unif_single, currentDemoProgram->uIndex, 1, &j);
-		//	a3vertexDrawableActivateAndRender(drawable[j]);
-		//}
+		a3textureActivate(demoState->prog_drawGBuffers->uTex_nm, a3tex_unit00);
+		a3textureActivate(demoState->prog_drawGBuffers->uTex_dm, a3tex_unit01);	//Used to be 02
 		 
 		//Activate and send pertinent uniform blocks and values
-		//a3shaderUniformBufferActivate(demoState->ubo_light, )
+		//a3shaderUniformBlockBind(currentDemoProgram, , uPB_inv)
 		//...
-		*/
+		
 
 		currentWriteFBO = writeFBO[ssfx_renderPassLights];
 		a3framebufferActivate(currentWriteFBO);
@@ -360,7 +350,7 @@ void a3ssfx_render(a3_DemoState const* demoState, a3_DemoMode2_SSFX const* demoM
 		currentDemoProgram = demoState->prog_drawPhongPointLight_instanced;
 		a3shaderProgramActivate(currentDemoProgram->program);
 		//... invert and additive
-		a3vertexDrawableActivateAndRenderInstanced(demoState->draw_unit_sphere, ssfxMaxCount_pointLight);
+		a3vertexDrawableActivateAndRenderInstanced(demoState->draw_unit_sphere, ssfxMaxCount_pointLight);	//Rendering a bunch of spheres
 		//... undo invert and additive
 	}
 

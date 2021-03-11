@@ -32,15 +32,17 @@
 //	-> declare view-space varyings related to lighting
 //		(hint: one per attribute)													done
 //	-> calculate final clip-space position and view-space varyings
-//		(hint: complete tangent basis [TBNP] transformed to view-space)
+//		(hint: complete tangent basis [TBNP] transformed to view-space)				what is this?
 //		(hint: texcoord transformed to atlas coordinates in a similar fashion)
 
 //Attributes
 layout (location = 0) in vec4 aPosition;
 layout (location = 2) in vec3 aNormal;
 layout (location = 8) in vec4 aTexcoord;
-layout (location = 10) in vec4 aTangent;
-layout (location = 11) in vec4 aBiTangent;
+
+//Whatever we do to normal, do to tan and bitan (not really required, screen-space stuff is more important)
+layout (location = 10) in vec4 aTangent;		//Related to normal (part of tangent basis)
+layout (location = 11) in vec4 aBiTangent;		//Related to normal (part of tangent basis)
 
 struct sModelMatrixStack
 {
