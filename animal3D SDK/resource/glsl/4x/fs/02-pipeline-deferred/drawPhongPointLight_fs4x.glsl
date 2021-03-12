@@ -86,6 +86,6 @@ void main()
 	vec4 specularSample = texture(uImage01, screenCoord.xy);
 
 	//Final diffuse and specular
-	rtDiffuseLight = ointLightData.color * diffuseSample
-	rtSpecularLight = ointLightData.color * specularSample;
+	rtDiffuseLight = pointLightData.color * diffuseSample
+	rtSpecularLight = pointLightData.color * specularSample;
 }

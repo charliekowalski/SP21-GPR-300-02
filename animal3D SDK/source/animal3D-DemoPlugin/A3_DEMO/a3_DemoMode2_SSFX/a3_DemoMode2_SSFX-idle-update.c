@@ -136,13 +136,11 @@ void a3ssfx_update_scene(a3_DemoState* demoState, a3_DemoMode2_SSFX* demoMode, a
 		//We want to make a new modelView matrix, do not overwrite the modelMatInverse.m
 
 		//Append position
-		
+		//lightMVMat;
 
-		//Make it from scratch
-		//a3real4x4p lightMVMat = pointLightMVP;
-			
-		a3real4x4p lightMVMat = {
-		   pointLightData->radius * 100, 0.0, 0.0, pointLightData->position.x,
+		//Scale (diagonal) is the unit sphere's radius
+		a3real4x4 lightMVMat = {
+		   pointLightData->radius, 0.0, 0.0, pointLightData->position.x,
 		   0.0, pointLightData->radius, 0.0, pointLightData->position.y,
 		   0.0, 0.0, pointLightData->radius, pointLightData->position.z,
 		   0.0, 0.0, 0.0, 1.0

@@ -24,7 +24,7 @@
 
 #version 450
 
-// ****TO-DO:
+// ****DONE?:
 //	-> declare samplers containing results of light pre-pass
 //	-> declare samplers for texcoords, diffuse and specular maps
 //	-> implement Phong sum with samples from the above
@@ -37,12 +37,19 @@ layout (binding = 0) uniform sampler2D diffuseLight;
 layout (binding = 1) uniform sampler2D specularLight;
 
 //Samplers for texcoords, diffuse and specular maps
+layout (binding = 2) uniform sampler2D texcoordsSampler;	//What de fuk?
+layout (binding = 3) uniform sampler2D diffuseMap;		//For colour
+layout (binding = 4) uniform sampler2D specularMap;		//For colour
 
+//Ambient
+uniform float ambientValue;
 
 layout (location = 0) out vec4 rtFragColor;
 
 void main()
 {
-	// DUMMY OUTPUT: all fragments are OPAQUE AQUA
-	rtFragColor = vec4(0.0, 1.0, 0.5, 1.0);
+	//Phong sum = (diffuse light)(diffuse color)  + (specular light)(specular color) + (dim ambient constant color)
+	rtFragColor = (texture2D(diffuseLight, vTexcoord_atlas.xy) * texture2D(diffuseMap, vTexcoord_atlas.xy))
+		+ (texture2D(specularLight, vTexcoord_atlas.xy) * texture2D(specularMap, vTexcoord_atlas.xy))
+		+ ambientValue;
 }

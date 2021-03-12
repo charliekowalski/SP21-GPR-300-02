@@ -319,7 +319,7 @@ void a3ssfx_render(a3_DemoState const* demoState, a3_DemoMode2_SSFX const* demoM
 
 	if (renderMode == ssfx_renderModePhongDL)
 	{
-		// ****TO-DO:
+		// ****DONE?:
 		//	-> uncomment deferred shading program and diffuse texture activations
 		//	-> activate pertinent textures for deferred lighting composition					normals and depth from the scene... like in deferred shading	no atlases, already written out normals to gbuffer
 		//		(hint: all outputs from previous passes)
@@ -333,12 +333,12 @@ void a3ssfx_render(a3_DemoState const* demoState, a3_DemoMode2_SSFX const* demoM
 		//Drawing is writing to a frame buffer, activating is not that, we want to pull stuff stuff out of the texture (we did this before)
 		//Activate pertinent textures (outputs from previous passes)
 		a3textureActivate(demoState->prog_drawGBuffers->uTex_nm, a3tex_unit00);
-		a3textureActivate(demoState->prog_drawGBuffers->uTex_dm, a3tex_unit01);	//Used to be 02
+		a3textureActivate(demoState->prog_drawGBuffers->uTex_dm, a3tex_unit01);
 		 
 		//Activate and send pertinent uniform blocks and values
-		//a3shaderUniformBlockBind(currentDemoProgram, , uPB_inv)
-		//...
-		
+		a3shaderUniformSendFloatMat(a3unif_mat4, 0, currentDemoProgram->ubLight, 1, demoState->ubo_light);
+		a3shaderUniformSendFloatMat(a3unif_mat4, 0, currentDemoProgram->ubLight, 1, demoState->ubo_transform);
+		a3shaderUniformSendFloatMat(a3unif_mat4, 0, currentDemoProgram->uPB_inv, 1, projectionBiasMatInv.mm);		
 
 		currentWriteFBO = writeFBO[ssfx_renderPassLights];
 		a3framebufferActivate(currentWriteFBO);
