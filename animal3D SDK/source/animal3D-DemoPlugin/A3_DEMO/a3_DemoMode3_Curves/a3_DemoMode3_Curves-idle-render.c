@@ -112,12 +112,22 @@ a3ret a3vertexDrawableRenderIsoPatches(a3ui32 const count)
 {
 	if (count)
 	{
-		// ****TO-DO: 
+		// ****DONE - IN-CLASS: 
 		//	-> set patch vertices parameter for isolines
 		//	-> disable anything that would result in a VAO, VBO and/or IBO based render
 		//	-> invoke rendering enough vertices to cover all path segments
 		// force isoline patches
 
+		//Define a patch
+		glPatchParameteri(GL_PATCH_VERTICES, 2);
+
+		//We are drawing from thin air, nowhere else --> turn off the rest
+		glBindVertexArray(0);	//No geometry description
+		glBindBuffer(GL_ARRAY_BUFFER, 0);	//No array buffer
+		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);	//No element array buffer
+
+		//Draw vertices
+		glDrawArrays(GL_PATCHES, 0, 2 * count);	//We are drawing patches (we cannot re-use a vertex for line segments that share a vertex)
 		return 1;
 	}
 	return -1;

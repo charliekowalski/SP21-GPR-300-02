@@ -33,7 +33,7 @@ layout (isolines, equal_spacing) in;
 
 uniform mat4 uP;
 
-out vec4 vColor;
+out vec4 vColor;	//Fragment shader after this reads colour and outputs it
 
 void main()
 {

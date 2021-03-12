@@ -24,14 +24,16 @@
 
 #version 450
 
-// ****TO-DO: 
+// ****DONE - IN-CLASS: 
 //	-> set tessellation levels, adjust as needed
 
-layout (vertices = 2) out;
+layout (vertices = 2) out;	//Specifying what a patch is (idle-render glPatchParameteri(GL_PATCH_VERTICES, 2); might not be needed!)
 
-uniform vec2 uLevelOuter;
+uniform vec2 uLevelOuter;	//Sets rules in application (that is why it is a uniform)
 
 void main()
 {
-	
+	//Set the rules
+	gl_TessLevelOuter[0] = uLevelOuter[0];	//How many lines
+	gl_TessLevelOuter[1] = uLevelOuter[1];	//How many subdivisions
 }
