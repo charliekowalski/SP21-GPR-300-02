@@ -53,7 +53,7 @@ uniform sampler2D uImage07;		//Depth g-buffer
 //Testing, NOT NEEDED
 //uniform sampler2D uImage02, uImage03;	//Normal, height map
 
-uniform sPointLightData
+uniform ubLight
 {
 	vec4 position;						// position in rendering target space
 	vec4 worldPos;						// original position in world space
