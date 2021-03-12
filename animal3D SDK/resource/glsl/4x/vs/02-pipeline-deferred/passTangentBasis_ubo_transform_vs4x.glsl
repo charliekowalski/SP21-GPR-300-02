@@ -55,6 +55,7 @@ struct sModelMatrixStack
 	mat4 modelViewProjectionMat;		// model-view-projection matrix (object -> clip)
 	mat4 atlasMat;						// atlas matrix (texture -> cell)
 };
+
 uniform ubTransformStack
 {
 	sModelMatrixStack uModelMatrixStack[MAX_OBJECTS];

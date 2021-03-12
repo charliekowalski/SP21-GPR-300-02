@@ -87,7 +87,7 @@ void main()
 //	rtFragColor = vec4(1.0, 0.0, 1.0, 1.0);
 
 	//Calculate final normal
-//	vec3 N = normalize(texture(tex_NM, vTexcoord.xy).rgb * 2.0 - vec3(1.0));	//Blue book page 632
+//	vec3 N = normalize(texture(tex_NM, vTexcoord.xy).rgb * 2.0 - vec3(1.0));	//Blue book page 632, and 671
 	vec3 N = (texture2D(tex_NM, vTexcoord.xy).rgb);	//Presentation - Lecture 10 nm pom - page 10
 
 	//Calculate common view vector

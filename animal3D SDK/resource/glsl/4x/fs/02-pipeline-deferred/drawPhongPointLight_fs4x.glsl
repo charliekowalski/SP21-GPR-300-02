@@ -26,7 +26,7 @@
 
 #define MAX_LIGHTS 1024
 
-// ****TO-DO:
+// ****DONE?:
 //	-> declare biased clip coordinate varying from vertex shader
 //	-> declare point light data structure and uniform block
 //	-> declare pertinent samplers with geometry data ("g-buffers")
@@ -36,7 +36,6 @@
 //	-> calculate view-space fragment position using depth sample
 //		(hint: same as deferred shading)
 //	-> calculate final diffuse and specular shading for current light only
-
 //DO NOT DO A LOOP, ONE LIGHT PER SPHERE
 
 flat in int vInstanceID;
@@ -45,8 +44,48 @@ flat in int vInstanceID;
 layout (location = 0) out vec4 rtDiffuseLight;
 layout (location = 1) out vec4 rtSpecularLight;
 
+//Biased clip-space position varying
+in vec4 vBiasedClipSpacePosition;
+
+uniform sPointLightData
+{
+	vec4 position;						// position in rendering target space
+	vec4 worldPos;						// original position in world space
+	vec4 color;							// RGB color with padding
+	float radius;						// radius (distance of effect from center)
+	float radiusSq;						// radius squared (if needed)
+	float radiusInv;					// radius inverse (attenuation factor)
+	float radiusInvSq;					// radius inverse squared (attenuation factor)
+} pointLightData;
+
+uniform mat4 uPB_inv;
+
+uniform sampler2D uImage00;		//The diffuse atlas //Found in the shader utility header
+uniform sampler2D uImage01;		//The specular atlas
+
+uniform sampler2D uImage04;		//Texcoord g-buffer
+uniform sampler2D uImage05;		//Normal g-buffer
+//uniform sampler2D uImage06;		//Position g-buffer ---- NOT NEEDED
+uniform sampler2D uImage07;		//Depth g-buffer
+
 void main()
 {
-	// DUMMY OUTPUT: all fragments are OPAQUE MAGENTA
-	rtDiffuseLight = vec4(1.0, 0.0, 1.0, 1.0);
+	//Perspective-divide (we are NOT bringing it to screen-space, it is in clip, but the hint just say perspective divide, we will trust that that is enough)
+	vec4 screenCoord = vBiasedClipSpacePosition / vBiasedClipSpacePosition.w;
+
+	//Screen-space pos (used for the view-space pos)
+	vec4 position_screen = vTexcoord_atlas;
+	position_screen.z = texture(uImage07, vTexcoord_atlas.xy).r;
+
+	//View-space pos
+	vec4 position_view = uPB_inv * position_screen;
+	position_view /= position_view.w;	//Reverse perspective-divide
+
+	//For final diffuse and specular
+	vec4 diffuseSample = texture(uImage00, screenCoord.xy);
+	vec4 specularSample = texture(uImage01, screenCoord.xy);
+
+	//Final diffuse and specular
+	rtDiffuseLight = ointLightData.color * diffuseSample
+	rtSpecularLight = ointLightData.color * specularSample;
 }

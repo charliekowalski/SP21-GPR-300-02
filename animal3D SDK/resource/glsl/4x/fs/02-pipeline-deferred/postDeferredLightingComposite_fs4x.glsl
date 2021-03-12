@@ -32,6 +32,13 @@
 
 in vec4 vTexcoord_atlas;
 
+//Samplers for lighting pre-passes
+layout (binding = 0) uniform sampler2D diffuseLight;
+layout (binding = 1) uniform sampler2D specularLight;
+
+//Samplers for texcoords, diffuse and specular maps
+
+
 layout (location = 0) out vec4 rtFragColor;
 
 void main()

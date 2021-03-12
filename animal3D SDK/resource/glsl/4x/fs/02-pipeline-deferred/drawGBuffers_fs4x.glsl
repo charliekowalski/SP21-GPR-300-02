@@ -24,7 +24,7 @@
 
 #version 450
 
-// ****TO-DO:
+// ****DONE?:
 //	-> declare view-space varyings from vertex shader
 //	-> declare MRT for pertinent surface data (incoming attribute info)
 //		(hint: at least normal and texcoord are needed)
@@ -39,6 +39,9 @@ layout (location = 1) out vec4 rtNormal;
 layout (location = 3) out vec4 rtPosition;
 //We also have depth, but it is not a target
 
+//Normal map sampler
+layout (binding = 2) uniform sampler2D tex_NM;																//The numbers, Mason
+
 //Varyings
 in vec4 vPosition;
 in vec4 vNormal;
@@ -52,6 +55,5 @@ void main()
 //	rtFragColor = vec4(1.0, 0.0, 1.0, 1.0);
 	rtTexcoord = vTexcoord;
 	rtNormal = vec4(normalize(vNormal.xyz) * 0.5 + 0.5, 1.0); 	//Pack normal from -1 -> 1 space to 0 -> 1, normalize it
-	//rtPosition = vPosition;
 	rtPosition = vPosition_screen / vPosition_screen.w;	//Perspective-divide (convert from pyramid-shaped clip space to box-shaped screen space)
 }

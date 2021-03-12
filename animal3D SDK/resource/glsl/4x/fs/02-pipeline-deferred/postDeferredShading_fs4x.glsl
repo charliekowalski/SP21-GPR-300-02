@@ -47,14 +47,26 @@ uniform sampler2D uImage01;		//The specular atlas
 
 uniform sampler2D uImage04;		//Texcoord g-buffer
 uniform sampler2D uImage05;		//Normal g-buffer
-//uniform sampler2D uImage06;		//Position g-buffer
+//uniform sampler2D uImage06;		//Position g-buffer ---- NOT NEEDED
 uniform sampler2D uImage07;		//Depth g-buffer
 
 //Testing, NOT NEEDED
 //uniform sampler2D uImage02, uImage03;	//Normal, height map
 
+uniform sPointLightData
+{
+	vec4 position;						// position in rendering target space
+	vec4 worldPos;						// original position in world space
+	vec4 color;							// RGB color with padding
+	float radius;						// radius (distance of effect from center)
+	float radiusSq;						// radius squared (if needed)
+	float radiusInv;					// radius inverse (attenuation factor)
+	float radiusInvSq;					// radius inverse squared (attenuation factor)
+} pointLightData;
+
 uniform int uCount;
 uniform mat4 uPB_inv;
+float ambient = 0.25;
 
 layout (location = 0) out vec4 rtFragColor;
 
@@ -73,7 +85,7 @@ void main()
 
 	//View-space pos
 	vec4 position_view = uPB_inv * position_screen;
-	position_view /= position_view.w;	//Reverse pers[ectove-divide
+	position_view /= position_view.w;	//Reverse perspective-divide
 
 	//Normal
 	vec4 normal = texture(uImage05, vTexcoord_atlas.xy);
@@ -84,21 +96,23 @@ void main()
 	//	+ diffuse colour * diffuse light
 	//	+ specular colour * specular light
 	//We have:
-	//	-> diffse and specular colours
-	//We do not have:
+	//	-> diffuse and specular colours
 	//	-> light stuff
 	//		-> light data -> light data struct -> uniform buffer
 	//		-> normals, position, depth -> geometry buffers!!!
 	//	-> texture coordinates -> g-buffer
 	
 	//DEBUGGING
-	rtFragColor = diffuseSample;
+	//rtFragColor = diffuseSample;									//We used this in class
 //	rtFragColor = position_screen;
-	rtFragColor = position_view;
+	//rtFragColor = position_view;									//We used this in class
 //	rtFragColor = texture(uImage04, vTexcoord_atlas.xy);
 //	rtFragColor = texture(uImage05, vTexcoord_atlas.xy);
 //	rtFragColor = texture(uImage06, vTexcoord_atlas.xy);
 //	rtFragColor = texture(uImage07, vTexcoord_atlas.xy);
+
+	//Final Phong composite kd * diffuse + ks * specular
+	rtFragColor = ambient + pointLightData.color * diffuseSample + pointLightData.color * specularSample;
 
 	//Final transparency
 	rtFragColor.a = diffuseSample.a;
