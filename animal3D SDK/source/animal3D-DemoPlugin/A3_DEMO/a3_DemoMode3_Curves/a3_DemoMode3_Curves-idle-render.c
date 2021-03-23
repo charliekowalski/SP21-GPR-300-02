@@ -119,7 +119,7 @@ a3ret a3vertexDrawableRenderIsoPatches(a3ui32 const count)
 		// force isoline patches
 
 		//Define a patch
-		glPatchParameteri(GL_PATCH_VERTICES, 2);
+		glPatchParameteri(GL_PATCH_VERTICES, 2);	//2 verts
 
 		//We are drawing from thin air, nowhere else --> turn off the rest
 		glBindVertexArray(0);	//No geometry description

@@ -29,13 +29,29 @@
 //	-> implement spline interpolation algorithm based on scene object's path
 //	-> interpolate along curve using correct inputs and project result
 
-layout (isolines, equal_spacing) in;
+layout (isolines, equal_spacing) in;	//All subdivisions are equal space apart
 
 uniform mat4 uP;
+
+uniform ubCurve
+{
+	vec4 uCurveWaypoint[32];
+	vec4 uCurveTangent[32];
+};
+
+uniform int uCount;	//Num of segments
 
 out vec4 vColor;	//Fragment shader after this reads colour and outputs it
 
 void main()
 {
+	int index0 = gl_PrimitiveID;	//Start waypoint index for this segment
+	int index1 = (index0 + 1) % uCount;	//End waypoint index for this segment (make sure not to go over length of array)
+	float t = gl_TessCoord.x;	//gl_TessCoord.x is 0 to 1, tells us how far along the line we are, good for LERP
+	vec4 p = mix(uCurveWaypoint[index0], uCurveWaypoint[index1], t);	//WE HAVE TO IMPLEMENT A CURVE SAMPLER, DO NOT USE MIX
+//	vec4 p = vec4(gl_TessCoord.xy, -1.0, 1.0);	//Near plane is -1
 	
+	gl_Position = uP * p;
+
+	vColor = vec4(0.5, 0.5, t, 1.0);
 }
