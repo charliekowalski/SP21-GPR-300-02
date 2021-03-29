@@ -59,7 +59,21 @@ void a3curves_update_animation(a3_DemoState* demoState, a3_DemoMode3_Curves* dem
 		//	-> update the animation timer
 		//		(hint: check if we've surpassed the segment's duration)
 		// teapot follows curved path
+		for (int i = 0; i < demoMode->curveWaypointCount; i++)
+		{
+			//demoMode->curveWaypoint stores the waypoints to move the object to
+			a3real4* p0 = demoMode->curveWaypoint[i].v;
+			a3real4* p1 = demoMode->curveWaypoint[(i + 1) % demoMode->curveWaypointCount].v;
+			a3real4* diff = a3real4Sub(p1, p0);
 
+			a3real4Sum(sceneObjectData->position.v, p0, a3real4MulS(diff, demoMode->curveSegmentParam));
+			//sceneObjectData->position = a3lerp(p0, p1, demoMode->curveSegmentParam);
+
+			demoMode->curveSegmentTime += dt;
+
+			if (demoMode->curveSegmentTime >= demoMode->curveSegmentDuration)
+				return;
+		}
 	}
 }
 
