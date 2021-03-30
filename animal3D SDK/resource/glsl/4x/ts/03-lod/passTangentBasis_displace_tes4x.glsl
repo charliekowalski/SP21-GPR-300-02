@@ -47,5 +47,6 @@ out vbVertexData {
 
 void main()
 {
+	//gl_TessCoord = 
 	//gl_Position = ???
 }

@@ -69,6 +69,7 @@ void a3curves_update_animation(a3_DemoState* demoState, a3_DemoMode3_Curves* dem
 			a3real4Sum(sceneObjectData->position.v, p0, a3real4MulS(diff, demoMode->curveSegmentParam));
 			//sceneObjectData->position = a3lerp(p0, p1, demoMode->curveSegmentParam);
 
+			//CHANGE THIS STUFF ACCORDING TO NOTES FROM CLASS, ALSO DO INTERPOLATION AFTER THIS
 			demoMode->curveSegmentTime += dt;
 
 			if (demoMode->curveSegmentTime >= demoMode->curveSegmentDuration)

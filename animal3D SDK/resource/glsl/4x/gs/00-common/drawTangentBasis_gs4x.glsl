@@ -42,12 +42,48 @@
 #define MAX_VERTICES 32
 
 layout (triangles) in;
+//gl_in[3] --> array of verts passed in from passTangentBasis_ubo_transform_vs4x.glsl
+
+in vbVertexData {
+	mat4 vTangentBasis_view;
+	vec4 vTexcoord_atlas;
+} vVertexData[];	//From same VS!
 
 layout (line_strip, max_vertices = MAX_VERTICES) out;
 
 out vec4 vColor;
 
+void drawWireframe()
+{
+	//Get vertex information
+	//Draw vertices (v0, v1, v2, v0)
+
+	//Red first line
+	vColor = vec4 (1.0, 0.0, 0.0, 1.0);
+	gl_Position = gl_in[0].gl_Position;
+	EmitVertex();
+	gl_Position = gl_in[1].gl_Position;
+	EmitVertex();
+	EndPrimitive();
+	
+	//Green second line
+	vColor = vec4 (0.0, 1.0, 0.0, 1.0);
+	gl_Position = gl_in[1].gl_Position;
+	EmitVertex();
+	gl_Position = gl_in[2].gl_Position;
+	EmitVertex();
+	EndPrimitive();
+
+	//Blue third line
+	vColor = vec4 (0.0, 0.0, 1.0, 1.0);
+	gl_Position = gl_in[2].gl_Position;
+	EmitVertex();
+	gl_Position = gl_in[0].gl_Position;
+	EmitVertex();
+	EndPrimitive();
+}
+
 void main()
 {
-	
+	drawWireframe();
 }
