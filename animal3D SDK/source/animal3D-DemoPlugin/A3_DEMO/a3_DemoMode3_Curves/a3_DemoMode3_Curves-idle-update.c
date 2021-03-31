@@ -59,21 +59,37 @@ void a3curves_update_animation(a3_DemoState* demoState, a3_DemoMode3_Curves* dem
 		//	-> update the animation timer
 		//		(hint: check if we've surpassed the segment's duration)
 		// teapot follows curved path
-		for (int i = 0; i < demoMode->curveWaypointCount; i++)
+
+		a3ui32 startIndex = 0;
+		a3ui32 endIndex = startIndex + 1;
+
+		for (a3ui32 i = startIndex + 1; i < demoMode->curveWaypointCount; i++)
 		{
-			//demoMode->curveWaypoint stores the waypoints to move the object to
-			a3real4* p0 = demoMode->curveWaypoint[i].v;
-			a3real4* p1 = demoMode->curveWaypoint[(i + 1) % demoMode->curveWaypointCount].v;
-			a3real4* diff = a3real4Sub(p1, p0);
-
-			a3real4Sum(sceneObjectData->position.v, p0, a3real4MulS(diff, demoMode->curveSegmentParam));
-			//sceneObjectData->position = a3lerp(p0, p1, demoMode->curveSegmentParam);
-
 			//CHANGE THIS STUFF ACCORDING TO NOTES FROM CLASS, ALSO DO INTERPOLATION AFTER THIS
-			demoMode->curveSegmentTime += dt;
+			demoMode->curveSegmentTime += (a3f32)dt;
 
 			if (demoMode->curveSegmentTime >= demoMode->curveSegmentDuration)
-				return;
+			{
+				demoMode->curveSegmentTime -= demoMode->curveSegmentDuration;
+				startIndex = endIndex;
+				endIndex = (startIndex + i) % demoMode->curveWaypointCount;
+			}
+
+			//demoMode->curveWaypoint stores the waypoints to move the object to
+			a3real* p0 = demoMode->curveWaypoint[startIndex].v;
+			a3real* p1 = demoMode->curveWaypoint[endIndex].v;
+
+			a3real u = demoMode->curveSegmentTime * demoMode->curveSegmentDurationInv;
+			//a3real* diff = a3real4Sub(p1, p0);
+
+			//a3real4Sum(sceneObjectData->position.v, p0, a3real4MulS(diff, u));
+			//a3real* lerpedPos = a3real4Add(p0, a3real4MulS(diff, u));
+			//sceneObjectData->position.v = lerpedPos;
+			//float zeLerp = a3lerp(*p0, *p1, u);
+			//a3vec4 lerpedPos;
+			//lerpedPos = a3vec4(zeLerp, zeLerp, zeLerp, 1.0f);
+			//sceneObjectData->position.v = lerpedPos;
+			/*sceneObjectData->position = */a3real3Lerp(sceneObjectData->position.v, p0, p1, u);
 		}
 	}
 }
