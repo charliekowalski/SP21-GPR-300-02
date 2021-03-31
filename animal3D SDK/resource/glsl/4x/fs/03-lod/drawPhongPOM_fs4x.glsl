@@ -60,10 +60,25 @@ void calcPhongPoint(out vec4 diffuseColor, out vec4 specularColor, in vec4 eyeVe
 	
 vec3 calcParallaxCoord(in vec3 coord, in vec3 viewVec, const int steps)
 {
-	// ****TO-DO:
+	// ****DONE?:
 	//	-> step along view vector until intersecting height map
 	//	-> determine precise intersection point, return resulting coordinate
-	
+
+	//Lecture: lecture10 nm pom
+	//Lerp on the ray
+	float dt =  1.0 / steps;
+	vec3 ct = mix(coord, coord + viewVec, dt);
+
+	//Sample the height map
+	vec4 heightMap = texture(uTex_hm, vTexcoord_atlas.xy);
+
+	//If the ray height < bump map height
+	if (ct.y < heightMap.y)
+	{
+		//"Save" that coordinate
+		coord = ct;
+	}
+
 	// done
 	return coord;
 }
@@ -89,10 +104,14 @@ void main()
 	//		(hint: the above TBN bases convert tangent to view, figure out 
 	//		an efficient way of representing the required matrix operation)
 	// tangent-space view vector
+	mat4 tbn = mat4 (
+		tan_view,
+		bit_view,
+		nrm_view,
+		0.0, 0.0, 0.0, 1.0);
+
 	vec3 viewVec_tan = vec3(
-		0.0,
-		0.0,
-		0.0
+		inverse(tbn) * viewVec
 	);
 	
 	// parallax occlusion mapping
