@@ -63,33 +63,25 @@ void a3curves_update_animation(a3_DemoState* demoState, a3_DemoMode3_Curves* dem
 		a3ui32 startIndex = 0;
 		a3ui32 endIndex = startIndex + 1;
 
-		for (a3ui32 i = startIndex + 1; i < demoMode->curveWaypointCount; i++)
+		for (a3ui32 i = startIndex + 1; i < demoMode->curveWaypointCount + 1; )
 		{
-			//CHANGE THIS STUFF ACCORDING TO NOTES FROM CLASS, ALSO DO INTERPOLATION AFTER THIS
+			//Update time
 			demoMode->curveSegmentTime += (a3f32)dt;
 
+			//Check if we reached the next segment
 			if (demoMode->curveSegmentTime >= demoMode->curveSegmentDuration)
 			{
 				demoMode->curveSegmentTime -= demoMode->curveSegmentDuration;
 				startIndex = endIndex;
-				endIndex = (startIndex + i) % demoMode->curveWaypointCount;
+				endIndex = (startIndex + 1) % demoMode->curveWaypointCount;
+				i++;
 			}
 
-			//demoMode->curveWaypoint stores the waypoints to move the object to
+			//Perform LERP
 			a3real* p0 = demoMode->curveWaypoint[startIndex].v;
 			a3real* p1 = demoMode->curveWaypoint[endIndex].v;
-
 			a3real u = demoMode->curveSegmentTime * demoMode->curveSegmentDurationInv;
-			//a3real* diff = a3real4Sub(p1, p0);
-
-			//a3real4Sum(sceneObjectData->position.v, p0, a3real4MulS(diff, u));
-			//a3real* lerpedPos = a3real4Add(p0, a3real4MulS(diff, u));
-			//sceneObjectData->position.v = lerpedPos;
-			//float zeLerp = a3lerp(*p0, *p1, u);
-			//a3vec4 lerpedPos;
-			//lerpedPos = a3vec4(zeLerp, zeLerp, zeLerp, 1.0f);
-			//sceneObjectData->position.v = lerpedPos;
-			/*sceneObjectData->position = */a3real3Lerp(sceneObjectData->position.v, p0, p1, u);
+			a3real3Lerp(sceneObjectData->position.v, p0, p1, u);
 		}
 	}
 }
