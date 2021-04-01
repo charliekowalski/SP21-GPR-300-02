@@ -43,10 +43,14 @@ in vbVertexData_tess {
 out vbVertexData {
 	mat4 vTangentBasis_view;
 	vec4 vTexcoord_atlas;
-};
+} vVertexData;
 
 void main()
 {
-	//gl_TessCoord = 
-	//gl_Position = ???
+	//Copy input varying data to output
+	vVertexData.vTangentBasis_view = vVertexData_tess[gl_PrimitiveID].vTangentBasis_view;
+	vVertexData.vTexcoord_atlas = vVertexData_tess[gl_PrimitiveID].vTexcoord_atlas;
+
+	gl_TessCoord = vVertexData.vTexcoord_atlas.xyz;
+	gl_Position = vVertexData.vTangentBasis_view[3];
 }

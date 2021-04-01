@@ -60,10 +60,20 @@ void a3curves_update_animation(a3_DemoState* demoState, a3_DemoMode3_Curves* dem
 		//		(hint: check if we've surpassed the segment's duration)
 		// teapot follows curved path
 
-		a3ui32 startIndex = 0;
-		a3ui32 endIndex = startIndex + 1;
+		//a3ui32 startIndex = 0;
+		//a3ui32 endIndex = startIndex + 1;
 
-		for (a3ui32 i = startIndex + 1; i < demoMode->curveWaypointCount + 1; )
+		//Indices
+		int i1 = 0;
+		int i0 = i1 - 1;
+		if (i0 < 0)
+		{
+			i0 = demoMode->curveWaypointCount;
+		}
+		int i2 = (i1 + 1) % demoMode->curveWaypointCount;
+		int i3 = (i2 + 1) % demoMode->curveWaypointCount;
+
+		for (a3ui32 i = i1 + 1; i < demoMode->curveWaypointCount + 1; )
 		{
 			//Update time
 			demoMode->curveSegmentTime += (a3f32)dt;
@@ -72,16 +82,31 @@ void a3curves_update_animation(a3_DemoState* demoState, a3_DemoMode3_Curves* dem
 			if (demoMode->curveSegmentTime >= demoMode->curveSegmentDuration)
 			{
 				demoMode->curveSegmentTime -= demoMode->curveSegmentDuration;
-				startIndex = endIndex;
-				endIndex = (startIndex + 1) % demoMode->curveWaypointCount;
+				i1 = i2;
+				i2 = (i1 + 1) % demoMode->curveWaypointCount;
+				i3 = (i2 + 1) % demoMode->curveWaypointCount;
+				i0 = i1 - 1;
+				if (i0 < 0)
+					i0 = demoMode->curveWaypointCount;
 				i++;
 			}
 
-			//Perform LERP
-			a3real* p0 = demoMode->curveWaypoint[startIndex].v;
-			a3real* p1 = demoMode->curveWaypoint[endIndex].v;
+			////Perform LERP
+			//a3real* p0 = demoMode->curveWaypoint[startIndex].v;
+			//a3real* p1 = demoMode->curveWaypoint[endIndex].v;
+			//a3real u = demoMode->curveSegmentTime * demoMode->curveSegmentDurationInv;
+			//a3real3Lerp(sceneObjectData->position.v, p0, p1, u);
+
+			//Catmull Rom spline interpolation
+			//Points
+			a3real* p0 = demoMode->curveWaypoint[i0].v;
+			a3real* p1 = demoMode->curveWaypoint[i1].v;
+			a3real* p2 = demoMode->curveWaypoint[i2].v;
+			a3real* p3 = demoMode->curveWaypoint[i3].v;
 			a3real u = demoMode->curveSegmentTime * demoMode->curveSegmentDurationInv;
-			a3real3Lerp(sceneObjectData->position.v, p0, p1, u);
+
+			//Interpolate
+			a3real3CatmullRom(sceneObjectData->position.v, p0, p1, p2, p3, u);
 		}
 	}
 }

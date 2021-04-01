@@ -87,20 +87,38 @@ void drawVertexTangents()
 {
 	//vTangentBasis_view[0] --> tangent,	vTangentBasis_view[1] --> bitangent,	vTangentBasis_view[2] --> normal
 
-	//Tangent
-	vec4 tangentAway = vVertexData[0].vTangentBasis_view[0];
+	//		-> vertex tangents: for each corner, new vertex at corner and another extending away 
+	//			from it in the direction of each basis (tangent, bitangent, normal)
+
+	//Bases
+	vec4 tangentAway;
+	vec4 bitangentAway;
+	vec4 normalAway;
+
+	//Corner 0
+	vColor = vec4 (0.5, 0.0, 0.0, 1.0);
+	tangentAway = vVertexData[0].vTangentBasis_view[0];
+	bitangentAway = vVertexData[0].vTangentBasis_view[1];
+	normalAway = vVertexData[0].vTangentBasis_view[2];
 	gl_Position = gl_in[0].gl_Position;
-	gl_Position = gl_in[0].gl_Position + tangentAway;
+	gl_Position = gl_in[0].gl_Position + tangentAway + bitangentAway + normalAway;
+	EmitVertex();
 
-	//Bitangent
-	vec4 bitangentAway = vVertexData[0].vTangentBasis_view[1];
+	//Corner 1
+	tangentAway = vVertexData[1].vTangentBasis_view[0];
+	bitangentAway = vVertexData[1].vTangentBasis_view[1];
+	normalAway = vVertexData[1].vTangentBasis_view[2];
 	gl_Position = gl_in[1].gl_Position;
-	gl_Position = gl_in[1].gl_Position + bitangentAway;
+	gl_Position = gl_in[1].gl_Position + tangentAway + bitangentAway + normalAway;
+	EmitVertex();
 
-	//Normal
-	vec4 normalAway = vVertexData[0].vTangentBasis_view[2];
+	//Corner 2
+	tangentAway = vVertexData[2].vTangentBasis_view[0];
+	bitangentAway = vVertexData[2].vTangentBasis_view[1];
+	normalAway = vVertexData[2].vTangentBasis_view[2];
 	gl_Position = gl_in[2].gl_Position;
-	gl_Position = gl_in[2].gl_Position + normalAway;
+	gl_Position = gl_in[2].gl_Position + tangentAway + bitangentAway + normalAway;
+	EmitVertex();
 }
 
 void main()
