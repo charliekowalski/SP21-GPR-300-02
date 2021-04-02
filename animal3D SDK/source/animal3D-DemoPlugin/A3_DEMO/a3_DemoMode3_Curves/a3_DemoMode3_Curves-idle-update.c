@@ -64,17 +64,13 @@ void a3curves_update_animation(a3_DemoState* demoState, a3_DemoMode3_Curves* dem
 		//a3ui32 endIndex = startIndex + 1;
 
 		//Indices
-		int i1 = 0;
-		int i0 = i1 - 1;
-		if (i0 < 0)
-		{
-			i0 = demoMode->curveWaypointCount;
-		}
+		int i1 = demoMode->curveSegmentIndex;
+		int i0 = (i1 - 1) % demoMode->curveWaypointCount;
 		int i2 = (i1 + 1) % demoMode->curveWaypointCount;
 		int i3 = (i2 + 1) % demoMode->curveWaypointCount;
 
-		for (a3ui32 i = i1 + 1; i < demoMode->curveWaypointCount + 1; )
-		{
+		//for (a3ui32 i = i1 + 1; i < demoMode->curveWaypointCount + 1; )
+		//{
 			//Update time
 			demoMode->curveSegmentTime += (a3f32)dt;
 
@@ -85,11 +81,12 @@ void a3curves_update_animation(a3_DemoState* demoState, a3_DemoMode3_Curves* dem
 				i1 = i2;
 				i2 = (i1 + 1) % demoMode->curveWaypointCount;
 				i3 = (i2 + 1) % demoMode->curveWaypointCount;
-				i0 = i1 - 1;
-				if (i0 < 0)
-					i0 = demoMode->curveWaypointCount;
-				i++;
+				i0 = (i1 - 1) % demoMode->curveWaypointCount;
+				//i++;
 			}
+
+			//Update the index to the new starting index (i1)
+			demoMode->curveSegmentIndex = i1;
 
 			////Perform LERP
 			//a3real* p0 = demoMode->curveWaypoint[startIndex].v;
@@ -106,8 +103,8 @@ void a3curves_update_animation(a3_DemoState* demoState, a3_DemoMode3_Curves* dem
 			a3real u = demoMode->curveSegmentTime * demoMode->curveSegmentDurationInv;
 
 			//Interpolate
-			a3real3CatmullRom(sceneObjectData->position.v, p0, p1, p2, p3, u);
-		}
+			a3real4CatmullRom(sceneObjectData->position.v, p0, p1, p2, p3, u);
+		//}
 	}
 }
 

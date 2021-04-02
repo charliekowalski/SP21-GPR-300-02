@@ -66,18 +66,53 @@ vec3 calcParallaxCoord(in vec3 coord, in vec3 viewVec, const int steps)
 
 	//Lecture: lecture10 nm pom
 	//Lerp on the ray
+	float t = 0.0;
 	float dt =  1.0 / steps;
-	vec3 ct = mix(coord, coord + viewVec, dt);
+	vec3 startCoord = vec3(coord.x, coord.y, 1);
+	vec3 endCoord = coord - (viewVec / viewVec.z) * uSize;
+	endCoord.z = 0;
 
-	//Sample the height map
-	vec4 heightMap = texture(uTex_hm, vTexcoord_atlas.xy);
+	//Positions
+	vec3 currentPos;
+	vec3 prevPos;
 
-	//If the ray height < bump map height
-	if (ct.y < heightMap.y)
+	//FINAL
+	vec3 finalPos;
+	vec3 finalPrevPos;
+	vec3 finalHeightMapPos;
+	vec3 finalHeightMapPrevPos;
+
+	for (int i = 0; i < steps; i++)
 	{
-		//"Save" that coordinate
-		coord = ct;
+		//Increase t
+		t += dt;
+
+		//Lerp
+		vec3 currentPos = mix(startCoord, endCoord, t);
+		prevPos = currentPos;
+
+		//Sample the height map
+		vec4 heightMap = texture(uTex_hm, currentPos.xy);
+
+		//If the ray height < bump map height
+		if (currentPos.z < heightMap.z)
+		{
+			//"Save" the coordinates
+			finalPos = currentPos;
+			finalPrevPos = prevPos;
+			finalHeightMapPos = heightMap.xyz;
+			finalHeightMapPrevPos = texture(uTex_hm, finalPrevPos.xy).xyz;
+			break;
+		}
 	}
+
+	//Calculte final point by lerping from finalPrevPos to finalPos by x
+	float deltaB = finalPrevPos.z - finalHeightMapPrevPos.z;
+	float deltaH = finalPos.z - finalHeightMapPos.z;
+	float x = (finalPrevPos.z - finalHeightMapPrevPos.z) / (deltaB - deltaH);
+
+	//Calculate final lerp
+	coord = mix(finalPrevPos, finalPos, x);
 
 	// done
 	return coord;
@@ -108,10 +143,10 @@ void main()
 		tan_view,
 		bit_view,
 		nrm_view,
-		0.0, 0.0, 0.0, 1.0);
+		pos_view);
 
 	vec3 viewVec_tan = vec3(
-		inverse(tbn) * viewVec
+		(inverse(tbn) * viewVec).xyz
 	);
 	
 	// parallax occlusion mapping
