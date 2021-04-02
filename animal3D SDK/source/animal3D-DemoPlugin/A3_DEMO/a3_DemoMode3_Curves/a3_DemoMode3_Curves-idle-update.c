@@ -53,15 +53,12 @@ void a3curves_update_animation(a3_DemoState* demoState, a3_DemoMode3_Curves* dem
 	{
 		a3_SceneObjectData* sceneObjectData = demoMode->obj_teapot->dataPtr;
 
-		// ****TO-DO: 
+		// ****DONE: 
 		//	-> interpolate teapot's position using algorithm that matches path drawn
 		//		(hint: use the one that looks the best)
 		//	-> update the animation timer
 		//		(hint: check if we've surpassed the segment's duration)
 		// teapot follows curved path
-
-		//a3ui32 startIndex = 0;
-		//a3ui32 endIndex = startIndex + 1;
 
 		//Indices
 		int i1 = demoMode->curveSegmentIndex;
@@ -69,42 +66,32 @@ void a3curves_update_animation(a3_DemoState* demoState, a3_DemoMode3_Curves* dem
 		int i2 = (i1 + 1) % demoMode->curveWaypointCount;
 		int i3 = (i2 + 1) % demoMode->curveWaypointCount;
 
-		//for (a3ui32 i = i1 + 1; i < demoMode->curveWaypointCount + 1; )
-		//{
-			//Update time
-			demoMode->curveSegmentTime += (a3f32)dt;
+		//Update time
+		demoMode->curveSegmentTime += (a3f32)dt;
 
-			//Check if we reached the next segment
-			if (demoMode->curveSegmentTime >= demoMode->curveSegmentDuration)
-			{
-				demoMode->curveSegmentTime -= demoMode->curveSegmentDuration;
-				i1 = i2;
-				i2 = (i1 + 1) % demoMode->curveWaypointCount;
-				i3 = (i2 + 1) % demoMode->curveWaypointCount;
-				i0 = (i1 - 1) % demoMode->curveWaypointCount;
-				//i++;
-			}
+		//Check if we reached the next segment
+		if (demoMode->curveSegmentTime >= demoMode->curveSegmentDuration)
+		{
+			demoMode->curveSegmentTime -= demoMode->curveSegmentDuration;
+			i1 = i2;
+			i2 = (i1 + 1) % demoMode->curveWaypointCount;
+			i3 = (i2 + 1) % demoMode->curveWaypointCount;
+			i0 = (i1 - 1) % demoMode->curveWaypointCount;
+		}
 
-			//Update the index to the new starting index (i1)
-			demoMode->curveSegmentIndex = i1;
+		//Update the index to the new starting index (i1)
+		demoMode->curveSegmentIndex = i1;
 
-			////Perform LERP
-			//a3real* p0 = demoMode->curveWaypoint[startIndex].v;
-			//a3real* p1 = demoMode->curveWaypoint[endIndex].v;
-			//a3real u = demoMode->curveSegmentTime * demoMode->curveSegmentDurationInv;
-			//a3real3Lerp(sceneObjectData->position.v, p0, p1, u);
+		//Catmull Rom spline interpolation
+		//Points
+		a3real* p0 = demoMode->curveWaypoint[i0].v;
+		a3real* p1 = demoMode->curveWaypoint[i1].v;
+		a3real* p2 = demoMode->curveWaypoint[i2].v;
+		a3real* p3 = demoMode->curveWaypoint[i3].v;
+		a3real u = demoMode->curveSegmentTime * demoMode->curveSegmentDurationInv;
 
-			//Catmull Rom spline interpolation
-			//Points
-			a3real* p0 = demoMode->curveWaypoint[i0].v;
-			a3real* p1 = demoMode->curveWaypoint[i1].v;
-			a3real* p2 = demoMode->curveWaypoint[i2].v;
-			a3real* p3 = demoMode->curveWaypoint[i3].v;
-			a3real u = demoMode->curveSegmentTime * demoMode->curveSegmentDurationInv;
-
-			//Interpolate
-			a3real4CatmullRom(sceneObjectData->position.v, p0, p1, p2, p3, u);
-		//}
+		//Interpolate
+		a3real4CatmullRom(sceneObjectData->position.v, p0, p1, p2, p3, u);
 	}
 }
 
