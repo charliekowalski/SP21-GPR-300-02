@@ -35,6 +35,10 @@
 
 layout (triangles, equal_spacing) in;
 
+//Uniforms
+uniform mat4 uP;
+uniform sampler2D uTex_hm;
+
 in vbVertexData_tess {
 	mat4 vTangentBasis_view;
 	vec4 vTexcoord_atlas;
@@ -47,17 +51,23 @@ out vbVertexData {
 
 void main()
 {
-	//Copy input varying data to output
-	vVertexData.vTangentBasis_view = vVertexData_tess[gl_PrimitiveID].vTangentBasis_view;
-	vVertexData.vTexcoord_atlas = vVertexData_tess[gl_PrimitiveID].vTexcoord_atlas;
+	//Copy input varying data to output	(average of everythiing in vVertexData_tess) - Blue book page 76 for formula - Thornton guided us in the direction of the page
+	vVertexData.vTangentBasis_view = gl_TessCoord.x * vVertexData_tess[0].vTangentBasis_view + 
+		gl_TessCoord.y * vVertexData_tess[1].vTangentBasis_view +
+		gl_TessCoord.z * vVertexData_tess[2].vTangentBasis_view;
+	vVertexData.vTexcoord_atlas = gl_TessCoord.x * vVertexData_tess[0].vTexcoord_atlas + 
+		gl_TessCoord.y * vVertexData_tess[1].vTexcoord_atlas +
+		gl_TessCoord.z * vVertexData_tess[2].vTexcoord_atlas;
 
-	//Blue book page 76 for formula - Thornton guided us in the direction of the page
-	//This makes the output patch the same as the input patch
-	gl_Position = gl_TessCoord.x * gl_in[0].gl_Position + 
-		gl_TessCoord.y * gl_in[1].gl_Position +
-		gl_TessCoord.z * gl_in[2].gl_Position;
-
-	//Similar idea with blending points, but for the stuff in vVertexData_tess --> array with 3 vertices in it, get the weighted average (just blend) of the 3 with gl_TessCoord
-	//--> SHOULD render normally after this is done
 	//Blue book p. 366 -> example of displace from height texture
+	//Components of blend for LOD
+	float height = texture(uTex_hm, vVertexData.vTexcoord_atlas.xy).x;
+	vec4 position = vVertexData.vTangentBasis_view[3];
+	vec4 normal = normalize(vVertexData.vTangentBasis_view[2]);
+
+	//Perform blend
+	vVertexData.vTangentBasis_view[3] = position + normal * height;
+
+	//Set gl_Position to the position we copied over (average of the positions from vVertexData_tess)
+	gl_Position = uP * vVertexData.vTangentBasis_view[3];
 }

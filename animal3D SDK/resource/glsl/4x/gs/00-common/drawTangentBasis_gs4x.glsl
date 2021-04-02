@@ -32,7 +32,7 @@
 //		-> wireframe: one at each corner, then one more at the first corner to close the loop
 //		-> vertex tangents: for each corner, new vertex at corner and another extending away 
 //			from it in the direction of each basis (tangent, bitangent, normal)
-//		-> face tangents: ditto but at the center of the face; need to calculate new bases
+//		-> face tangents: ditto but at the center of the face; need to calculate new bases			-- Here
 //	-> call "EmitVertex" whenever you're done with a vertex
 //		(hint: every vertex needs gl_Position set)
 //	-> call "EndPrimitive" to finish a new line and restart
