@@ -54,6 +54,10 @@ void main()
 	vVertexData_tess[gl_InvocationID].vTangentBasis_view = vVertexData[gl_InvocationID].vTangentBasis_view;
 	vVertexData_tess[gl_InvocationID].vTexcoord_atlas = vVertexData[gl_InvocationID].vTexcoord_atlas;
 
+	//Blue book page ???
+	gl_out[gl_InvocationID].gl_Position = gl_in[gl_InvocationID].gl_Position;
+
+	//Tesselation levels
 	gl_TessLevelOuter[0] = uLevelOuter[0];
 	gl_TessLevelOuter[1] = uLevelOuter[1];
 	gl_TessLevelOuter[2] = uLevelOuter[2];

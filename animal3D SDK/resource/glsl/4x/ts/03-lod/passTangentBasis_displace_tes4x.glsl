@@ -51,6 +51,13 @@ void main()
 	vVertexData.vTangentBasis_view = vVertexData_tess[gl_PrimitiveID].vTangentBasis_view;
 	vVertexData.vTexcoord_atlas = vVertexData_tess[gl_PrimitiveID].vTexcoord_atlas;
 
-	gl_TessCoord = vVertexData.vTexcoord_atlas.xyz;
-	gl_Position = vVertexData.vTangentBasis_view[3];
+	//Blue book page 76 for formula - Thornton guided us in the direction of the page
+	//This makes the output patch the same as the input patch
+	gl_Position = gl_TessCoord.x * gl_in[0].gl_Position + 
+		gl_TessCoord.y * gl_in[1].gl_Position +
+		gl_TessCoord.z * gl_in[2].gl_Position;
+
+	//Similar idea with blending points, but for the stuff in vVertexData_tess --> array with 3 vertices in it, get the weighted average (just blend) of the 3 with gl_TessCoord
+	//--> SHOULD render normally after this is done
+	//Blue book p. 366 -> example of displace from height texture
 }

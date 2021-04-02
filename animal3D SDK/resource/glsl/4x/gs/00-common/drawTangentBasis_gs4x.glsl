@@ -44,6 +44,8 @@
 layout (triangles) in;
 //gl_in[3] --> array of verts passed in from passTangentBasis_ubo_transform_vs4x.glsl
 
+uniform mat4 uP;
+
 in vbVertexData {
 	mat4 vTangentBasis_view;
 	vec4 vTexcoord_atlas;
@@ -87,38 +89,66 @@ void drawVertexTangents()
 {
 	//vTangentBasis_view[0] --> tangent,	vTangentBasis_view[1] --> bitangent,	vTangentBasis_view[2] --> normal
 
-	//		-> vertex tangents: for each corner, new vertex at corner and another extending away 
-	//			from it in the direction of each basis (tangent, bitangent, normal)
-
 	//Bases
 	vec4 tangentAway;
 	vec4 bitangentAway;
 	vec4 normalAway;
 
-	//Corner 0
-	vColor = vec4 (0.5, 0.0, 0.0, 1.0);
-	tangentAway = vVertexData[0].vTangentBasis_view[0];
-	bitangentAway = vVertexData[0].vTangentBasis_view[1];
-	normalAway = vVertexData[0].vTangentBasis_view[2];
-	gl_Position = gl_in[0].gl_Position;
-	gl_Position = gl_in[0].gl_Position + tangentAway + bitangentAway + normalAway;
-	EmitVertex();
+	//For each corner (represented by the index i)
+	for (int i = 0; i < 4; i++)
+	{
+		//Bases
+		tangentAway = vVertexData[i].vTangentBasis_view[0];
+		bitangentAway = vVertexData[i].vTangentBasis_view[1];
+		normalAway = vVertexData[i].vTangentBasis_view[2];
 
-	//Corner 1
-	tangentAway = vVertexData[1].vTangentBasis_view[0];
-	bitangentAway = vVertexData[1].vTangentBasis_view[1];
-	normalAway = vVertexData[1].vTangentBasis_view[2];
-	gl_Position = gl_in[1].gl_Position;
-	gl_Position = gl_in[1].gl_Position + tangentAway + bitangentAway + normalAway;
-	EmitVertex();
+		//Set points
+		//Tangent
+		vColor = vec4 (1.0, 0.0, 0.0, 1.0);
+		gl_Position = gl_in[i].gl_Position;
+		EmitVertex();
+		gl_Position = gl_in[i].gl_Position + uP * normalize(tangentAway);
+		EmitVertex();
 
-	//Corner 2
-	tangentAway = vVertexData[2].vTangentBasis_view[0];
-	bitangentAway = vVertexData[2].vTangentBasis_view[1];
-	normalAway = vVertexData[2].vTangentBasis_view[2];
-	gl_Position = gl_in[2].gl_Position;
-	gl_Position = gl_in[2].gl_Position + tangentAway + bitangentAway + normalAway;
-	EmitVertex();
+		//Bitangent
+		vColor = vec4 (0.0, 1.0, 0.0, 1.0);
+		gl_Position = gl_in[i].gl_Position;
+		EmitVertex();
+		gl_Position = gl_in[i].gl_Position + uP * normalize(bitangentAway);
+		EmitVertex();
+
+		//Normal
+		vColor = vec4 (0.0, 0.0, 1.0, 1.0);
+		gl_Position = gl_in[i].gl_Position;
+		EmitVertex();
+		gl_Position = gl_in[i].gl_Position + uP * normalize(normalAway);
+		EmitVertex();
+		EndPrimitive();
+	}
+
+//	//Corner 1
+//	tangentAway = vVertexData[1].vTangentBasis_view[0];
+//	bitangentAway = vVertexData[1].vTangentBasis_view[1];
+//	normalAway = vVertexData[1].vTangentBasis_view[2];
+//	gl_Position = gl_in[1].gl_Position;
+//	EmitVertex();
+//	gl_Position = gl_in[1].gl_Position + uP * normalize(tangentAway);
+//	gl_Position = gl_in[1].gl_Position + uP * normalize(bitangentAway);
+//	gl_Position = gl_in[1].gl_Position + uP * normalize(normalAway);
+//	EmitVertex();
+//	EndPrimitive();
+//
+//	//Corner 2
+//	tangentAway = vVertexData[2].vTangentBasis_view[0];
+//	bitangentAway = vVertexData[2].vTangentBasis_view[1];
+//	normalAway = vVertexData[2].vTangentBasis_view[2];
+//	gl_Position = gl_in[2].gl_Position;
+//	EmitVertex();
+//	gl_Position = gl_in[2].gl_Position + uP * normalize(tangentAway);
+//	gl_Position = gl_in[2].gl_Position + uP * normalize(bitangentAway);
+//	gl_Position = gl_in[2].gl_Position + uP * normalize(normalAway);
+//	EmitVertex();
+//	EndPrimitive();
 }
 
 void main()
