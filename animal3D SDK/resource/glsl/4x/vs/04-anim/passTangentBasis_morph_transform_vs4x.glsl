@@ -51,6 +51,19 @@ layout (location = 11) in vec3 aBitangent;
 //	-> bitangent: cross(normal, tangent)
 //...
 
+//Represent a single morth target
+struct sMorphTarget
+{
+	vec4 position;
+	vec3 normal;	float nPad;	//Dummy padding, we do not need a w for nomal
+	vec3 tangent;	float tPad;	//Dummy padding, we do not need a w for tangent
+};
+
+//Read the morph targets (hint: they are attributes)
+layout (location = 0) in sMorphTarget aMorphTarget[5];
+//texcoord, figure it out on our own
+//Procedurally calculate bitangent
+
 struct sModelMatrixStack
 {
 	mat4 modelMat;						// model matrix (object -> world)
