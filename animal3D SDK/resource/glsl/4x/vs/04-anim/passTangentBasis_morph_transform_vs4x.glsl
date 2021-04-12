@@ -55,13 +55,13 @@ layout (location = 11) in vec3 aBitangent;
 struct sMorphTarget
 {
 	vec4 position;
-	vec3 normal;	float nPad;	//Dummy padding, we do not need a w for nomal
+	vec3 normal;	float nPad;	//Dummy padding, we do not need a w for normal
 	vec3 tangent;	float tPad;	//Dummy padding, we do not need a w for tangent
 };
 
 //Read the morph targets (hint: they are attributes)
 layout (location = 0) in sMorphTarget aMorphTarget[5];
-//texcoord, figure it out on our own
+layout (location = 8) in vec4 aTexcoord;	//We copied this from vs/02.../passTangentBasis_ubo_transform_vs4x.glsl
 //Procedurally calculate bitangent
 
 struct sModelMatrixStack
@@ -99,11 +99,13 @@ void main()
 	vec4 aPosition;
 	vec3 aTangent, aBitangent, aNormal;
 
+	sModelMatrixStack t = uModelMatrixStack[uIndex];
+
 	//Testing: copy the first morph target only --> will show teapot as if static (non-morphing but at least will be rendering)
 	//...
-	
-	sModelMatrixStack t = uModelMatrixStack[uIndex];
-	
+	sMorphTarget m = aMorphTarget[uIndex];
+	gl_Position = t.modelViewProjectionMat * m.position;
+
 	vTangentBasis_view = t.modelViewMatInverseTranspose * mat4(aTangent, 0.0, aBitangent, 0.0, aNormal, 0.0, vec4(0.0));
 	vTangentBasis_view[3] = t.modelViewMat * aPosition;
 	gl_Position = t.modelViewProjectionMat * aPosition;
