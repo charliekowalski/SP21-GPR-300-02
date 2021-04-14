@@ -79,14 +79,37 @@ inline int a3animate_updateSkeletonLocalSpace(a3_Hierarchy const* hierarchy,
 			tmpPose = *pBase;
 
 			// ****TO-DO:
-			// interpolate channels
+			// interpolate channels -->LERP tempPose's position (a3vec4), euler (a3vec4), and scale (a3vec3) properties
+			a3real4Lerp(tmpPose.position.v, p0->position.v, p1->position.v, u);
+			a3real4Lerp(tmpPose.euler.v, p0->euler.v, p1->euler.v, u);
+			a3real3Lerp(tmpPose.scale.v, p0->scale.v, p1->scale.v, u);
 
 			// ****TO-DO:
-			// concatenate base pose
+			// concatenate base pose (position - add, rotation - add, scale - multiply)
+			a3real4Add(pBase->position.v, tmpPose.position.v);
+			a3real4Add(pBase->euler.v, tmpPose.euler.v);
+			a3real3MulComp(pBase->scale.v, tmpPose.scale.v);
 
 			// ****TO-DO:
 			// convert to matrix
+			a3mat4 translationMat = {
+				1.0f, 0.0f, 0.0f, pBase->position.x,
+				0.0f, 1.0f, 0.0f, pBase->position.y,
+				0.0f, 0.0f, 1.0, pBase->position.z,
+				0.0f, 0.0f, 0.0f, 1.0f
+			};
 
+			a3mat4 scaleMat = {
+				pBase->scale.x, 0.0f, 0.0f, 0.0f,
+				0.0f, pBase->scale.y, 0.0f, 0.0f,
+				0.0f, 0.0f, pBase->scale.z, 0.0f,
+				0.0f, 0.0f, 0.0f, 1.0f
+			};
+
+			a3real4x4Concat(translationMat.m, scaleMat.m);
+			a3mat4 finalMat = scaleMat;		//Wack but we want to store the value in a matrix with the right name
+
+			a3real4x4SetRotateXYZ(finalMat.m, pBase->euler.x, pBase->euler.y, pBase->euler.z);
 		}
 
 		// done
@@ -100,10 +123,29 @@ inline int a3animate_updateSkeletonObjectSpace(a3_Hierarchy const* hierarchy,
 {
 	if (hierarchy && objectSpaceArray && localSpaceArray)
 	{
-		// ****TO-DO: 
+		// ****TO-DO:						Lecture 9 Skeletal Intro - Slide 35
 		// forward kinematics
-		//a3ui32 j;
-		//a3i32 jp;
+		a3ui32 j;	//Joint
+		a3i32 jp;	//Joint parent
+
+		//Joint starts at 0, parent is always 1 less, traverse entire hierarchy
+		for (j = 0, jp = j - 1; j < hierarchy->numNodes; ++j, ++jp)
+		{
+			//If node is root
+			if (j == 0)
+			{
+				//Node's world transform is the node's local transform
+				a3real4x4SetReal4x4(objectSpaceArray[j].m, localSpaceArray[j].m);
+			}
+			else  //Otherwise
+			{
+				//Node's world transform = parent's world transform * node's local transform
+				a3mat4 finalWorldTransform;
+				a3real4x4Product(finalWorldTransform.m, objectSpaceArray[jp].m, localSpaceArray[j].m);
+
+				a3real4x4SetReal4x4(objectSpaceArray[j].m, finalWorldTransform.m);
+			}
+		}
 
 		// done
 		return 1;
