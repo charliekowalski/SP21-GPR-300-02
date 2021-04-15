@@ -96,14 +96,37 @@ inline int a3animate_updateSkeletonLocalSpace(a3_Hierarchy const* hierarchy,
 
 			// ****TO-DO:
 			// convert to matrix
-			a3mat4 translationScaleMat = {
-				tmpPose.scale.x, 0.0f, 0.0f, tmpPose.position.x,
-				0.0f, tmpPose.scale.y, 0.0f, tmpPose.position.y,
-				0.0f, 0.0f, tmpPose.scale.z, tmpPose.position.z,
-				0.0f, 0.0f, 0.0f, 1.0f
-			};
-
+			//a3mat4 translationScaleMat = {
+			//	tmpPose.scale.x, 0.0f, 0.0f, tmpPose.position.x,
+			//	0.0f, tmpPose.scale.y, 0.0f, tmpPose.position.y,
+			//	0.0f, 0.0f, tmpPose.scale.z, tmpPose.position.z,
+			//	0.0f, 0.0f, 0.0f, 1.0f
+			//};
+			//a3mat4 translationMat = {
+			//	0.0f, 0.0f, 0.0f, tmpPose.position.x,
+			//	0.0f, 0.0f, 0.0f, tmpPose.position.y,
+			//	0.0f, 0.0f, 0.0f, tmpPose.position.z,
+			//	0.0f, 0.0f, 0.0f, 1.0f
+			//};
+			//a3mat4 scaleMat = {
+			//	tmpPose.scale.x, 0.0f, 0.0f, 0.0f,
+			//	0.0f, tmpPose.scale.y, 0.0f, 0.0f,
+			//	0.0f, 0.0f, tmpPose.scale.z, 0.0f,
+			//	0.0f, 0.0f, 0.0f, 1.0f
+			//};
+			//a3mat4 rotationMat;
+			//a3real4x4SetRotateXYZ(rotationMat.m, tmpPose.euler.x, tmpPose.euler.y, tmpPose.euler.z);
 			a3real4x4SetRotateXYZ(localSpaceArray->m, tmpPose.euler.x, tmpPose.euler.y, tmpPose.euler.z);
+
+			//TRS --> Scale * Rot * Trans
+			//a3real4x4Concat(a3real4x4Concat(/*a3real4x4Concat(rotationMat.m, */scaleMat.m/*)*/, translationMat.m), localSpaceArray->m);
+			//a3real4x4Product(translationScaleMat.m, translationMat.m, scaleMat.m);
+			a3mat4 translationScaleMat = {
+				tmpPose.scale.x, 0.0f, 0.0f, 0.0f,
+				0.0f, tmpPose.scale.y, 0.0f, 0.0f,
+				0.0f, 0.0f, tmpPose.scale.z, 0.0f,
+				tmpPose.position.x, tmpPose.position.y, tmpPose.position.z, 1.0f
+			};
 
 			a3real4x4Concat(translationScaleMat.m, localSpaceArray->m);
 		}
@@ -119,15 +142,18 @@ inline int a3animate_updateSkeletonObjectSpace(a3_Hierarchy const* hierarchy,
 {
 	if (hierarchy && objectSpaceArray && localSpaceArray)
 	{
-		// ****TO-DO:						Lecture 9 Skeletal Intro - Slide 35
+		// ****DONE:						Lecture 9 Skeletal Intro - Slide 35
 		// forward kinematics
 		a3ui32 j;	//Joint
 		a3i32 jp;	//Joint parent
 
 		//Joint starts at 0, parent is always 1 less, traverse entire hierarchy
-		for (j = 0, jp = j - 1; j < hierarchy->numNodes; ++j, ++jp)
+		for (j = 0; j < hierarchy->numNodes; j++)
 		{
-			//If node is root
+			//Get the parent's index
+			jp = hierarchy->nodes[j].parentIndex;
+
+			//If the node is the root
 			if (j == 0)
 			{
 				//Node's world transform is the node's local transform
@@ -136,10 +162,7 @@ inline int a3animate_updateSkeletonObjectSpace(a3_Hierarchy const* hierarchy,
 			else  //Otherwise
 			{
 				//Node's world transform = parent's world transform * node's local transform
-				a3mat4 finalWorldTransform;
-				a3real4x4Product(finalWorldTransform.m, objectSpaceArray[jp].m, localSpaceArray[j].m);
-
-				a3real4x4SetReal4x4(objectSpaceArray[j].m, finalWorldTransform.m);
+				a3real4x4Product(objectSpaceArray[j].m, objectSpaceArray[jp].m, localSpaceArray[j].m);
 			}
 		}
 
