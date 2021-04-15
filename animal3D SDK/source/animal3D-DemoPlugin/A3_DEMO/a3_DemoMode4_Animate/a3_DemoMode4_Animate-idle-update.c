@@ -78,7 +78,7 @@ inline int a3animate_updateSkeletonLocalSpace(a3_Hierarchy const* hierarchy,
 			// testing: copy base pose
 			//tmpPose = *pBase;
 
-			// ****DONE?:
+			// ****DONE:
 			// interpolate channels -->LERP tempPose's position (a3vec4), euler (a3vec4), and scale (a3vec3) properties
 			a3real4Lerp(tmpPose.position.v, p0->position.v, p1->position.v, u);
 			a3real4Lerp(tmpPose.euler.v, p0->euler.v, p1->euler.v, u);
@@ -88,39 +88,14 @@ inline int a3animate_updateSkeletonLocalSpace(a3_Hierarchy const* hierarchy,
 			a3clamp(0.0f, 360.0f, tmpPose.euler.y);
 			a3clamp(0.0f, 360.0f, tmpPose.euler.z);
 
-			// ****DONE?:
+			// ****DONE:
 			// concatenate base pose (position - add, rotation - add, scale - multiply)
 			a3real4Add(tmpPose.position.v, pBase->position.v);
 			a3real4Add(tmpPose.euler.v, pBase->euler.v);
 			a3real3MulComp(tmpPose.scale.v, pBase->scale.v);
 
-			// ****TO-DO:
+			// ****DONE:
 			// convert to matrix
-			//a3mat4 translationScaleMat = {
-			//	tmpPose.scale.x, 0.0f, 0.0f, tmpPose.position.x,
-			//	0.0f, tmpPose.scale.y, 0.0f, tmpPose.position.y,
-			//	0.0f, 0.0f, tmpPose.scale.z, tmpPose.position.z,
-			//	0.0f, 0.0f, 0.0f, 1.0f
-			//};
-			//a3mat4 translationMat = {
-			//	0.0f, 0.0f, 0.0f, tmpPose.position.x,
-			//	0.0f, 0.0f, 0.0f, tmpPose.position.y,
-			//	0.0f, 0.0f, 0.0f, tmpPose.position.z,
-			//	0.0f, 0.0f, 0.0f, 1.0f
-			//};
-			//a3mat4 scaleMat = {
-			//	tmpPose.scale.x, 0.0f, 0.0f, 0.0f,
-			//	0.0f, tmpPose.scale.y, 0.0f, 0.0f,
-			//	0.0f, 0.0f, tmpPose.scale.z, 0.0f,
-			//	0.0f, 0.0f, 0.0f, 1.0f
-			//};
-			//a3mat4 rotationMat;
-			//a3real4x4SetRotateXYZ(rotationMat.m, tmpPose.euler.x, tmpPose.euler.y, tmpPose.euler.z);
-			a3real4x4SetRotateXYZ(localSpaceArray->m, tmpPose.euler.x, tmpPose.euler.y, tmpPose.euler.z);
-
-			//TRS --> Scale * Rot * Trans
-			//a3real4x4Concat(a3real4x4Concat(/*a3real4x4Concat(rotationMat.m, */scaleMat.m/*)*/, translationMat.m), localSpaceArray->m);
-			//a3real4x4Product(translationScaleMat.m, translationMat.m, scaleMat.m);
 			a3mat4 translationScaleMat = {
 				tmpPose.scale.x, 0.0f, 0.0f, 0.0f,
 				0.0f, tmpPose.scale.y, 0.0f, 0.0f,
@@ -128,6 +103,10 @@ inline int a3animate_updateSkeletonLocalSpace(a3_Hierarchy const* hierarchy,
 				tmpPose.position.x, tmpPose.position.y, tmpPose.position.z, 1.0f
 			};
 
+			//Set the rotation in localSpaceArray
+			a3real4x4SetRotateXYZ(localSpaceArray->m, tmpPose.euler.x, tmpPose.euler.y, tmpPose.euler.z);
+
+			//Concatenate (multiply) translationScaleMat and localSpaceArray (containing rotation already)
 			a3real4x4Concat(translationScaleMat.m, localSpaceArray->m);
 		}
 
