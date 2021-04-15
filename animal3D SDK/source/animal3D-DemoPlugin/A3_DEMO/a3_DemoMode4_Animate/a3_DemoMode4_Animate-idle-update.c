@@ -76,40 +76,36 @@ inline int a3animate_updateSkeletonLocalSpace(a3_Hierarchy const* hierarchy,
 			++j, ++p0, ++p1, ++pBase, ++localSpaceArray)
 		{
 			// testing: copy base pose
-			tmpPose = *pBase;
+			//tmpPose = *pBase;
 
-			// ****TO-DO:
+			// ****DONE?:
 			// interpolate channels -->LERP tempPose's position (a3vec4), euler (a3vec4), and scale (a3vec3) properties
 			a3real4Lerp(tmpPose.position.v, p0->position.v, p1->position.v, u);
 			a3real4Lerp(tmpPose.euler.v, p0->euler.v, p1->euler.v, u);
 			a3real3Lerp(tmpPose.scale.v, p0->scale.v, p1->scale.v, u);
 
-			// ****TO-DO:
+			a3clamp(0.0f, 360.0f, tmpPose.euler.x);
+			a3clamp(0.0f, 360.0f, tmpPose.euler.y);
+			a3clamp(0.0f, 360.0f, tmpPose.euler.z);
+
+			// ****DONE?:
 			// concatenate base pose (position - add, rotation - add, scale - multiply)
-			a3real4Add(pBase->position.v, tmpPose.position.v);
-			a3real4Add(pBase->euler.v, tmpPose.euler.v);
-			a3real3MulComp(pBase->scale.v, tmpPose.scale.v);
+			a3real4Add(tmpPose.position.v, pBase->position.v);
+			a3real4Add(tmpPose.euler.v, pBase->euler.v);
+			a3real3MulComp(tmpPose.scale.v, pBase->scale.v);
 
 			// ****TO-DO:
 			// convert to matrix
-			a3mat4 translationMat = {
-				1.0f, 0.0f, 0.0f, pBase->position.x,
-				0.0f, 1.0f, 0.0f, pBase->position.y,
-				0.0f, 0.0f, 1.0, pBase->position.z,
+			a3mat4 translationScaleMat = {
+				tmpPose.scale.x, 0.0f, 0.0f, tmpPose.position.x,
+				0.0f, tmpPose.scale.y, 0.0f, tmpPose.position.y,
+				0.0f, 0.0f, tmpPose.scale.z, tmpPose.position.z,
 				0.0f, 0.0f, 0.0f, 1.0f
 			};
 
-			a3mat4 scaleMat = {
-				pBase->scale.x, 0.0f, 0.0f, 0.0f,
-				0.0f, pBase->scale.y, 0.0f, 0.0f,
-				0.0f, 0.0f, pBase->scale.z, 0.0f,
-				0.0f, 0.0f, 0.0f, 1.0f
-			};
+			a3real4x4SetRotateXYZ(localSpaceArray->m, tmpPose.euler.x, tmpPose.euler.y, tmpPose.euler.z);
 
-			a3real4x4Concat(translationMat.m, scaleMat.m);
-			a3mat4 finalMat = scaleMat;		//Wack but we want to store the value in a matrix with the right name
-
-			a3real4x4SetRotateXYZ(finalMat.m, pBase->euler.x, pBase->euler.y, pBase->euler.z);
+			a3real4x4Concat(translationScaleMat.m, localSpaceArray->m);
 		}
 
 		// done
