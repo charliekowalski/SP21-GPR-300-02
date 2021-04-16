@@ -28,7 +28,7 @@
 
 #define MAX_COLORS 24
 
-// ****TO-DO: 
+// ****DONE: 
 //	-> declare hierarchy depth info in uniform block
 //	-> use hierarchy depth to select color
 

@@ -29,7 +29,7 @@
 // ****TO-DO: 
 //	-> declare morph target attributes
 //	-> declare and implement morph target interpolation algorithm
-//	-> declare interpolation time/param/keyframe uniform
+//	-> declare interpolation time/param/keyframe uniform --> uTime in a3_DemoMode4_Animate-idle-render.c lines 252 and 294
 //	-> perform morph target interpolation using correct attributes
 //		(hint: results can be stored in local variables named after the 
 //		complete tangent basis attributes provided before any changes)
@@ -83,12 +83,14 @@ uniform ubTransformStack
 uniform int uIndex;
 
 //Uniform block for teapot information
-uniform ubAnimMorphTeapot
-{
-	float duration, durationInv;
-	float time, param;
-	uint index, count;
-} teapotMorphData;
+//uniform ubAnimMorphTeapot
+//{
+//	float duration, durationInv;
+//	float time, param;
+//	uint index, count;
+//} animMorphTeapot;
+
+uniform float uTime;
 
 out vbVertexData {
 	mat4 vTangentBasis_view;
@@ -105,6 +107,9 @@ vec4 interpolate(vec4 startVec, vec4 endVec, float t)
 	return mix(startVec, endVec, t);
 }
 
+int currentMorphTargetIndex = 0;
+float interpolationParam;
+
 void main()
 {
 	// DUMMY OUTPUT: directly assign input position to output position
@@ -114,32 +119,40 @@ void main()
 	vec4 aPosition;
 	vec3 aTangent, aBitangent, aNormal;
 
+	//uTime = index + param (a3_DemoMode4_nimate-idle-render.c line 252: 	const a3f32 keyframeTime = (a3f32)demoMode->animMorphTeapot->index + demoMode->animMorphTeapot->param;)
+	currentMorphTargetIndex = int(uTime);
+	interpolationParam = float(uTime - currentMorphTargetIndex);
+
 	//Perform interpolation
 	//Position
-	aPosition = interpolate(aMorphTarget[uIndex].position, aMorphTarget[(uIndex + 1) % 4].position, teapotMorphData.param);
+//	aPosition = interpolate(aMorphTarget[uIndex].position, aMorphTarget[(uIndex + 1) % 5].position, teapotMorphData.param);
+	aPosition = interpolate(aMorphTarget[currentMorphTargetIndex].position, aMorphTarget[(currentMorphTargetIndex + 1) % 5].position, interpolationParam);
 
 	//Tangent
-	vec4 startPaddedTan = vec4(aMorphTarget[uIndex].tangent, aMorphTarget[uIndex].tPad);
-	vec4 endPaddedTan = vec4(aMorphTarget[(uIndex + 1) % 5].tangent, aMorphTarget[(uIndex + 1) % 5].tPad);
-	aTangent = vec3(interpolate(startPaddedTan, endPaddedTan, teapotMorphData.param));
+	vec4 startPaddedTan = vec4(aMorphTarget[currentMorphTargetIndex].tangent, aMorphTarget[currentMorphTargetIndex].tPad);
+	vec4 endPaddedTan = vec4(aMorphTarget[(currentMorphTargetIndex + 1) % 5].tangent, aMorphTarget[(currentMorphTargetIndex + 1) % 5].tPad);
+//	aTangent = vec3(interpolate(startPaddedTan, endPaddedTan, teapotMorphData.param));
+	aTangent = vec3(interpolate(startPaddedTan, endPaddedTan, interpolationParam));
 
 	//Normal
-	vec4 startPaddedNormal = vec4(aMorphTarget[uIndex].normal, aMorphTarget[uIndex].nPad);
-	vec4 endPaddedNormal = vec4(aMorphTarget[(uIndex + 1) % 5].normal, aMorphTarget[(uIndex + 1) % 5].nPad);
-	aNormal = vec3(interpolate(startPaddedNormal, endPaddedNormal, teapotMorphData.param));
+	vec4 startPaddedNormal = vec4(aMorphTarget[currentMorphTargetIndex].normal, aMorphTarget[currentMorphTargetIndex].nPad);
+	vec4 endPaddedNormal = vec4(aMorphTarget[(currentMorphTargetIndex + 1) % 5].normal, aMorphTarget[(currentMorphTargetIndex + 1) % 5].nPad);
+//	aNormal = vec3(interpolate(startPaddedNormal, endPaddedNormal, teapotMorphData.param));
+	aNormal = vec3(interpolate(startPaddedNormal, endPaddedNormal, interpolationParam));
 
 	//Bitangent
-//	vec4 startPaddedBitan = vec4(cross(aMorphTarget[uIndex].tangent, aMorphTarget[uIndex].normal), 1.0);
-//	vec4 endPaddedBitan = vec4(cross(aMorphTarget[(uIndex + 1) % 5].tangent, aMorphTarget[(uIndex + 1) % 5].normal), 0.0);
-	vec4 startPaddedBitan = vec4(cross(vec3(startPaddedNormal), vec3(startPaddedTan)), 1.0);
-	vec4 endPaddedBitan = vec4(cross(vec3(endPaddedNormal), vec3(endPaddedTan)), 1.0);
+	vec4 startPaddedBitan = vec4(cross(aMorphTarget[currentMorphTargetIndex].normal, aMorphTarget[currentMorphTargetIndex].tangent), 0.0);
+	vec4 endPaddedBitan = vec4(cross(aMorphTarget[(currentMorphTargetIndex + 1) % 5].normal, aMorphTarget[(currentMorphTargetIndex + 1) % 5].tangent), 0.0);
+//	vec4 startPaddedBitan = vec4(cross(vec3(startPaddedNormal), vec3(startPaddedTan)), 0.0);
+//	vec4 endPaddedBitan = vec4(cross(vec3(endPaddedNormal), vec3(endPaddedTan)), 0.0);
 //	aBitangent = vec3(interpolate(startPaddedBitan, endPaddedBitan, teapotMorphData.param));
+	aBitangent = vec3(interpolate(startPaddedBitan, endPaddedBitan, interpolationParam));
 
 	sModelMatrixStack t = uModelMatrixStack[uIndex];
 
 	//Testing: copy the first morph target only --> will show teapot as if static (non-morphing but at least will be rendering)
 	//...
-	aPosition = aMorphTarget[0].position;
+//	aPosition = aMorphTarget[4].position;
 
 	vTangentBasis_view = t.modelViewMatInverseTranspose * mat4(aTangent, 0.0, aBitangent, 0.0, aNormal, 0.0, vec4(0.0));
 	vTangentBasis_view[3] = t.modelViewMat * aPosition;
