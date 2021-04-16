@@ -82,6 +82,14 @@ uniform ubTransformStack
 };
 uniform int uIndex;
 
+//Uniform block for teapot information
+uniform ubAnimMorphTeapot
+{
+	float duration, durationInv;
+	float time, param;
+	uint index, count;
+} teapotMorphData;
+
 out vbVertexData {
 	mat4 vTangentBasis_view;
 	vec4 vTexcoord_atlas;
@@ -89,6 +97,13 @@ out vbVertexData {
 
 flat out int vVertexID;
 flat out int vInstanceID;
+
+//Interpolation algorithm
+vec4 interpolate(vec4 startVec, vec4 endVec, float t)
+{
+	//LERP using mix function
+	return mix(startVec, endVec, t);
+}
 
 void main()
 {
@@ -99,12 +114,32 @@ void main()
 	vec4 aPosition;
 	vec3 aTangent, aBitangent, aNormal;
 
+	//Perform interpolation
+	//Position
+	aPosition = interpolate(aMorphTarget[uIndex].position, aMorphTarget[(uIndex + 1) % 4].position, teapotMorphData.param);
+
+	//Tangent
+	vec4 startPaddedTan = vec4(aMorphTarget[uIndex].tangent, aMorphTarget[uIndex].tPad);
+	vec4 endPaddedTan = vec4(aMorphTarget[(uIndex + 1) % 5].tangent, aMorphTarget[(uIndex + 1) % 5].tPad);
+	aTangent = vec3(interpolate(startPaddedTan, endPaddedTan, teapotMorphData.param));
+
+	//Normal
+	vec4 startPaddedNormal = vec4(aMorphTarget[uIndex].normal, aMorphTarget[uIndex].nPad);
+	vec4 endPaddedNormal = vec4(aMorphTarget[(uIndex + 1) % 5].normal, aMorphTarget[(uIndex + 1) % 5].nPad);
+	aNormal = vec3(interpolate(startPaddedNormal, endPaddedNormal, teapotMorphData.param));
+
+	//Bitangent
+//	vec4 startPaddedBitan = vec4(cross(aMorphTarget[uIndex].tangent, aMorphTarget[uIndex].normal), 1.0);
+//	vec4 endPaddedBitan = vec4(cross(aMorphTarget[(uIndex + 1) % 5].tangent, aMorphTarget[(uIndex + 1) % 5].normal), 0.0);
+	vec4 startPaddedBitan = vec4(cross(vec3(startPaddedNormal), vec3(startPaddedTan)), 1.0);
+	vec4 endPaddedBitan = vec4(cross(vec3(endPaddedNormal), vec3(endPaddedTan)), 1.0);
+//	aBitangent = vec3(interpolate(startPaddedBitan, endPaddedBitan, teapotMorphData.param));
+
 	sModelMatrixStack t = uModelMatrixStack[uIndex];
 
 	//Testing: copy the first morph target only --> will show teapot as if static (non-morphing but at least will be rendering)
 	//...
-	sMorphTarget m = aMorphTarget[uIndex];
-	gl_Position = t.modelViewProjectionMat * m.position;
+	aPosition = aMorphTarget[0].position;
 
 	vTangentBasis_view = t.modelViewMatInverseTranspose * mat4(aTangent, 0.0, aBitangent, 0.0, aNormal, 0.0, vec4(0.0));
 	vTangentBasis_view[3] = t.modelViewMat * aPosition;
