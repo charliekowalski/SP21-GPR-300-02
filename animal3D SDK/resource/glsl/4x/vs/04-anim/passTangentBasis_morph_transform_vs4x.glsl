@@ -64,8 +64,7 @@ float tPad = 0.0;	//Dummy padding, we do not need a w for tangent
 
 //Read the morph targets (hint: they are attributes)
 layout (location = 0) in sMorphTarget aMorphTarget[5];
-layout (location = 15) in vec4 aTexcoord;	//a3vertexAttribCreateDescriptor(morphAttribPtr, a3attrib_user15, a3attrib_vec2);
-//Procedurally calculate bitangent
+layout (location = 15) in vec4 aTexcoord;	//a3_DemoState-load.c line 334: a3vertexAttribCreateDescriptor(morphAttribPtr, a3attrib_user15, a3attrib_vec2);
 
 struct sModelMatrixStack
 {
@@ -115,7 +114,7 @@ void main()
 	vec4 aPosition;
 	vec3 aTangent, aBitangent, aNormal;
 
-	//uTime = index + param (a3_DemoMode4_Animate-idle-render.c line 252: 	const a3f32 keyframeTime = (a3f32)demoMode->animMorphTeapot->index + demoMode->animMorphTeapot->param;)
+	//uTime = index + param (a3_DemoMode4_Animate-idle-render.c line 252)
 	currentMorphTargetIndex = int(uTime);
 	interpolationParam = uTime - currentMorphTargetIndex;
 
@@ -139,10 +138,6 @@ void main()
 	aBitangent = vec3(interpolate(startPaddedBitan, endPaddedBitan, interpolationParam));
 
 	sModelMatrixStack t = uModelMatrixStack[uIndex];
-
-	//Testing: copy the first morph target only --> will show teapot as if static (non-morphing but at least will be rendering)
-	//...
-//	aPosition = aMorphTarget[4].position;
 
 	vTangentBasis_view = t.modelViewMatInverseTranspose * mat4(aTangent, 0.0, aBitangent, 0.0, aNormal, 0.0, vec4(0.0));
 	vTangentBasis_view[3] = t.modelViewMat * aPosition;
