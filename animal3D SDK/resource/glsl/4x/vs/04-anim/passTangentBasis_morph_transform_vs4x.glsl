@@ -55,13 +55,16 @@ layout (location = 11) in vec3 aBitangent;
 struct sMorphTarget
 {
 	vec4 position;
-	vec3 normal;	float nPad;	//Dummy padding, we do not need a w for normal
-	vec3 tangent;	float tPad;	//Dummy padding, we do not need a w for tangent
+	vec3 normal;
+	vec3 tangent;
 };
+
+float nPad = 0.0;	//Dummy padding, we do not need a w for normal
+float tPad = 0.0;	//Dummy padding, we do not need a w for tangent
 
 //Read the morph targets (hint: they are attributes)
 layout (location = 0) in sMorphTarget aMorphTarget[5];
-layout (location = 8) in vec4 aTexcoord;	//We copied this from vs/02.../passTangentBasis_ubo_transform_vs4x.glsl
+layout (location = 15) in vec4 aTexcoord;	//a3vertexAttribCreateDescriptor(morphAttribPtr, a3attrib_user15, a3attrib_vec2);
 //Procedurally calculate bitangent
 
 struct sModelMatrixStack
@@ -82,14 +85,7 @@ uniform ubTransformStack
 };
 uniform int uIndex;
 
-//Uniform block for teapot information
-//uniform ubAnimMorphTeapot
-//{
-//	float duration, durationInv;
-//	float time, param;
-//	uint index, count;
-//} animMorphTeapot;
-
+//From c code, a3_DemoMode4_Animate-idle-render.c line 252: 	const a3f32 keyframeTime = (a3f32)demoMode->animMorphTeapot->index + demoMode->animMorphTeapot->param;
 uniform float uTime;
 
 out vbVertexData {
@@ -119,33 +115,27 @@ void main()
 	vec4 aPosition;
 	vec3 aTangent, aBitangent, aNormal;
 
-	//uTime = index + param (a3_DemoMode4_nimate-idle-render.c line 252: 	const a3f32 keyframeTime = (a3f32)demoMode->animMorphTeapot->index + demoMode->animMorphTeapot->param;)
+	//uTime = index + param (a3_DemoMode4_Animate-idle-render.c line 252: 	const a3f32 keyframeTime = (a3f32)demoMode->animMorphTeapot->index + demoMode->animMorphTeapot->param;)
 	currentMorphTargetIndex = int(uTime);
-	interpolationParam = float(uTime - currentMorphTargetIndex);
+	interpolationParam = uTime - currentMorphTargetIndex;
 
 	//Perform interpolation
 	//Position
-//	aPosition = interpolate(aMorphTarget[uIndex].position, aMorphTarget[(uIndex + 1) % 5].position, teapotMorphData.param);
 	aPosition = interpolate(aMorphTarget[currentMorphTargetIndex].position, aMorphTarget[(currentMorphTargetIndex + 1) % 5].position, interpolationParam);
 
 	//Tangent
-	vec4 startPaddedTan = vec4(aMorphTarget[currentMorphTargetIndex].tangent, aMorphTarget[currentMorphTargetIndex].tPad);
-	vec4 endPaddedTan = vec4(aMorphTarget[(currentMorphTargetIndex + 1) % 5].tangent, aMorphTarget[(currentMorphTargetIndex + 1) % 5].tPad);
-//	aTangent = vec3(interpolate(startPaddedTan, endPaddedTan, teapotMorphData.param));
+	vec4 startPaddedTan = vec4(aMorphTarget[currentMorphTargetIndex].tangent, tPad);
+	vec4 endPaddedTan = vec4(aMorphTarget[(currentMorphTargetIndex + 1) % 5].tangent, tPad);
 	aTangent = vec3(interpolate(startPaddedTan, endPaddedTan, interpolationParam));
 
 	//Normal
-	vec4 startPaddedNormal = vec4(aMorphTarget[currentMorphTargetIndex].normal, aMorphTarget[currentMorphTargetIndex].nPad);
-	vec4 endPaddedNormal = vec4(aMorphTarget[(currentMorphTargetIndex + 1) % 5].normal, aMorphTarget[(currentMorphTargetIndex + 1) % 5].nPad);
-//	aNormal = vec3(interpolate(startPaddedNormal, endPaddedNormal, teapotMorphData.param));
+	vec4 startPaddedNormal = vec4(aMorphTarget[currentMorphTargetIndex].normal, nPad);
+	vec4 endPaddedNormal = vec4(aMorphTarget[(currentMorphTargetIndex + 1) % 5].normal, nPad);
 	aNormal = vec3(interpolate(startPaddedNormal, endPaddedNormal, interpolationParam));
 
 	//Bitangent
-	vec4 startPaddedBitan = vec4(cross(aMorphTarget[currentMorphTargetIndex].normal, aMorphTarget[currentMorphTargetIndex].tangent), 0.0);
-	vec4 endPaddedBitan = vec4(cross(aMorphTarget[(currentMorphTargetIndex + 1) % 5].normal, aMorphTarget[(currentMorphTargetIndex + 1) % 5].tangent), 0.0);
-//	vec4 startPaddedBitan = vec4(cross(vec3(startPaddedNormal), vec3(startPaddedTan)), 0.0);
-//	vec4 endPaddedBitan = vec4(cross(vec3(endPaddedNormal), vec3(endPaddedTan)), 0.0);
-//	aBitangent = vec3(interpolate(startPaddedBitan, endPaddedBitan, teapotMorphData.param));
+	vec4 startPaddedBitan = vec4(cross(vec3(startPaddedNormal), vec3(startPaddedTan)), 0.0);
+	vec4 endPaddedBitan = vec4(cross(vec3(endPaddedNormal), vec3(endPaddedTan)), 0.0);
 	aBitangent = vec3(interpolate(startPaddedBitan, endPaddedBitan, interpolationParam));
 
 	sModelMatrixStack t = uModelMatrixStack[uIndex];
