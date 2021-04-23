@@ -118,6 +118,9 @@
     <Filter Include="Resource Files\A3_DEMO\glsl\4x\vs\04-anim">
       <UniqueIdentifier>{18252e52-3ee4-474d-aad9-aea70fdbf3de}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Source Files\common\A3_DEMO\a3_DemoMode5_Beach">
+      <UniqueIdentifier>{38dafa8c-5262-4916-b131-9537d1cfecc4}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="_src_win\main_dll.c">
@@ -261,6 +264,9 @@
       <Filter>Header Files\A3_DEMO</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\source\animal3D-DemoPlugin\A3_DEMO\a3_DemoMode4_Animate.h">
+      <Filter>Header Files\A3_DEMO</Filter>
+    </ClInclude>
+    <ClInclude Include="a3_DemoMode5_Beach.h">
       <Filter>Header Files\A3_DEMO</Filter>
     </ClInclude>
   </ItemGroup>

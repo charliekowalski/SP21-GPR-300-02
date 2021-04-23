@@ -48,6 +48,7 @@
 #include "a3_DemoMode2_SSFX.h"
 #include "a3_DemoMode3_Curves.h"
 #include "a3_DemoMode4_Animate.h"
+#include "a3_DemoMode5_Beach.h"
 
 
 //-----------------------------------------------------------------------------
@@ -177,6 +178,7 @@ struct a3_DemoState
 	a3_DemoMode2_SSFX demoMode2[1];
 	a3_DemoMode3_Curves demoMode3[1];
 	a3_DemoMode4_Animate demoMode4[1];
+	a3_DemoMode5_Beach demoMode5[1];
 	a3_DemoState_ModeName demoMode;
 	a3_DemoModeCallbacks demoModeCallbacks[demoState_mode_max];
 	a3_DemoModeCallbacks const* demoModeCallbacksPtr;
