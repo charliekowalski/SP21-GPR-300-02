@@ -170,7 +170,7 @@ struct a3_DemoMode5_Beach
 	a3_Hierarchy hierarchy_scene[1];
 
 	// animation data
-	a3_KeyframeController animMorphTeapot[1], animPoseSkel[1];
+	a3_KeyframeController animPoseSkel[1];	//Removed teapot morphing
 	a3_Hierarchy hierarchy_skel[1];
 	a3ui32 hierarchyDepth_skel[animateMaxCount_skeletonJoint];
 	a3_SceneObjectData skeletonPose[animateMaxCount_skeletonPose][animateMaxCount_skeletonJoint];
@@ -189,7 +189,7 @@ struct a3_DemoMode5_Beach
 			a3_SceneObjectComponent
 				obj_skybox[1],
 				obj_skeleton[1],
-				obj_teapot[1],
+				obj_cube[4],	//one cube for water, one for sand, and 2 for umbrella
 				obj_ground[1];
 		};
 	};
