@@ -74,6 +74,7 @@ enum a3_DemoState_ModeName
 	demoState_modeSSFX,				// screen-space effects scene
 	demoState_modeCurves,			// curve editor scene
 	demoState_modeAnimate,			// animation scene
+	demoState_modeBeach,			//Final project beach scene
 
 	demoState_mode_max
 };
