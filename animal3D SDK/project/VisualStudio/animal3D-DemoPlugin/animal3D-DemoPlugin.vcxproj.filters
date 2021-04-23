@@ -119,7 +119,7 @@
       <UniqueIdentifier>{18252e52-3ee4-474d-aad9-aea70fdbf3de}</UniqueIdentifier>
     </Filter>
     <Filter Include="Source Files\common\A3_DEMO\a3_DemoMode5_Beach">
-      <UniqueIdentifier>{38dafa8c-5262-4916-b131-9537d1cfecc4}</UniqueIdentifier>
+      <UniqueIdentifier>{2f3af680-09c8-4316-a6e4-ce3ce5cc9eea}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -228,6 +228,21 @@
     <ClCompile Include="..\..\..\source\animal3D-DemoPlugin\A3_DEMO\a3_DemoMode4_Animate\a3_DemoMode4_Animate-unload.c">
       <Filter>Source Files\common\A3_DEMO\a3_DemoMode4_Animate</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\..\source\animal3D-DemoPlugin\A3_DEMO\a3_DemoMode5_Beach\a3_DemoMode5_Beach-idle-input.c">
+      <Filter>Source Files\common\A3_DEMO\a3_DemoMode5_Beach</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\source\animal3D-DemoPlugin\A3_DEMO\a3_DemoMode5_Beach\a3_DemoMode5_Beach-idle-render.c">
+      <Filter>Source Files\common\A3_DEMO\a3_DemoMode5_Beach</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\source\animal3D-DemoPlugin\A3_DEMO\a3_DemoMode5_Beach\a3_DemoMode5_Beach-idle-update.c">
+      <Filter>Source Files\common\A3_DEMO\a3_DemoMode5_Beach</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\source\animal3D-DemoPlugin\A3_DEMO\a3_DemoMode5_Beach\a3_DemoMode5_Beach-load.c">
+      <Filter>Source Files\common\A3_DEMO\a3_DemoMode5_Beach</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\source\animal3D-DemoPlugin\A3_DEMO\a3_DemoMode5_Beach\a3_DemoMode5_Beach-unload.c">
+      <Filter>Source Files\common\A3_DEMO\a3_DemoMode5_Beach</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\..\source\animal3D-DemoPlugin\A3_DEMO\a3_DemoState.h">
@@ -266,7 +281,7 @@
     <ClInclude Include="..\..\..\source\animal3D-DemoPlugin\A3_DEMO\a3_DemoMode4_Animate.h">
       <Filter>Header Files\A3_DEMO</Filter>
     </ClInclude>
-    <ClInclude Include="a3_DemoMode5_Beach.h">
+    <ClInclude Include="..\..\..\source\animal3D-DemoPlugin\A3_DEMO\a3_DemoMode5_Beach.h">
       <Filter>Header Files\A3_DEMO</Filter>
     </ClInclude>
   </ItemGroup>
