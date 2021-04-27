@@ -150,9 +150,15 @@ void a3animate_loadValidate(a3_DemoState* demoState, a3_DemoMode5_Beach* demoMod
 		demoMode->sceneObjectData, demoMode->modelMatrixStack);
 	a3demo_initSceneObject(demoMode->obj_skeleton, 4,
 		demoMode->sceneObjectData, demoMode->modelMatrixStack);
-	a3demo_initSceneObject(demoMode->obj_teapot, 5,
+	a3demo_initSceneObject(demoMode->obj_cube, 5,
 		demoMode->sceneObjectData, demoMode->modelMatrixStack);
-	a3demo_initSceneObject(demoMode->obj_ground, 6,
+	a3demo_initSceneObject(demoMode->obj_cube, 6,
+		demoMode->sceneObjectData, demoMode->modelMatrixStack);
+	a3demo_initSceneObject(demoMode->obj_cube, 7,
+		demoMode->sceneObjectData, demoMode->modelMatrixStack);
+	a3demo_initSceneObject(demoMode->obj_cube, 8,
+		demoMode->sceneObjectData, demoMode->modelMatrixStack);
+	a3demo_initSceneObject(demoMode->obj_ground, 9,
 		demoMode->sceneObjectData, demoMode->modelMatrixStack);
 
 	// initialize projector pointers
@@ -252,10 +258,46 @@ void a3animate_load(a3_DemoState const* demoState, a3_DemoMode5_Beach* demoMode)
 	sceneObjectData->position.x = +12.0f;
 	sceneObjectData->position.y = +12.0f;
 
-	sceneObject = demoMode->obj_teapot;
+	sceneObject = demoMode->obj_cube;
 	sceneObjectData = sceneObject->dataPtr;
 	a3hierarchySetNode(demoMode->hierarchy_scene,
-		sceneObject->sceneHierarchyIndex, sceneObject_parent->sceneHierarchyIndex, "obj_teapot");
+		sceneObject->sceneHierarchyIndex, sceneObject_parent->sceneHierarchyIndex, "obj_cube0");
+	a3demo_resetSceneObjectData(sceneObjectData);
+	a3demo_resetModelMatrixStack(sceneObject->modelMatrixStackPtr);
+	sceneObjectData->position.x = a3real_zero;
+	sceneObjectData->position.y = -a3real_six;
+	sceneObjectData->position.z = +a3real_two + a3real_half;
+	sceneObjectData->scale.x = a3real_two;
+	sceneObjectData->scaleMode = a3scale_uniform;
+
+	sceneObject = demoMode->obj_cube;
+	sceneObjectData = sceneObject->dataPtr;
+	a3hierarchySetNode(demoMode->hierarchy_scene,
+		sceneObject->sceneHierarchyIndex, sceneObject_parent->sceneHierarchyIndex, "obj_cube1");
+	a3demo_resetSceneObjectData(sceneObjectData);
+	a3demo_resetModelMatrixStack(sceneObject->modelMatrixStackPtr);
+	sceneObjectData->position.x = a3real_zero;
+	sceneObjectData->position.y = -a3real_six;
+	sceneObjectData->position.z = +a3real_two + a3real_half;
+	sceneObjectData->scale.x = a3real_two;
+	sceneObjectData->scaleMode = a3scale_uniform;
+
+	sceneObject = demoMode->obj_cube;
+	sceneObjectData = sceneObject->dataPtr;
+	a3hierarchySetNode(demoMode->hierarchy_scene,
+		sceneObject->sceneHierarchyIndex, sceneObject_parent->sceneHierarchyIndex, "obj_cube2");
+	a3demo_resetSceneObjectData(sceneObjectData);
+	a3demo_resetModelMatrixStack(sceneObject->modelMatrixStackPtr);
+	sceneObjectData->position.x = a3real_zero;
+	sceneObjectData->position.y = -a3real_six;
+	sceneObjectData->position.z = +a3real_two + a3real_half;
+	sceneObjectData->scale.x = a3real_two;
+	sceneObjectData->scaleMode = a3scale_uniform;
+
+	sceneObject = demoMode->obj_cube;
+	sceneObjectData = sceneObject->dataPtr;
+	a3hierarchySetNode(demoMode->hierarchy_scene,
+		sceneObject->sceneHierarchyIndex, sceneObject_parent->sceneHierarchyIndex, "obj_cube3");
 	a3demo_resetSceneObjectData(sceneObjectData);
 	a3demo_resetModelMatrixStack(sceneObject->modelMatrixStackPtr);
 	sceneObjectData->position.x = a3real_zero;
@@ -298,7 +340,7 @@ void a3animate_load(a3_DemoState const* demoState, a3_DemoMode5_Beach* demoMode)
 
 
 	// set up animation
-	a3animate_initKeyframeController(demoMode->animMorphTeapot, 5, 0, 2.0f);
+	//a3animate_initKeyframeController(demoMode->animMorphTeapot, 5, 0, 2.0f);
 	a3animate_initKeyframeController(demoMode->animPoseSkel, 3, 0, 3.0f);	// 3 poses animating + base
 
 	{
