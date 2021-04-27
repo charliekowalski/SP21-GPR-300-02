@@ -1,0 +1,22 @@
+Graphics II Final Project Notes
+
+Topic: Water Shader
+Engine: Unity (3D) 2020.2.7f1
+
+Ideas:
+	. Height map for white salt parts in waves
+	. Move the vertices up and down in the VS to simulate moving waves (update height map and therefore colour accordingly)
+	. Interpolate (spline interp) vertices?
+	. Bloom or Blur when underwater and looking at the light source
+	. Hierarchies using scene objects? (consider, otherwise justify why not)
+
+Final Product Ideas:
+	. Beach scene in order of importance (inspired by https://photos.com/featured/umbrella-in-sand-on-empty-beach-hybrid-images.html)
+		. Water with waves shader (interp vertices in VS, change colour --> whiter as the verts are higher - use height map, look like salt)
+		. Sand shader (static, brown with dots of white, yellow, and black everywhere)
+		. Umbrella to demonstrate shadows (model or just thin long cube and thicc short cube on top)
+		. Skeleton dancing on sand
+		. Sun in the sky, blur/bloom when underwater
+
+Sources:
+	. Sand Texture: https://www.pinterest.com/pin/138696863513485466/
