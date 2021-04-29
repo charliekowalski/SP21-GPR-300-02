@@ -66,46 +66,52 @@ Shader "Custom/WaterShader"
 	{
 		Pass
 		{
+			//Tutorial: https://docs.unity3d.com/Manual/SL-VertexFragmentShaderExamples.html
+			// indicate that our pass is the "base" pass in forward
+			// rendering pipeline. It gets ambient and main directional
+			// light data set up; light direction in _WorldSpaceLightPos0
+			// and color in _LightColor0
+			Tags {"LightMode" = "ForwardBase"}
+
 			//Start program
 			CGPROGRAM
 
 			//Define functions - Vertex and Fragment Shaders
 			#pragma vertex VertexFunc
 			#pragma fragment FragmentFunc
+			#include "UnityLightingCommon.cginc" //For _LightColor0
+			#include "UnityCG.cginc"	//For _LightColor0
 
-			//Optional, NVIDIA library
-			//#include "UnityCG.cginc"
+			float2 Unity_GradientNoise_Dir_float(float2 p)
+			{
+				// Permutation and hashing used in webgl-nosie goo.gl/pX7HtC
+				p = p % 289;
+				// need full precision, otherwise half overflows when p > 1
+				float x = float(34 * p.x + 1) * p.x % 289 + p.y;
+				x = (34 * x + 1) * x % 289;
+				x = frac(x / 41) * 2 - 1;
+				return normalize(float2(x - floor(x + 0.5), abs(x) - 0.5));
+			}
 
-		float2 Unity_GradientNoise_Dir_float(float2 p)
-		{
-			// Permutation and hashing used in webgl-nosie goo.gl/pX7HtC
-			p = p % 289;
-			// need full precision, otherwise half overflows when p > 1
-			float x = float(34 * p.x + 1) * p.x % 289 + p.y;
-			x = (34 * x + 1) * x % 289;
-			x = frac(x / 41) * 2 - 1;
-			return normalize(float2(x - floor(x + 0.5), abs(x) - 0.5));
-		}
-
-		float Unity_GradientNoise_float(float2 UV, float Scale)
-		{
-			float2 p = UV * Scale;
-			float2 ip = floor(p);
-			float2 fp = frac(p);
-			float d00 = dot(Unity_GradientNoise_Dir_float(ip), fp);
-			float d01 = dot(Unity_GradientNoise_Dir_float(ip + float2(0, 1)), fp - float2(0, 1));
-			float d10 = dot(Unity_GradientNoise_Dir_float(ip + float2(1, 0)), fp - float2(1, 0));
-			float d11 = dot(Unity_GradientNoise_Dir_float(ip + float2(1, 1)), fp - float2(1, 1));
-			fp = fp * fp * fp * (fp * (fp * 6 - 15) + 10);
-			return lerp(lerp(d00, d01, fp.y), lerp(d10, d11, fp.y), fp.x) + 0.5;
-		}
+			float Unity_GradientNoise_float(float2 UV, float Scale)
+			{
+				float2 p = UV * Scale;
+				float2 ip = floor(p);
+				float2 fp = frac(p);
+				float d00 = dot(Unity_GradientNoise_Dir_float(ip), fp);
+				float d01 = dot(Unity_GradientNoise_Dir_float(ip + float2(0, 1)), fp - float2(0, 1));
+				float d10 = dot(Unity_GradientNoise_Dir_float(ip + float2(1, 0)), fp - float2(1, 0));
+				float d11 = dot(Unity_GradientNoise_Dir_float(ip + float2(1, 1)), fp - float2(1, 1));
+				fp = fp * fp * fp * (fp * (fp * 6 - 15) + 10);
+				return lerp(lerp(d00, d01, fp.y), lerp(d10, d11, fp.y), fp.x) + 0.5;
+			}
 
 			//Got names from https://docs.unity3d.com/Manual/SL-VertexProgramInputs.html
 			//Vertex Shader Inputs
 			struct appdata
 			{
 				float4 vertex : POSITION;	//Position of current vertex
-				//float3 normal : NORMAL;	//Normal
+				float3 normal : NORMAL;	//Normal
 				//float4 tangent : TANGENT;	//Tangent
 				float2 uv : TEXCOORD0;	//UV
 			};
@@ -114,7 +120,8 @@ Shader "Custom/WaterShader"
 			struct  v2f
 			{
 				float4 position : SV_POSITION;
-				fixed4 color : COLOR;
+				//fixed4 color : COLOR;
+				fixed4 diffuseColor : COLOR0; //Diffuse Lighting Colour
 				float2 uv : TEXCOORD0;
 			};
 
@@ -130,6 +137,11 @@ Shader "Custom/WaterShader"
 				UNITY_INITIALIZE_OUTPUT(v2f, OUT);
 				float3 finalPos;
 				float4 objectSpacePos = IN.vertex;
+
+				//Diffuse lighting (Lambert) --> dot product between normal and light direction
+				half3 worldNormal = UnityObjectToWorldNormal(IN.normal);
+				half nl = max(0, dot(worldNormal, _WorldSpaceLightPos0.xyz));
+				OUT.diffuseColor = nl * _LightColor0;	//Factor in the light color
 
 				//Calculatge R and B in finalPos
 				finalPos.r = objectSpacePos.r;
@@ -159,6 +171,9 @@ Shader "Custom/WaterShader"
 			{
 				//Sample the _MainTex at the uv
 				fixed4 pixelColor = tex2D(_MainTex, IN.uv);
+
+				//Multiply by lighting
+				pixelColor *= IN.diffuseColor;
 
 				return pixelColor * _Color;
 			}
