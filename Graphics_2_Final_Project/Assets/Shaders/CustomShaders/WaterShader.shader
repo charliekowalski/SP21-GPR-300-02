@@ -66,7 +66,7 @@ Shader "Custom/WaterShader"
 	{
 		Pass
 		{
-			//Tutorial: https://docs.unity3d.com/Manual/SL-VertexFragmentShaderExamples.html
+			//Lighting and Shadows tutorial: https://docs.unity3d.com/Manual/SL-VertexFragmentShaderExamples.html
 			// indicate that our pass is the "base" pass in forward
 			// rendering pipeline. It gets ambient and main directional
 			// light data set up; light direction in _WorldSpaceLightPos0
@@ -81,6 +81,11 @@ Shader "Custom/WaterShader"
 			#pragma fragment FragmentFunc
 			#include "UnityLightingCommon.cginc" //For _LightColor0
 			#include "UnityCG.cginc"	//For _LightColor0
+
+			// compile shader into multiple variants, with and without shadows
+			// (we don't care about any lightmaps yet, so skip these variants)
+			#pragma multi_compile_fwdbase nolightmap nodirlightmap nodynlightmap novertexlight
+			#include "AutoLight.cginc"	//For receiving shadows
 
 			float2 Unity_GradientNoise_Dir_float(float2 p)
 			{
@@ -112,7 +117,6 @@ Shader "Custom/WaterShader"
 			{
 				float4 vertex : POSITION;	//Position of current vertex
 				float3 normal : NORMAL;	//Normal
-				//float4 tangent : TANGENT;	//Tangent
 				float2 uv : TEXCOORD0;	//UV
 			};
 
@@ -120,9 +124,11 @@ Shader "Custom/WaterShader"
 			struct  v2f
 			{
 				float4 position : SV_POSITION;
-				//fixed4 color : COLOR;
+				//fixed4 colorRGBA : COLOR;
 				fixed4 diffuseColor : COLOR0; //Diffuse Lighting Colour
+				fixed3 ambientLighting : COLOR1;	//Ambient Lighting
 				float2 uv : TEXCOORD0;
+				SHADOW_COORDS(1)	//Shadow data goes into TEXCOORD1
 			};
 
 			//Passing in stuff
@@ -142,6 +148,10 @@ Shader "Custom/WaterShader"
 				half3 worldNormal = UnityObjectToWorldNormal(IN.normal);
 				half nl = max(0, dot(worldNormal, _WorldSpaceLightPos0.xyz));
 				OUT.diffuseColor = nl * _LightColor0;	//Factor in the light color
+				OUT.diffuseColor.rgb += ShadeSH9(half4(worldNormal, 1));	//Factor in ambient lighting (function from UnityCG.cginc include file)
+
+				//Receive shadows
+				TRANSFER_SHADOW(OUT)
 
 				//Calculatge R and B in finalPos
 				finalPos.r = objectSpacePos.r;
@@ -172,8 +182,10 @@ Shader "Custom/WaterShader"
 				//Sample the _MainTex at the uv
 				fixed4 pixelColor = tex2D(_MainTex, IN.uv);
 
-				//Multiply by lighting
-				pixelColor *= IN.diffuseColor;
+				//Multiply by lighting and shading
+				fixed shadow = SHADOW_ATTENUATION(IN);
+				fixed3 lightingAndShading = IN.diffuseColor * shadow + IN.ambientLighting;
+				pixelColor.rgb *= lightingAndShading;
 
 				return pixelColor * _Color;
 			}
@@ -181,5 +193,8 @@ Shader "Custom/WaterShader"
 			//End program
 			ENDCG
 		}
+
+		//Shadow casting support
+		UsePass "Legacy Shaders/VertexLit/SHADOWCASTER"
 	}
 }
