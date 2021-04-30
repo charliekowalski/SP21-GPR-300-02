@@ -218,8 +218,8 @@ Shader "Custom/WaterShader"
 				fixed4 pixelColor = tex2D(_MainTex, IN.uv);
 
 				//Interpolation parameter (camera stuff here: https://docs.unity3d.com/Manual/SL-UnityShaderVariables.html)
-				float sceneDepth = Linear01Depth(IN.uv) * _ProjectionParams.z;	//Linear01Depth and parameter from https://docs.unity3d.com/Manual/SL-DepthTextures.html	, _ProjectionParams.z for camera far plane
-				float4 screenPosition = ComputeScreenPos(UnityObjectToClipPos(IN.position));// , _ProjectionParams.x);	//https://www.ronja-tutorials.com/post/039-screenspace-texture/#:~:text=We%20can%20get%20the%20screen,ll%20return%20the%20screenspace%20position.
+//CHECK HERE	float sceneDepth = Linear01Depth(IN.uv) * _ProjectionParams.z;	//Linear01Depth and parameter from https://docs.unity3d.com/Manual/SL-DepthTextures.html	, _ProjectionParams.z for camera far plane
+				float4 screenPosition = ComputeScreenPos(UnityObjectToClipPos(IN.position));	//https://www.ronja-tutorials.com/post/039-screenspace-texture/#:~:text=We%20can%20get%20the%20screen,ll%20return%20the%20screenspace%20position
 				float interpolationParameter = (sceneDepth - (screenPosition.a + _Depth)) * _Strength;
 				interpolationParameter = clamp(interpolationParameter, 0.0, 1.0);
 
