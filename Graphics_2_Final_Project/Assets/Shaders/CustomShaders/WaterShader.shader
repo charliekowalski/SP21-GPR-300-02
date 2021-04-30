@@ -185,7 +185,7 @@ Shader "Custom/WaterShader"
 				//Receive shadows
 				TRANSFER_SHADOW(OUT)
 
-				//Transfer depth
+				//Transfer depth (https://docs.unity3d.com/Manual/SL-DepthTextures.html)
 				UNITY_TRANSFER_DEPTH(OUT.uv);
 
 				//Calculatge R and B in finalPos
@@ -218,20 +218,20 @@ Shader "Custom/WaterShader"
 				fixed4 pixelColor = tex2D(_MainTex, IN.uv);
 
 				//Interpolation parameter (camera stuff here: https://docs.unity3d.com/Manual/SL-UnityShaderVariables.html)
-				float sceneDepth = Linear01Depth(IN.uv) * _ProjectionParams.z;	//_ProjectionParams.z for camera far plane
+				float sceneDepth = Linear01Depth(IN.uv) * _ProjectionParams.z;	//Linear01Depth and parameter from https://docs.unity3d.com/Manual/SL-DepthTextures.html	, _ProjectionParams.z for camera far plane
 				fixed4 screenPosition = ComputeScreenPos(TransformWorldToHClip(IN.interp0.xyz), _ProjectionParams.x);
 				float interpolationParameter = (sceneDepth - (screenPosition.a + _Depth)) * _Strength;
 				interpolationParameter = clamp(interpolationParameter, 0.0, 1.0);
 
-				//Perform Interpolation (Lerp) bewteen shallowWaterColour and deepWaterColour
-
+				//Perform Interpolation (Lerp) between shallowWaterColour and deepWaterColour
+				float interpolatedWaterColour = lerp(_ShallowWaterColour, _DeepWaterColour, interpolationParameter);
 
 				//Multiply by lighting and shading
 				fixed shadow = SHADOW_ATTENUATION(IN);
 				fixed3 lightingAndShading = IN.diffuseColor * shadow + IN.ambientLighting;
 				pixelColor.rgb *= lightingAndShading;
 
-				return pixelColor * _ShallowWaterColour;
+				return pixelColor * interpolatedWaterColour;
 			}
 
 			//End program
