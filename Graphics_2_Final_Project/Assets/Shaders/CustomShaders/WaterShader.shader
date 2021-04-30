@@ -166,8 +166,7 @@ Shader "Custom/WaterShader"
 				interpolationParameter = clamp(interpolationParameter, 0.0, 1.0);
 
 				//Perform Interpolation (Lerp) between shallowWaterColour and deepWaterColour
-				//float interpolatedWaterColour = lerp(_ShallowWaterColour, _DeepWaterColour, interpolationParameter);
-				float4 interpolatedWaterColour = _ShallowWaterColour + (_DeepWaterColour - _ShallowWaterColour) * interpolationParameter;
+				float4 interpolatedWaterColour = lerp(_ShallowWaterColour, _DeepWaterColour, interpolationParameter);
 
 				//Multiply by lighting and shading
 				fixed shadow = SHADOW_ATTENUATION(IN);
@@ -175,7 +174,7 @@ Shader "Custom/WaterShader"
 				pixelColor.rgb *= lightingAndShading;
 
 				//Debugging
-				//return float4(interpolatedWaterColour, 0.0, 0.0, 1.0);
+				//return float4(sceneDepth, 0.5, 0.5, 1.0);
 
 				return pixelColor * interpolatedWaterColour;
 			}
