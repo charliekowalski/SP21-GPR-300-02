@@ -1,58 +1,4 @@
-//Shader "Custom/WaterShader"
-//{
-//    Properties
-//    {
-//        _Color ("Color", Color) = (1,1,1,1)
-//        _MainTex ("Albedo (RGB)", 2D) = "white" {}
-//        _Glossiness ("Smoothness", Range(0,1)) = 0.5
-//        _Metallic ("Metallic", Range(0,1)) = 0.0
-//    }
-//    SubShader
-//    {
-//        Tags { "RenderType"="Opaque" }
-//        LOD 200
-//
-//        CGPROGRAM
-//        // Physically based Standard lighting model, and enable shadows on all light types
-//        #pragma surface surf Standard fullforwardshadows
-//
-//        // Use shader model 3.0 target, to get nicer looking lighting
-//        #pragma target 3.0
-//
-//        sampler2D _MainTex;
-//
-//        struct Input
-//        {
-//            float2 uv_MainTex;
-//        };
-//
-//        half _Glossiness;
-//        half _Metallic;
-//        fixed4 _Color;
-//
-//        // Add instancing support for this shader. You need to check 'Enable Instancing' on materials that use the shader.
-//        // See https://docs.unity3d.com/Manual/GPUInstancing.html for more information about instancing.
-//        // #pragma instancing_options assumeuniformscaling
-//        UNITY_INSTANCING_BUFFER_START(Props)
-//            // put more per-instance properties here
-//        UNITY_INSTANCING_BUFFER_END(Props)
-//
-//        void surf (Input IN, inout SurfaceOutputStandard o)
-//        {
-//            // Albedo comes from a texture tinted by color
-//            fixed4 c = tex2D (_MainTex, IN.uv_MainTex) * _Color;
-//            o.Albedo = c.rgb;
-//            // Metallic and smoothness come from slider variables
-//            o.Metallic = _Metallic;
-//            o.Smoothness = _Glossiness;
-//            o.Alpha = c.a;
-//        }
-//        ENDCG
-//    }
-//    FallBack "Diffuse"
-//}
-
-//Tutorial we followed: https://www.youtube.com/watch?v=bR8DHcj6Htg
+//Tutorial we followed for basic shader creation: https://www.youtube.com/watch?v=bR8DHcj6Htg
 Shader "Custom/WaterShader"
 {
 	Properties
@@ -127,15 +73,6 @@ Shader "Custom/WaterShader"
 				return mul(UNITY_MATRIX_VP, float4(positionWS, 1.0));
 			}
 
-			//// Z buffer to linear 0..1 depth (0 at camera position, 1 at far plane).
-			//// Does NOT work with orthographic projections.
-			//// Does NOT correctly handle oblique view frustums.
-			//// zBufferParam = { (f-n)/n, 1, (f-n)/n*f, 1/f }
-			//float Linear01Depth(float depth, float4 zBufferParam)	//https://cyangamedev.wordpress.com/2019/06/01/scene-color-depth-nodes/
-			//{
-			//	return 1.0 / (zBufferParam.x * depth + zBufferParam.y);
-			//}
-
 			//------------------------------------------------------------------------------------------------------------------------
 
 			//Got names from https://docs.unity3d.com/Manual/SL-VertexProgramInputs.html
@@ -156,6 +93,8 @@ Shader "Custom/WaterShader"
 				fixed3 ambientLighting : COLOR1;	//Ambient Lighting
 				float2 uv : TEXCOORD0;
 				float3 interp0 : TEXCOORD1;
+				float4 screenPosition : TEXCOORD2;
+				float2 depthUV : TEXCOORD3;
 				SHADOW_COORDS(1)	//Shadow data goes into TEXCOORD1
 			};
 
@@ -186,7 +125,10 @@ Shader "Custom/WaterShader"
 				TRANSFER_SHADOW(OUT)
 
 				//Transfer depth (https://docs.unity3d.com/Manual/SL-DepthTextures.html)
-				UNITY_TRANSFER_DEPTH(OUT.uv);
+				UNITY_TRANSFER_DEPTH(OUT.depthUV);
+
+				//Calculate screen-space position (https://www.ronja-tutorials.com/post/039-screenspace-texture/#screenspace-coordinates-in-unlit-shaders)
+				OUT.screenPosition = ComputeScreenPos(UnityObjectToClipPos(IN.vertex));
 
 				//Calculatge R and B in finalPos
 				finalPos.r = objectSpacePos.r;
@@ -218,19 +160,22 @@ Shader "Custom/WaterShader"
 				fixed4 pixelColor = tex2D(_MainTex, IN.uv);
 
 				//Interpolation parameter (camera stuff here: https://docs.unity3d.com/Manual/SL-UnityShaderVariables.html)
-//CHECK HERE	float sceneDepth = Linear01Depth(IN.uv) * _ProjectionParams.z;	//Linear01Depth and parameter from https://docs.unity3d.com/Manual/SL-DepthTextures.html	, _ProjectionParams.z for camera far plane
-				float4 screenPosition = ComputeScreenPos(UnityObjectToClipPos(IN.position));	//https://www.ronja-tutorials.com/post/039-screenspace-texture/#:~:text=We%20can%20get%20the%20screen,ll%20return%20the%20screenspace%20position
-				float interpolationParameter = (sceneDepth - (screenPosition.a + _Depth)) * _Strength;
+				float sceneDepth = Linear01Depth(IN.depthUV) * _ProjectionParams.z;	//Linear01Depth and parameter from https://docs.unity3d.com/Manual/SL-DepthTextures.html	, _ProjectionParams.z for camera far plane
+				float screenPositionAlpha = IN.screenPosition.a;	//https://www.ronja-tutorials.com/post/039-screenspace-texture/#:~:text=We%20can%20get%20the%20screen,ll%20return%20the%20screenspace%20position
+				float interpolationParameter = (sceneDepth - (screenPositionAlpha + _Depth)) * _Strength;
 				interpolationParameter = clamp(interpolationParameter, 0.0, 1.0);
 
 				//Perform Interpolation (Lerp) between shallowWaterColour and deepWaterColour
-				float interpolatedWaterColour = lerp(_ShallowWaterColour, _DeepWaterColour, interpolationParameter);
-				//float interpolatedWaterColour = _ShallowWaterColour + (_DeepWaterColour - _ShallowWaterColour) * interpolationParameter;
+				//float interpolatedWaterColour = lerp(_ShallowWaterColour, _DeepWaterColour, interpolationParameter);
+				float4 interpolatedWaterColour = _ShallowWaterColour + (_DeepWaterColour - _ShallowWaterColour) * interpolationParameter;
 
 				//Multiply by lighting and shading
 				fixed shadow = SHADOW_ATTENUATION(IN);
 				fixed3 lightingAndShading = IN.diffuseColor * shadow + IN.ambientLighting;
 				pixelColor.rgb *= lightingAndShading;
+
+				//Debugging
+				//return float4(interpolatedWaterColour, 0.0, 0.0, 1.0);
 
 				return pixelColor * interpolatedWaterColour;
 			}
