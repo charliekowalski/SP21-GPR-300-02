@@ -58,8 +58,10 @@ Shader "Custom/WaterShader"
 	Properties
 	{
 		_MainTex("MainTex", 2D) = "white" {}
-		_Color("Color", Color) = (0.04, 0.49, 0.8, 1.0)
-		//_Displacement ("Displacement", Range(0.0, 1.0)) = 0.5
+		_ShallowWaterColour("Shallow Water Colour", Color) = (0.04, 0.49, 0.8, 1.0)
+		_DeepWaterColour("Deep Water Colour", Color) = (0.01, 0.0, 0.32, 1.0)
+		_Strength("Strength", Float) = 1
+		_Depth("Depth", Float) = 1
 	}
 
 	SubShader
@@ -71,7 +73,7 @@ Shader "Custom/WaterShader"
 			// rendering pipeline. It gets ambient and main directional
 			// light data set up; light direction in _WorldSpaceLightPos0
 			// and color in _LightColor0
-			Tags {"LightMode" = "ForwardBase"}
+			//Tags {"LightMode" = "ForwardBase"}			//THIS BREAKS IT
 
 			//Start program
 			CGPROGRAM
@@ -111,6 +113,31 @@ Shader "Custom/WaterShader"
 				return lerp(lerp(d00, d01, fp.y), lerp(d10, d11, fp.y), fp.x) + 0.5;
 			}
 
+			float4 ComputeScreenPos(float4 pos, float projectionSign)
+			{
+				float4 o = pos * 0.5f;
+				o.xy = float2(o.x, o.y * projectionSign) + o.w;
+				o.zw = pos.zw;
+				return o;
+			}
+
+			// Tranforms position from world space to homogenous space
+			float4 TransformWorldToHClip(float3 positionWS)
+			{
+				return mul(UNITY_MATRIX_VP, float4(positionWS, 1.0));
+			}
+
+			//// Z buffer to linear 0..1 depth (0 at camera position, 1 at far plane).
+			//// Does NOT work with orthographic projections.
+			//// Does NOT correctly handle oblique view frustums.
+			//// zBufferParam = { (f-n)/n, 1, (f-n)/n*f, 1/f }
+			//float Linear01Depth(float depth, float4 zBufferParam)	//https://cyangamedev.wordpress.com/2019/06/01/scene-color-depth-nodes/
+			//{
+			//	return 1.0 / (zBufferParam.x * depth + zBufferParam.y);
+			//}
+
+			//------------------------------------------------------------------------------------------------------------------------
+
 			//Got names from https://docs.unity3d.com/Manual/SL-VertexProgramInputs.html
 			//Vertex Shader Inputs
 			struct appdata
@@ -128,12 +155,17 @@ Shader "Custom/WaterShader"
 				fixed4 diffuseColor : COLOR0; //Diffuse Lighting Colour
 				fixed3 ambientLighting : COLOR1;	//Ambient Lighting
 				float2 uv : TEXCOORD0;
+				float3 interp0 : TEXCOORD1;
 				SHADOW_COORDS(1)	//Shadow data goes into TEXCOORD1
 			};
 
 			//Passing in stuff
-			fixed4 _Color;
+			fixed4 _ShallowWaterColour;
+			fixed4 _DeepWaterColour;
+			float _Strength;
+			float _Depth;
 			sampler2D _MainTex;
+			float4 _MainTex_ST;
 
 			//HERE is where we implement our functions
 			v2f VertexFunc(appdata IN)
@@ -153,6 +185,9 @@ Shader "Custom/WaterShader"
 				//Receive shadows
 				TRANSFER_SHADOW(OUT)
 
+				//Transfer depth
+				UNITY_TRANSFER_DEPTH(OUT.uv);
+
 				//Calculatge R and B in finalPos
 				finalPos.r = objectSpacePos.r;
 				finalPos.b = objectSpacePos.b;
@@ -171,7 +206,7 @@ Shader "Custom/WaterShader"
 
 				//Transform from object-space to clip-space
 				OUT.position = UnityObjectToClipPos(float4(finalPos, 1.0));
-				OUT.uv = IN.uv;
+				OUT.uv = TRANSFORM_TEX(IN.uv, _MainTex);
 
 				return OUT;
 			}
@@ -182,12 +217,21 @@ Shader "Custom/WaterShader"
 				//Sample the _MainTex at the uv
 				fixed4 pixelColor = tex2D(_MainTex, IN.uv);
 
+				//Interpolation parameter (camera stuff here: https://docs.unity3d.com/Manual/SL-UnityShaderVariables.html)
+				float sceneDepth = Linear01Depth(IN.uv) * _ProjectionParams.z;	//_ProjectionParams.z for camera far plane
+				fixed4 screenPosition = ComputeScreenPos(TransformWorldToHClip(IN.interp0.xyz), _ProjectionParams.x);
+				float interpolationParameter = (sceneDepth - (screenPosition.a + _Depth)) * _Strength;
+				interpolationParameter = clamp(interpolationParameter, 0.0, 1.0);
+
+				//Perform Interpolation (Lerp) bewteen shallowWaterColour and deepWaterColour
+
+
 				//Multiply by lighting and shading
 				fixed shadow = SHADOW_ATTENUATION(IN);
 				fixed3 lightingAndShading = IN.diffuseColor * shadow + IN.ambientLighting;
 				pixelColor.rgb *= lightingAndShading;
 
-				return pixelColor * _Color;
+				return pixelColor * _ShallowWaterColour;
 			}
 
 			//End program
