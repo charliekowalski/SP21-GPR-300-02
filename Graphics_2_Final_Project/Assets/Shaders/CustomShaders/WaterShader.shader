@@ -82,7 +82,7 @@ Shader "Custom/WaterShader"
 			#pragma vertex VertexFunc
 			#pragma fragment FragmentFunc
 			#include "UnityLightingCommon.cginc" //For _LightColor0
-			#include "UnityCG.cginc"	//For _LightColor0
+			#include "UnityCG.cginc"
 
 			// compile shader into multiple variants, with and without shadows
 			// (we don't care about any lightmaps yet, so skip these variants)
@@ -219,12 +219,13 @@ Shader "Custom/WaterShader"
 
 				//Interpolation parameter (camera stuff here: https://docs.unity3d.com/Manual/SL-UnityShaderVariables.html)
 				float sceneDepth = Linear01Depth(IN.uv) * _ProjectionParams.z;	//Linear01Depth and parameter from https://docs.unity3d.com/Manual/SL-DepthTextures.html	, _ProjectionParams.z for camera far plane
-				fixed4 screenPosition = ComputeScreenPos(TransformWorldToHClip(IN.interp0.xyz), _ProjectionParams.x);
+				float4 screenPosition = ComputeScreenPos(UnityObjectToClipPos(IN.position));// , _ProjectionParams.x);	//https://www.ronja-tutorials.com/post/039-screenspace-texture/#:~:text=We%20can%20get%20the%20screen,ll%20return%20the%20screenspace%20position.
 				float interpolationParameter = (sceneDepth - (screenPosition.a + _Depth)) * _Strength;
 				interpolationParameter = clamp(interpolationParameter, 0.0, 1.0);
 
 				//Perform Interpolation (Lerp) between shallowWaterColour and deepWaterColour
 				float interpolatedWaterColour = lerp(_ShallowWaterColour, _DeepWaterColour, interpolationParameter);
+				//float interpolatedWaterColour = _ShallowWaterColour + (_DeepWaterColour - _ShallowWaterColour) * interpolationParameter;
 
 				//Multiply by lighting and shading
 				fixed shadow = SHADOW_ATTENUATION(IN);
