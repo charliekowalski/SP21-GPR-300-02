@@ -141,7 +141,7 @@ Shader "Custom/WaterShader"
 				float2 tiling = float2(1, 1);
 				float2 tilingAndOffset = IN.uv * tiling * scaledTime;
 				gradientNoise = Unity_GradientNoise_float(tilingAndOffset, 20);
-				gradientNoiseDisplaced = mul(/*_Displacement*/0.5, gradientNoise);
+				gradientNoiseDisplaced = mul(0.5, gradientNoise);
 
 				//Set G in finalPos to gradientNoiseDisplaced
 				finalPos.g = gradientNoiseDisplaced;
