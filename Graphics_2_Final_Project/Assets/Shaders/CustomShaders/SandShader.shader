@@ -1,3 +1,9 @@
+/*
+    SOURCES:
+        . POM code inspiration: our project 4 and a github link to help us bridge the gaps between animal3D and Unity code: https://github.com/przemyslawzaworski/Unity3D-CG-programming/blob/master/pom.shader
+        . Lighting and Shading: https://docs.unity3d.com/Manual/SL-VertexFragmentShaderExamples.html
+*/
+
 Shader "Custom/SandShader"
 {
     Properties

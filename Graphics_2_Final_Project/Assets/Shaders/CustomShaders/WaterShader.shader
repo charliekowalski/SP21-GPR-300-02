@@ -1,4 +1,12 @@
-//Tutorial we followed for basic shader creation: https://www.youtube.com/watch?v=bR8DHcj6Htg
+/*
+	SOURCES:
+		. Basic shader creation: https://www.youtube.com/watch?v=bR8DHcj6Htg
+		. Lighting and Shading: https://docs.unity3d.com/Manual/SL-VertexFragmentShaderExamples.html
+		. Unity Shader variable names: https://docs.unity3d.com/Manual/SL-VertexProgramInputs.html
+		. Unity Depth Textures: https://docs.unity3d.com/Manual/SL-DepthTextures.html
+		. Screenspace Coordinates: https://www.ronja-tutorials.com/post/039-screenspace-texture/#screenspace-coordinates-in-unlit-shaders
+		. More Unity Shader Variables: https://docs.unity3d.com/Manual/SL-UnityShaderVariables.html
+*/
 Shader "Custom/WaterShader"
 {
 	Properties
@@ -14,7 +22,6 @@ Shader "Custom/WaterShader"
 	{
 		Pass
 		{
-			//Lighting and Shadows tutorial: https://docs.unity3d.com/Manual/SL-VertexFragmentShaderExamples.html
 			// indicate that our pass is the "base" pass in forward
 			// rendering pipeline. It gets ambient and main directional
 			// light data set up; light direction in _WorldSpaceLightPos0
@@ -75,7 +82,6 @@ Shader "Custom/WaterShader"
 
 			//------------------------------------------------------------------------------------------------------------------------
 
-			//Got names from https://docs.unity3d.com/Manual/SL-VertexProgramInputs.html
 			//Vertex Shader Inputs
 			struct appdata
 			{
@@ -124,10 +130,10 @@ Shader "Custom/WaterShader"
 				//Receive shadows
 				TRANSFER_SHADOW(OUT)
 
-				//Transfer depth (https://docs.unity3d.com/Manual/SL-DepthTextures.html)
+				//Transfer depth
 				UNITY_TRANSFER_DEPTH(OUT.depthUV);
 
-				//Calculate screen-space position (https://www.ronja-tutorials.com/post/039-screenspace-texture/#screenspace-coordinates-in-unlit-shaders)
+				//Calculate screen-space position
 				OUT.screenPosition = ComputeScreenPos(UnityObjectToClipPos(IN.vertex));
 
 				//Calculatge R and B in finalPos
@@ -159,9 +165,9 @@ Shader "Custom/WaterShader"
 				//Sample the _MainTex at the uv
 				fixed4 pixelColor = tex2D(_MainTex, IN.uv);
 
-				//Interpolation parameter (camera stuff here: https://docs.unity3d.com/Manual/SL-UnityShaderVariables.html)
-				float sceneDepth = Linear01Depth(IN.depthUV) * _ProjectionParams.z;	//Linear01Depth and parameter from https://docs.unity3d.com/Manual/SL-DepthTextures.html	, _ProjectionParams.z for camera far plane
-				float screenPositionAlpha = IN.screenPosition.a;	//https://www.ronja-tutorials.com/post/039-screenspace-texture/#:~:text=We%20can%20get%20the%20screen,ll%20return%20the%20screenspace%20position
+				//Interpolation parameter
+				float sceneDepth = Linear01Depth(IN.depthUV) * _ProjectionParams.z;	//_ProjectionParams.z for camera far plane
+				float screenPositionAlpha = IN.screenPosition.a;
 				float interpolationParameter = (sceneDepth - (screenPositionAlpha + _Depth)) * _Strength;
 				interpolationParameter = clamp(interpolationParameter, 0.0, 1.0);
 
