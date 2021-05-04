@@ -19,11 +19,18 @@ Material:
   m_SavedProperties:
     serializedVersion: 3
     m_TexEnvs:
+    - _HeightMap:
+        m_Texture: {fileID: 2800000, guid: 12278ab611033764c8975d3370f4e389, type: 3}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
     - _MainTex:
         m_Texture: {fileID: 2800000, guid: 12278ab611033764c8975d3370f4e389, type: 3}
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     m_Ints: []
-    m_Floats: []
+    m_Floats:
+    - _Parallax: 0.137
+    - _ParallaxSamples: 100
+    - _RaySize: 5
     m_Colors: []
   m_BuildTextureStacks: []
