@@ -149,7 +149,7 @@ Shader "Custom/WaterShader"
 				UNITY_TRANSFER_DEPTH(OUT.depthUV);
 
 				//Calculate screen-space position
-				OUT.screenPosition = ComputeScreenPos(UnityObjectToClipPos(IN.vertex), _ProjectionParams.x);
+				//OUT.screenPosition = ComputeScreenPos(TransformWorldToHClip(float3(IN.uv, 0.0)), _ProjectionParams.x);
 
 				//Calculatge R and B in finalPos
 				finalPos.r = objectSpacePos.r;
@@ -170,6 +170,7 @@ Shader "Custom/WaterShader"
 				//Transform from object-space to clip-space
 				OUT.position = UnityObjectToClipPos(float4(finalPos, 1.0));
 				OUT.uv = TRANSFORM_TEX(IN.uv, _MainTex);
+				//OUT.uv = IN.uv;
 
 				return OUT;
 			}
@@ -179,6 +180,9 @@ Shader "Custom/WaterShader"
 			{
 				//Sample the _MainTex at the uv
 				fixed4 pixelColor = tex2D(_MainTex, IN.uv);
+
+				//Screen position
+				IN.screenPosition = ComputeScreenPos(TransformWorldToHClip(IN.interp0), _ProjectionParams.x);
 
 				//Interpolation parameter
 				float sceneDepth = Linear01Depth(IN.depthUV) * _ProjectionParams.z;	//_ProjectionParams.z for camera far plane
