@@ -6,12 +6,15 @@
 		. Unity Depth Textures: https://docs.unity3d.com/Manual/SL-DepthTextures.html
 		. Screenspace Coordinates: https://www.ronja-tutorials.com/post/039-screenspace-texture/#screenspace-coordinates-in-unlit-shaders
 		. More Unity Shader Variables: https://docs.unity3d.com/Manual/SL-UnityShaderVariables.html
+		. Phong Shading Tutorial: https://en.wikibooks.org/wiki/Cg_Programming/Unity/Smooth_Specular_Highlights
 */
 Shader "Custom/WaterShader"
 {
 	Properties
 	{
 		_MainTex("Main Texture", 2D) = "white" {}
+		_SpecularColour("Specular Colour", Color) = (1,1,1,1)
+		_Shininess("Shininess", Float) = 10
 		_ShallowWaterColour("Shallow Water Colour", Color) = (0.04, 0.49, 0.8, 1.0)
 		_DeepWaterColour("Deep Water Colour", Color) = (0.01, 0.0, 0.32, 1.0)
 		_Strength("Strength", Float) = 1
@@ -23,11 +26,7 @@ Shader "Custom/WaterShader"
 	{
 		Pass
 		{
-			// indicate that our pass is the "base" pass in forward
-			// rendering pipeline. It gets ambient and main directional
-			// light data set up; light direction in _WorldSpaceLightPos0
-			// and color in _LightColor0
-			//Tags {"LightMode" = "ForwardBase"}			//THIS BREAKS IT
+			//Tags { "LightMode" = "ForwardBase" }			//THIS BREAKS IT
 
 			//Start program
 			CGPROGRAM
@@ -112,20 +111,25 @@ Shader "Custom/WaterShader"
 				fixed4 diffuseColor : COLOR0; //Diffuse Lighting Colour
 				fixed3 ambientLighting : COLOR1;	//Ambient Lighting
 				float2 uv : TEXCOORD0;
-				float3 interp0 : TEXCOORD1;
+				float3 normalDir : TEXCOORD1;
 				float4 screenPosition : TEXCOORD2;
 				float2 depthUV : TEXCOORD3;
+				float4 posWorld : TEXCOORD4;
 				SHADOW_COORDS(1)	//Shadow data goes into TEXCOORD1
 			};
 
 			//Passing in stuff
+			fixed4 _SpecularColour;
+			float _Shininess;
 			fixed4 _ShallowWaterColour;
 			fixed4 _DeepWaterColour;
 			float _Strength;
 			float _Depth;
 			float _NormalStrength;
 			sampler2D _MainTex;
+			//sampler2D _CameraDepthTexture;
 			float4 _MainTex_ST;
+			UNITY_DECLARE_DEPTH_TEXTURE(_CameraDepthTexture);
 
 			//HERE is where we implement our functions
 			v2f VertexFunc(appdata IN)
@@ -146,6 +150,8 @@ Shader "Custom/WaterShader"
 				TRANSFER_SHADOW(OUT)
 
 				//Transfer depth
+				//OUT.screenPosition = ComputeScreenPos(OUT.position);
+				//COMPUTE_EYEDEPTH(OUT.screenPosition.z);
 				UNITY_TRANSFER_DEPTH(OUT.depthUV);
 
 				//Calculate screen-space position
@@ -167,8 +173,14 @@ Shader "Custom/WaterShader"
 				//Set G in finalPos to gradientNoiseDisplaced
 				finalPos.g = gradientNoiseDisplaced;
 
+				//Matrices
+				float4x4 modelMatrix = unity_ObjectToWorld;
+				float4x4 modelMatrixInverse = unity_WorldToObject;
+
 				//Transform from object-space to clip-space
 				OUT.position = UnityObjectToClipPos(float4(finalPos, 1.0));
+				OUT.posWorld = mul(modelMatrix, finalPos);
+				OUT.normalDir = normalize(mul(float4(IN.normal, 0.0), modelMatrixInverse).xyz);
 				OUT.uv = TRANSFORM_TEX(IN.uv, _MainTex);
 				//OUT.uv = IN.uv;
 
@@ -181,8 +193,12 @@ Shader "Custom/WaterShader"
 				//Sample the _MainTex at the uv
 				fixed4 pixelColor = tex2D(_MainTex, IN.uv);
 
+				//Depth - Doesn't wanna work because it thinks there is a 'v' in COMPUTE_EYEDEPTH(OUT.screenPosition.z);
+				//float sceneZ = LinearEyeDepth(SAMPLE_DEPTH_TEXTURE_PROJ(_CameraDepthTexture, UNITY_PROJ_COORD(IN.screenPosition)));
+				//float depth = sceneZ - IN.screenPosition.z;
+
 				//Screen position
-				IN.screenPosition = ComputeScreenPos(TransformWorldToHClip(IN.interp0), _ProjectionParams.x);
+				IN.screenPosition = ComputeScreenPos(TransformWorldToHClip(IN.normalDir), _ProjectionParams.x);
 
 				//Interpolation parameter
 				float sceneDepth = Linear01Depth(IN.depthUV) * _ProjectionParams.z;	//_ProjectionParams.z for camera far plane
@@ -213,17 +229,157 @@ Shader "Custom/WaterShader"
 				float inverseLerp = InverseLerp(0.0, _NormalStrength, interpolationParameter);
 				IN.normal = UnityObjectToClipPos(NormalStrength(texture0 + texture1, inverseLerp));
 
+				//Phong
+				float3 normalDir = normalize(IN.normalDir);
+				float3 viewDirection = normalize(
+					_WorldSpaceCameraPos - IN.posWorld.xyz);
+				float3 lightDirection;
+				float attenuation;
+
+				if (0.0 == _WorldSpaceLightPos0.w) // directional light?
+				{
+					attenuation = 1.0; // no attenuation
+					lightDirection = normalize(_WorldSpaceLightPos0.xyz);
+				}
+				else // point or spot light
+				{
+					float3 vertexToLightSource =
+						_WorldSpaceLightPos0.xyz - IN.posWorld.xyz;
+					float distance = length(vertexToLightSource);
+					attenuation = 1.0 / distance; // linear attenuation 
+					lightDirection = normalize(vertexToLightSource);
+				}
+
+				float3 ambientLighting = /*IN.ambientLighting;*/
+					UNITY_LIGHTMODEL_AMBIENT.rgb * IN.diffuseColor.rgb;
+
+				float3 diffuseReflection =
+					attenuation * _LightColor0.rgb * IN.diffuseColor.rgb
+					* max(0.0, dot(normalDir, lightDirection));
+
+				float3 specularReflection;
+				if (dot(normalDir, lightDirection) < 0.0)
+					// light source on the wrong side?
+				{
+					specularReflection = float3(0.0, 0.0, 0.0);
+					// no specular reflection
+				}
+				else // light source on the right side
+				{
+					specularReflection = attenuation * _LightColor0.rgb
+						* _SpecColor.rgb * pow(max(0.0, dot(
+							reflect(-lightDirection, normalDir),
+							viewDirection)), _Shininess);
+				}
+
+				float4 lighting = float4(ambientLighting + diffuseReflection
+					+ specularReflection, 1.0);
+
 				//Debugging
 				//return float4(sceneDepth, 0.0, 0.0, 1.0);
 
-				return pixelColor * interpolatedWaterColour;
+				return pixelColor * interpolatedWaterColour * lighting;
 			}
-
 			//End program
 			ENDCG
 		}
-
 		//Shadow casting support
 		UsePass "Legacy Shaders/VertexLit/SHADOWCASTER"
+
+		Pass
+		{
+			Tags { "LightMode" = "ForwardAdd" }
+			// pass for additional light sources
+			Blend One One // additive blending 
+
+			CGPROGRAM
+
+			#pragma vertex vert  
+			#pragma fragment frag 
+
+			#include "UnityCG.cginc"
+			uniform float4 _LightColor0;
+			// color of light source (from "Lighting.cginc")
+
+			// User-specified properties
+			uniform float4 _Color;
+			uniform float4 _SpecColor;
+			uniform float _Shininess;
+
+			struct vertexInput 
+			{
+				float4 vertex : POSITION;
+				float3 normal : NORMAL;
+			};
+			struct vertexOutput 
+			{
+				float4 pos : SV_POSITION;
+				float4 posWorld : TEXCOORD0;
+				float3 normalDir : TEXCOORD1;
+			};
+
+			vertexOutput vert(vertexInput input)
+			{
+				vertexOutput output;
+
+				float4x4 modelMatrix = unity_ObjectToWorld;
+				float4x4 modelMatrixInverse = unity_WorldToObject;
+
+				output.posWorld = mul(modelMatrix, input.vertex);
+				output.normalDir = normalize(
+					mul(float4(input.normal, 0.0), modelMatrixInverse).xyz);
+				output.pos = UnityObjectToClipPos(input.vertex);
+				return output;
+			}
+
+			float4 frag(vertexOutput input) : COLOR
+			{
+				float3 normalDirection = normalize(input.normalDir);
+
+				float3 viewDirection = normalize(
+					_WorldSpaceCameraPos - input.posWorld.xyz);
+				float3 lightDirection;
+				float attenuation;
+
+				if (0.0 == _WorldSpaceLightPos0.w) // directional light?
+				{
+					attenuation = 1.0; // no attenuation
+					lightDirection = normalize(_WorldSpaceLightPos0.xyz);
+				}
+				else // point or spot light
+				{
+					float3 vertexToLightSource =
+						_WorldSpaceLightPos0.xyz - input.posWorld.xyz;
+					float distance = length(vertexToLightSource);
+					attenuation = 1.0 / distance; // linear attenuation 
+					lightDirection = normalize(vertexToLightSource);
+				}
+
+				float3 diffuseReflection =
+					attenuation * _LightColor0.rgb * _Color.rgb
+					* max(0.0, dot(normalDirection, lightDirection));
+
+				float3 specularReflection;
+				if (dot(normalDirection, lightDirection) < 0.0)
+					// light source on the wrong side?
+					{
+					specularReflection = float3(0.0, 0.0, 0.0);
+					// no specular reflection
+				}
+				else // light source on the right side
+				{
+						specularReflection = attenuation * _LightColor0.rgb
+						* _SpecColor.rgb * pow(max(0.0, dot(
+						reflect(-lightDirection, normalDirection),
+						viewDirection)), _Shininess);
+				}
+
+				return float4(diffuseReflection
+						+ specularReflection, 1.0);
+				// no ambient lighting in this pass
+			}
+			ENDCG
+		}
 	}
+	Fallback "Specular"
 }
