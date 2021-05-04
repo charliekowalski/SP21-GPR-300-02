@@ -11,11 +11,12 @@ Shader "Custom/WaterShader"
 {
 	Properties
 	{
-		_MainTex("MainTex", 2D) = "white" {}
+		_MainTex("Main Texture", 2D) = "white" {}
 		_ShallowWaterColour("Shallow Water Colour", Color) = (0.04, 0.49, 0.8, 1.0)
 		_DeepWaterColour("Deep Water Colour", Color) = (0.01, 0.0, 0.32, 1.0)
 		_Strength("Strength", Float) = 1
 		_Depth("Depth", Float) = 1
+		_NormalStrength("Normal Strength", Range(0, 1)) = 1
 	}
 
 	SubShader
@@ -80,6 +81,18 @@ Shader "Custom/WaterShader"
 				return mul(UNITY_MATRIX_VP, float4(positionWS, 1.0));
 			}
 
+			//Inverse Lerp
+			float InverseLerp(float A, float B, float T)
+			{
+				return (T - A) / (B - A);
+			}
+
+			//Normal Strength
+			float3 NormalStrength(float3 In, float Strength)
+			{
+				return float3(In.rg * Strength, lerp(1, In.b, saturate(Strength)));
+			}
+
 			//------------------------------------------------------------------------------------------------------------------------
 
 			//Vertex Shader Inputs
@@ -94,6 +107,7 @@ Shader "Custom/WaterShader"
 			struct  v2f
 			{
 				float4 position : SV_POSITION;
+				float3 normal : NORMAL;
 				//fixed4 colorRGBA : COLOR;
 				fixed4 diffuseColor : COLOR0; //Diffuse Lighting Colour
 				fixed3 ambientLighting : COLOR1;	//Ambient Lighting
@@ -109,6 +123,7 @@ Shader "Custom/WaterShader"
 			fixed4 _DeepWaterColour;
 			float _Strength;
 			float _Depth;
+			float _NormalStrength;
 			sampler2D _MainTex;
 			float4 _MainTex_ST;
 
@@ -134,7 +149,7 @@ Shader "Custom/WaterShader"
 				UNITY_TRANSFER_DEPTH(OUT.depthUV);
 
 				//Calculate screen-space position
-				OUT.screenPosition = ComputeScreenPos(UnityObjectToClipPos(IN.vertex));
+				OUT.screenPosition = ComputeScreenPos(UnityObjectToClipPos(IN.vertex), _ProjectionParams.x);
 
 				//Calculatge R and B in finalPos
 				finalPos.r = objectSpacePos.r;
@@ -179,8 +194,23 @@ Shader "Custom/WaterShader"
 				fixed3 lightingAndShading = IN.diffuseColor * shadow + IN.ambientLighting;
 				pixelColor.rgb *= lightingAndShading;
 
+				//Waves effect
+				float2 tiling = float2(100, 100);
+				float offset0 = _Time * 0.02;	//Time / 50
+				float offset1 = _Time * -0.1;	//Time / -10
+				float2 uv0 = IN.uv * tiling + offset0;
+				float2 uv1 = IN.uv * tiling + offset1;
+
+				//Sample the textures
+				float4 texture0 = tex2D(_MainTex, uv0);
+				float4 texture1 = tex2D(_MainTex, uv1);
+
+				//Calculate the normal (tangent space)
+				float inverseLerp = InverseLerp(0.0, _NormalStrength, interpolationParameter);
+				IN.normal = UnityObjectToClipPos(NormalStrength(texture0 + texture1, inverseLerp));
+
 				//Debugging
-				//return float4(sceneDepth, 0.5, 0.5, 1.0);
+				//return float4(sceneDepth, 0.0, 0.0, 1.0);
 
 				return pixelColor * interpolatedWaterColour;
 			}
