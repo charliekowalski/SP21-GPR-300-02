@@ -29,7 +29,7 @@ Material:
         m_Offset: {x: 0, y: 0}
     m_Ints: []
     m_Floats:
-    - _Parallax: 0.137
+    - _Parallax: 0.135
     - _ParallaxSamples: 100
     - _RaySize: 5
     m_Colors: []
